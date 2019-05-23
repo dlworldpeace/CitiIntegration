@@ -12,7 +12,7 @@ public class HandlerConstant {
 
   /* Inputs to the Parsing Response Logic */
   public static final String authType = ""; // for Authentication
-  public static final String paymentType = "BASE64”"; // for Payment Initiation
+  public static final String paymentType = "BASE64"; // for Payment Initiation
   public static final String tagName = "//access_token/text()” for Authentication & "
       + "“//Response/text()” for Payment Initiation";
 

@@ -1,4 +1,9 @@
-import java.awt.PageAttributes.MediaType;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -19,11 +24,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
@@ -31,9 +36,15 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,6 +58,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
 import org.apache.xml.security.encryption.XMLCipher;
@@ -204,19 +216,29 @@ public class Handler {
    * Encrypt the signed XML payload document
    *
    * @param signedXmlDoc signed XML document
-   * @throws XMLEncryptionException
+   * @param publicEncryptKey public key used to encrypt the doc
+   * @throws XMLEncryptionException if an unexpected exception occurs while encrypting the signed doc
    * @throws HandlerException custom exception for Handler class
    */
   public static Document encryptSignedXMLPayloadDoc (Document signedXmlDoc,
       PublicKey publicEncryptKey) throws XMLEncryptionException, HandlerException {
-    try{
+
     String jceAlgorithmName = "DESede";
-    KeyGenerator keyGenerator = KeyGenerator.getInstance(jceAlgorithmName);
-    Key symmetricKey = keyGenerator.generateKey();
+    Key symmetricKey;
+
+    try {
+      KeyGenerator keyGenerator = KeyGenerator.getInstance(jceAlgorithmName);
+      symmetricKey = keyGenerator.generateKey();
+    } catch (NoSuchAlgorithmException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+
     String algorithmURI = XMLCipher.RSA_v1dot5;
     XMLCipher keyCipher = XMLCipher.getInstance(algorithmURI);
     keyCipher.init(XMLCipher.WRAP_MODE, publicEncryptKey);
-    EncryptedKey encryptedKey = keyCipher.encryptKey(signedXmlDoc, symmetricKey);
+    EncryptedKey encryptedKey = keyCipher
+        .encryptKey(signedXmlDoc, symmetricKey);
     Element rootElement = signedXmlDoc.getDocumentElement();
     algorithmURI = XMLCipher.TRIPLEDES;
     XMLCipher xmlCipher = XMLCipher.getInstance(algorithmURI);
@@ -225,6 +247,7 @@ public class Handler {
     KeyInfo keyInfo = new KeyInfo(signedXmlDoc);
     keyInfo.add(encryptedKey);
     encryptedData.setKeyInfo(keyInfo);
+
     try {
       return xmlCipher.doFinal(signedXmlDoc, rootElement, false);
     } catch (Exception e) {
@@ -239,14 +262,16 @@ public class Handler {
    * @return string value of the document
    * @throws HandlerException custom exception for Handler class
    */
-  // TODO check what kind of string value is returned: XML?
   public static String convertDocToString (Document xmlDoc) throws HandlerException {
-    TransformerFactory tf = TransformerFactory.newInstance();
     try {
+      TransformerFactory tf = TransformerFactory.newInstance();
       Transformer transformer = tf.newTransformer();
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
       StringWriter writer = new StringWriter();
       transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
+
+      // TODO check what kind of string value is returned: XML?
+
       return writer.getBuffer().toString();
     } catch (TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -337,12 +362,16 @@ public class Handler {
   /**
    * Decrypt the encrypted & signed XML Response Payload Document
    *
+   * @param encryptedSignedDoc encrypted & signed XML doc
+   * @param privateDecryptKey private key used to decrypt
+   * @throws XMLEncryptionException if an unexpected exception occurs while decrypting the encrypted & signed doc
    * @throws HandlerException custom exception for Handler class
    */
-  public static void decryptEncryptedAndSignedXXML () throws HandlerException {
-    xml.security.Init.init();
+  public static void decryptEncryptedAndSignedXXML (Document encryptedSignedDoc,
+      PrivateKey privateDecryptKey) throws XMLEncryptionException, HandlerException {
+    org.apache.xml.security.Init.init();
 
-    Element docRoot = xmlDoc.getDocumentElement();
+    Element docRoot = encryptedSignedDoc.getDocumentElement();
     Node dataEL = null;
     Node keyEL = null;
     if ("http://www.w3.org/2001/04/xmlenc#".equals(docRoot.getNamespaceURI())
@@ -373,9 +402,9 @@ public class Handler {
     XMLCipher cipher = XMLCipher.getInstance();
     cipher.init(XMLCipher.DECRYPT_MODE, null);
     EncryptedData encryptedData = cipher
-        .loadEncryptedData(xmlDoc, (Element) dataEL);
+        .loadEncryptedData(encryptedSignedDoc, (Element) dataEL);
     EncryptedKey encryptedKey = cipher
-        .loadEncryptedKey(xmlDoc, (Element) keyEL);
+        .loadEncryptedKey(encryptedSignedDoc, (Element) keyEL);
     if (encryptedData != null && encryptedKey != null) {
       String encAlgoURL = encryptedData.getEncryptionMethod().getAlgorithm();
       XMLCipher keyCipher = XMLCipher.getInstance();
@@ -383,9 +412,15 @@ public class Handler {
       Key encryptionKey = keyCipher.decryptKey(encryptedKey, encAlgoURL);
       cipher = XMLCipher.getInstance();
       cipher.init(XMLCipher.DECRYPT_MODE, encryptionKey);
-      Document decryptedDoc = cipher.doFinal(xmlDoc, (Element) dataEL);
+      try {
+        Document decryptedDoc = cipher
+            .doFinal(encryptedSignedDoc, (Element) dataEL);
+      } catch (Exception e) {
+        Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+        throw new HandlerException(e.getMessage());
+      }
     }
-    decryptedDoc.normalize();
+    decryptedDoc.normalize(); // TODO: add inside if loop?
   }
 
   /**
@@ -410,9 +445,15 @@ public class Handler {
   /**
    * Verifying the Signature of decrypted XML response Payload Document
    *
+   * @param decryptedDoc decrypted XML doc to be verified
+   * @param signVerifyCert certificate used to verify the signature of the doc
+   * @throws CertificateEncodingException if an unexpected exception occurs while extracting cert info
+   * @throws XMLSecurityException if an unexpected exception occurs while verifying the signature
    * @throws HandlerException custom exception for Handler class
    */
-  public static void verifySignatureofDecryptedXML () throws HandlerException {
+  // TODO: Check for the exception throwing
+  public static void verifySignatureofDecryptedXML (Document decryptedDoc,
+      X509Certificate signVerifyCert) throws CertificateEncodingException, XMLSecurityException, HandlerException {
     boolean verifySignStatus = false;
     NodeList sigElement = decryptedDoc
         .getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#",
@@ -433,8 +474,7 @@ public class Handler {
           X509Certificate certFromDoc = keyInfo.getX509Certificate();
           if (certFromDoc != null) {
             int enCodeCertLengthFrmDocCert = certFromDoc.getEncoded().length;
-            int enCodeCertLengthTobeValidated = signVerifyCert
-                .getEncoded().length;
+            int enCodeCertLengthTobeValidated = signVerifyCert.getEncoded().length;
             if (enCodeCertLengthFrmDocCert == enCodeCertLengthTobeValidated) {
               verifySignStatus = signature.checkSignatureValue(signVerifyCert);
             } else {
@@ -465,7 +505,8 @@ public class Handler {
    * @return decrypted statement file as bytearray
    * @throws HandlerException custom exception for Handler class
    */
-  public static byte[] decryptStatementFile () throws HandlerException {
+  public static byte[] decryptStatementFile (byte[] encryptedStatementFile)
+      throws HandlerException {
     String decryptionKey = "";
     NodeList nodes = evalFromString(
         "//statementRetrievalResponse//attachmentDecryptionKey",
@@ -502,9 +543,11 @@ public class Handler {
    * Parsing response to show error or valid message logic
    *
    * @param responseDoc document to be parsed
+   * @param type "" for authType or "BASE64" for paymentType
+   * @return reponse message
    * @throws HandlerException custom exception for Handler class
    */
-  public static void handleResponse (Document responseDoc) throws HandlerException {
+  public static String handleResponse (Document responseDoc, String type) throws HandlerException {
     XPath xpath = XPathFactory.newInstance().newXPath();
 
     String errorInResponse = "";
@@ -556,41 +599,56 @@ public class Handler {
       NodeList nodes = (NodeList) xpath.compile(tagName)
           .evaluate(responseDoc, XPathConstants.NODESET);
       if (nodes != null && nodes.getLength() == 1) {
-        response = nodes.item(0).getNodeValue();
-      }
-      if ("BASE64".equals(type)) {
-        String response = new String(Base64.decodeBase64(response));
+        String response = nodes.item(0).getNodeValue();
+
+        if ("BASE64".equals(type)) {
+          return new String(Base64.decodeBase64(response));
+        } else {
+          return response;
+        }
+      } else {
+        throw new HandlerException("Empty content of responseDoc");  // TODO: Check if this logic is correct
       }
     }
+
+
   }
 
   /**
    * Parsing MTOM Response (Parser for Statement Retrieval Response)
    *
+   * @param response MPTOM response
+   * @return response in byteArray
    * @throws HandlerException custom exception for Handler class
    */
-  public static void parseMTOPResponse () throws HandlerException {
-    MimeMultipart mp = new MimeMultipart(
-        new ByteArrayDataSource(response, MediaType.TEXT_XML));
-    for (int i = 0; i < mp.getCount(); i++) {
-      BodyPart bodyPart = mp.getBodyPart(i);
-      String contentType = bodyPart.getContentType();
-      logger.info("ContentTyp==>", contentType);
-      if (bodyPart.isMimeType("text/xml")) {// if text/xml
-        responseStatRetXMLStr = (String) bodyPart.getContent();
-      } else {
-        ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
-            .getContent();
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[1024];
-        while ((nRead = bais.read(data, 0, data.length)) != -1) {
-          buffer.write(data, 0, nRead);
+  public static byte[] parseMTOPResponse (String response) throws HandlerException {
+    try {
+      MimeMultipart mp = new MimeMultipart(
+          new ByteArrayDataSource(response,
+              MediaType.TEXT_XML)); // TODO: Find out what is this MediaType
+      for (int i = 0; i < mp.getCount(); i++) {
+        BodyPart bodyPart = mp.getBodyPart(i);
+        String contentType = bodyPart.getContentType();
+        logger.info("ContentTyp==>", contentType);
+        if (bodyPart.isMimeType("text/xml")) {// if text/xml
+          responseStatRetXMLStr = (String) bodyPart
+              .getContent(); // TODO: Find out why is this never used
+        } else {
+          ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
+              .getContent();
+          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+          int nRead;
+          byte[] data = new byte[1024];
+          while ((nRead = bais.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+          }
+          buffer.flush();
+          return buffer.toByteArray();
         }
-        buffer.flush();
-        byte[] encryptedStatementFile = buffer.toByteArray();
       }
+    } catch (MessagingException | IOException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
     }
   }
 
@@ -633,9 +691,9 @@ public class Handler {
           }
         }), new DefaultClientConfig());
     WebResource webResource = client.resource(HandlerConstant.oAuthURL);
-    Builder builder = webResource.type(MediaType.APPLICATION_XML);
+    WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
     builder.header(HttpHeaders.AUTHORIZATION, "Basic " + Base64
-        .encodeBase64String((clientID + ":" + HandlerConstant.clientSecret).getBytes())
+        .encodeBase64String((HandlerConstant.clientID + ":" + HandlerConstant.clientSecret).getBytes())
         .replaceAll("(\\r|\\n)", ""));
     ClientResponse clientResponse = builder
         .post(ClientResponse.class, HandlerConstant.oAuthPayloadSignedEncrypted);
@@ -782,10 +840,6 @@ public class Handler {
     ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
         .post(ClientResponse.class, HandlerConstant.payloadSignedEncrypted);
     return clientResponse.getEntityInputStream();
-  }
-
-  public static void main(String[] args) {
-    Handler.signXMLPayloadDoc();
   }
 
 }

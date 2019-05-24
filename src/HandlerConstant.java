@@ -17,21 +17,28 @@ public class HandlerConstant {
       + "“//Response/text()” for Payment Initiation";
 
   /* Sample Authentication Payload */
-  public static final String oAuthPayloadSignedEncrypted =
+  public static final String oAuthPayload_CCF =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
           + "<oAuthToken xmlns=\"http://com.citi.citiconnect/services/types/oauthtoken/v1\">\n"
           + "<grantType>client_credentials</grantType>\n"
           + "<scope>/authenticationservices/v1</scope>\n"
           + "<sourceApplication>CCF</sourceApplication>\n"
           + "</oAuthToken>";
+  public static final String oAuthPayload_FAST =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+          + "<oAuthToken xmlns=\"http://com.citi.citiconnect/services/types/oauthtoken/v1\">\n"
+          + "<grantType>client_credentials</grantType>\n"
+          + "<scope>/authenticationservices/v1</scope>\n"
+          + "</oAuthToken>";
 
   /* Inputs to the Authentication API Calling Logic */
   public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12"; //SSLcert.pem
   public static final String certPwd = "pass123"; // where do we get this from?
   public static final String proxyURL = "webproxy.abc.net"; // what is this?
-  public static final String oAuthURL = "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/authenticationservices/v1/oauth/token";
+  public static final String oAuthURL_UAT = "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/authenticationservices/v1/oauth/token";
+  public static final String oAuthURL_PROD = "https://tts.apib2b.citi.com/citiconnect/prod/authenticationservices/v1/oauth/token";
   public static final String clientID  = "9a9069d1-ed93-4d40-8b60-1e56a53899df";
-  public static final String clientSecret = "F5yR7jQ8iN6tU7xQ5sX8rQ8oP3lY0rJ8tQ8vO6hI7eE4rA1nS6";
+  public static final String clientSecretKey = "F5yR7jQ8iN6tU7xQ5sX8rQ8oP3lY0rJ8tQ8vO6hI7eE4rA1nS6";
 
   /* Sample Payment Initiation Payload */
   public static final String samplePaymentPayload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"

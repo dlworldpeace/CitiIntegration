@@ -180,7 +180,8 @@ public class Handler {
    * @param xmlDoc xml document to be signed
    * @param signCert certificate to be added in
    * @param privateSignKey private key used to sign the document
-   * @throws XMLSecurityException if an unexpected exception occurs while signing the doc
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the {@code xmlDoc}
    */
   public static void signXMLPayloadDoc (Document xmlDoc, X509Certificate signCert,
       PrivateKey privateSignKey) throws XMLSecurityException {
@@ -343,7 +344,7 @@ public class Handler {
    * @return public client decryption key
    * @throws HandlerException custom exception for Handler class
    */
-  public static X509Certificate getClientPublicDecryotKey () throws HandlerException {
+  public static X509Certificate getClientPublicDecrytionKey () throws HandlerException {
     try {
       KeyStore ks = KeyStore.getInstance("JKS");
       X509Certificate decryptCert = (X509Certificate) ks
@@ -682,9 +683,11 @@ public class Handler {
    * Authentication Calling Logic: establish handshake through keys
    *
    * @return response received from the successful handshake with Citi API
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload
    * @throws HandlerException custom exception for Handler class
    */
-  public static String authenticate () throws HandlerException {
+  public static String authenticate () throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
       clientStore
@@ -717,14 +720,23 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.oAuthURL);
+      WebResource webResource = client.resource(HandlerConstant.oAuthURL_UAT);
       WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION, "Basic " + Base64
-          .encodeBase64String(
-              (HandlerConstant.clientID + ":" + HandlerConstant.clientSecret)
-                  .getBytes()).replaceAll("(\\r|\\n)", ""));
+      builder.header(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
+              (HandlerConstant.clientID + ":" + HandlerConstant.clientSecretKey)
+                  .getBytes()).replaceAll("([\\r\\n])", ""));
+
+      Document payloadDoc = convertXMLPayloadToDoc(HandlerConstant.oAuthPayload_CCF);
+      PrivateKey clientPrivateKey = getClientPrivateKey();
+      X509Certificate clientSigningCert = getClientPublicKey();
+      signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
+      PublicKey citiPublicKey = getCitiPublicKey();
+      Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(
+          payloadDoc, citiPublicKey);
+      String oAuthPayloadSignedEncrypted = convertDocToString(encryptedSignedXMLPayloadDoc);
+
       ClientResponse clientResponse = builder.post(ClientResponse.class,
-              HandlerConstant.oAuthPayloadSignedEncrypted);
+              oAuthPayloadSignedEncrypted);
       return clientResponse.getEntity(String.class);
     } catch (IOException | CertificateException | NoSuchAlgorithmException |
         UnrecoverableKeyException | KeyManagementException | KeyStoreException e) {

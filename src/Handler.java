@@ -123,7 +123,9 @@ public class Handler {
    * @return converted document object
    * @throws HandlerException custom exception for Handler class
    */
-  public static Document convertXMLPayloadToDoc (String xmlPayload) throws HandlerException {
+  public static Document convertXMLPayloadToDoc (String xmlPayload)
+      throws HandlerException {
+
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
     try {
@@ -227,7 +229,8 @@ public class Handler {
    *
    * @param signedXmlDoc signed XML document
    * @param publicEncryptKey public key used to encrypt the doc
-   * @throws XMLEncryptionException if an unexpected exception occurs while encrypting the signed doc
+   * @throws XMLEncryptionException if an unexpected exception occurs while
+   *                                encrypting the signed doc
    * @throws HandlerException custom exception for Handler class
    */
   public static Document encryptSignedXMLPayloadDoc (Document signedXmlDoc,
@@ -376,7 +379,8 @@ public class Handler {
    *
    * @param encryptedSignedDoc encrypted & signed XML doc
    * @param privateDecryptKey private key used to decrypt
-   * @throws XMLEncryptionException if an unexpected exception occurs while decrypting the encrypted & signed doc
+   * @throws XMLEncryptionException if an unexpected exception occurs while
+   *                                decrypting the encrypted & signed doc
    * @throws HandlerException custom exception for Handler class
    */
   public static void decryptEncryptedAndSignedXML (Document encryptedSignedDoc,
@@ -570,7 +574,7 @@ public class Handler {
    */
   public static String handleResponse (Document responseDoc, String type)
       throws HandlerException {
-    
+
     XPath xpath = XPathFactory.newInstance().newXPath();
 
     String errorInResponse = "";
@@ -619,7 +623,7 @@ public class Handler {
     if (errorInResponse.trim().length() > 0) {
       throw new HandlerException(errorInResponse);
     } else {
-      NodeList nodes = (NodeList) xpath.compile(xpath.compile(tagName))
+      NodeList nodes = (NodeList) xpath.compile(xpath.compile(tagName)) // TODO: Find out what tagName is
           .evaluate(responseDoc, XPathConstants.NODESET);
       if (nodes != null && nodes.getLength() == 1) {
         String response = nodes.item(0).getNodeValue();
@@ -645,8 +649,7 @@ public class Handler {
   public static byte[] parseMTOPResponse (String response) throws HandlerException {
     try {
       MimeMultipart mp = new MimeMultipart(
-          new ByteArrayDataSource(response,
-              MediaType.TEXT_XML));
+          new ByteArrayDataSource(response, MediaType.TEXT_XML));
       for (int i = 0; i < mp.getCount(); i++) {
         BodyPart bodyPart = mp.getBodyPart(i);
         String contentType = bodyPart.getContentType();
@@ -694,7 +697,7 @@ public class Handler {
       kmf.init(clientStore, HandlerConstant.certPwd.toCharArray());
 
       SSLContext sslContext = SSLContext
-          .getInstance("TLSv1.2"); // What is TLSv1.2?
+          .getInstance("TLSv1.2"); // SSL standard
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
           .setDefaultSSLSocketFactory(sslContext.getSocketFactory());

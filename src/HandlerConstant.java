@@ -44,23 +44,43 @@ public class HandlerConstant {
   public static final String samplePaymentPayload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
       + "<Request><paymentBase64>--Base64EncodedISOPaymentXML--</paymentBase64></Request>";
 
-  //c)	Inputs to the Payment Initiation API Calling Logic
-
   /* Inputs to the Payment Initiation API Calling Logic */
-  public static final String payInitPayloadSignedEncrypted
-  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12";
-  public static final String certPwd = "pass123";
-  public static final String proxyURL = "webproxy.abc.net";
+  public static final String samplePayInitPayload;
   public static final String payInitURL = "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/payment/initiation";
-  public static final String clientID = "9a9069d1-ed93-4d40-8b60-1e56a53899df";
-  public static final String oAuthToken;
+//  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12";
+//  public static final String certPwd = "pass123";
+//  public static final String proxyURL = "webproxy.abc.net";
+//  public static final String clientID = "9a9069d1-ed93-4d40-8b60-1e56a53899df";
+//  public static final String oAuthToken;
+
+  /* Inputs to the Balance Inquiry API Calling Logic */
+  public static final String sampleBalanceInquiryPayload =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+          + "<balanceInquiryRequest xmlns=\"http://com.citi.citiconnect/services/types/inquiries/balance/v1\">\n"
+          + "  <accountNumber>12345678</accountNumber>\n"
+          + "  <branchNumber>600</branchNumber>\n"
+          + "  <baseCurrency>USD</baseCurrency>\n"
+          + "  <accountCurrency>USD</accountCurrency>\n"
+          + "  <fromDate>2017-04-01</fromDate>\n"
+          + "  <toDate>2017-04-30</toDate>\n"
+          + "</balanceInquiryRequest>\n";
+  public static final String balanceInquiryUrl_UAT =
+      "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices"
+          + "/v1/balance/inquiry?client_id=<%s>"; // <%s> = API Client ID shared
+  public static final String balanceInquiryUrl_PROD =
+      "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
+          + "balance/inquiry?client_id=<%s>"; // <%s> = API Client ID shared
 
   /* Inputs to the Statement Retrieval API Calling Logic */
-  public static final String payloadSignedEncrypted
-  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12"
-  public static final String certPwd = "pass123"
-  public static final String proxyURL = "webproxy.abc.net"
-  public static final String statmentRetUrl = "https://sit.api.citiconnect.citigroup.com/citidirect/uat/payments/v2/statement/retrieval";
-  public static final String clientID = "9a9069d1-ed93-4d40-8b60-1e56a53899df";
-  public static final String oAuthToken;
+  public static final String sampleStatementRetPayload =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+          + "<statementRetrievalRequest xmlns=\"http://com.citi.citiconnect/services/types/attachments/v1\">\n"
+          + "\t<statementId>ABC12312312</statementId>\n"
+          + "</statementRetrievalRequest>";
+  public static final String statementRetUrl = "https://sit.api.citiconnect.citigroup.com/citidirect/uat/payments/v2/statement/retrieval";
+//  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12"
+//  public static final String certPwd = "pass123"
+//  public static final String proxyURL = "webproxy.abc.net"
+//  public static final String clientID = "9a9069d1-ed93-4d40-8b60-1e56a53899df";
+//  public static final String oAuthToken;
 }

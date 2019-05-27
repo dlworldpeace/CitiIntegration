@@ -891,7 +891,7 @@ public class Handler {
    */
   public static String checkBalance (String balanceInquiryPayload)
       throws XMLSecurityException, HandlerException {
-    
+
     // TODO: check if this function body follows the body of initPayment() or not, since it follows 6.2 Payment Inquiry but there is no sample code for that
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");

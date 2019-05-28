@@ -1,4 +1,3 @@
-import com.oracle.tools.packager.IOUtils;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -18,6 +17,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -53,7 +54,6 @@ import javax.mail.util.SharedByteArrayInputStream;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilder;
@@ -70,6 +70,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
 import org.apache.xml.security.encryption.XMLCipher;
@@ -83,6 +84,8 @@ import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.transforms.Transforms;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xml.security.utils.ElementProxy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1002,12 +1005,14 @@ public class Handler {
 //      3.	Get the instance of SecretKeyFactory with DESede
 //      4.	Get the decryption key using SecretKeyFactory instance with DESedeKeySpec instance
 
+  /* Webservice Logic */
+
   /**
-   * Webservice Logic:
+   *
    *
    * @return
    */
-  public static ResponseEntity<?> () {
+  public static ResponseEntity<?> ss() {
     ResponseEntity<?> responseEntity = restTemplate
         .exchange(uri, httpMethod, requestEntity, byte[].class);
     try {
@@ -1016,11 +1021,12 @@ public class Handler {
       response.put("HDR", responseEntity.getHeaders());
       response.put("STATUS", responseEntity.getStatusCode());
       response.put("BODY", responseEntity.getBody());
-    } catch (HttpStatusCodeException e) {
+    } catch (HttpStatusCodeException e) { // TODO: why is this inheriting from java.lang.throwable but still raises an error
       response.put("HDR", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
       response.put("BODY", e.getResponseBodyAsByteArray());
     }
+    return responseEntity;
   }
 
   /**
@@ -1036,7 +1042,8 @@ public class Handler {
 //    response= responseEntity.getBody()
 //    path= attachment file location
     String responseStatRetXMLStr = "";
-    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(response, MediaType.TEXT_XML_VALUE));
+    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(response,
+        org.springframework.http.MediaType.TEXT_XML_VALUE));
     for (int i = 0; i < mp.getCount(); i++) {
       BodyPart bodyPart = mp.getBodyPart(i);
       String contentType = bodyPart.getContentType();
@@ -1096,10 +1103,9 @@ public class Handler {
       data[i] = input[i+ivLen];
     }
 
-    Key deskey;
     DESedeKeySpec spec = new DESedeKeySpec(Base64.decodeBase64(decryptionKey));
     SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
-    deskey = keyfactory.generateSecret(spec);
+    Key deskey = keyfactory.generateSecret(spec);
 
     Cipher cipher = Cipher.getInstance("TripleDES/CBC/NoPadding");
     IvParameterSpec ips = new IvParameterSpec(keyiv);
@@ -1109,6 +1115,5 @@ public class Handler {
 
     return Base64.decodeBase64(bout);
   }
-
 
 }

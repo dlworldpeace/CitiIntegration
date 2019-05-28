@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<errormessage>
+	<httpCode>500</httpCode>
+	<httpMessage>NOT_ENTITLED_TO_DOWNLOAD_STATEMENT</httpMessage>
+	<moreInformation>Your entitlements do not allow you to perform this action.</moreInformation>
+</errormessage>

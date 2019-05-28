@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<balanceInquiryRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/balance/v1">
+  <accountNumber>12345678</accountNumber>
+  <branchNumber>600</branchNumber>
+  <baseCurrency>USD</baseCurrency>
+  <accountCurrency>USD</accountCurrency>
+  <fromDate>2017-04-01</fromDate>
+  <toDate>2017-04-30</toDate>
+</balanceInquiryRequest>

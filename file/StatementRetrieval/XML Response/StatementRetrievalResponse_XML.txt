@@ -1,0 +1,12 @@
+<ns2:statementRetrievalResponse
+	xmlns:ns2="http://com.citi.citiconnect/services/types/attachments/v1"
+	xmlns="http://com.citi.citiconnect/services/types/citiconnect/v1"
+	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<ns2:attachmentDecryptionKey>5sBk5UDQgBx7gJUh3m0owRRyQALojfSA</ns2:attachmentDecryptionKey>
+	<ns2:statementId>45227678</ns2:statementId>
+	<ns2:fileCheckSum>770d285d1505da11034f729484d4d7250b30dde1101730bed129283476715e14fc5835de5d49d3b17c55ba5908bcfb50ab212edc4bb9c7e1ee08a4e03fcc6f4a</ns2:fileCheckSum>
+	<ns2:statementStream>
+		<xop:Include
+			xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:337895adcfe006ba4c40fa0bba7ed157076ef9e3455e1e7e@apache.org"/>
+		</ns2:statementStream>
+	</ns2:statementRetrievalResponse>

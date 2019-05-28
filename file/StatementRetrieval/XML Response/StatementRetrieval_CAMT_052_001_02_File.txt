@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document
+	xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<BkToCstmrStmt>
+		<GrpHdr>
+			<MsgId>41637835</MsgId>
+			<CreDtTm>2017-05-11T16:44:46-05:00</CreDtTm>
+			<MsgRcpt>
+				<Nm>CITICONNECT_API_TEST</Nm>
+			</MsgRcpt>
+			<AddtlInf>/EODY/</AddtlInf>
+		</GrpHdr>
+		<Stmt>
+			<Id>9400124578480643</Id>
+			<ElctrncSeqNb>397</ElctrncSeqNb>
+			<CreDtTm>2017-05-11T16:44:46-05:00</CreDtTm>
+			<FrToDt>
+				<FrDtTm>2017-04-03T00:00:00</FrDtTm>
+				<ToDtTm>2017-04-03T23:59:59</ToDtTm>
+			</FrToDt>
+			<RptgSrc>
+				<Cd>ACCT</Cd>
+			</RptgSrc>
+			<Acct>
+				<Id>
+					<Othr>
+						<Id>12345678</Id>
+						<SchmeNm>
+							<Prtry>CITI</Prtry>
+						</SchmeNm>
+					</Othr>
+				</Id>
+				<Ccy>USD</Ccy>
+				<Nm>8010012 262X XXXXXX XXX</Nm>
+				<Ownr>
+					<Nm>8010012 262X XXXXXX XXX</Nm>
+				</Ownr>
+				<Svcr>
+					<FinInstnId>
+						<BIC>CITIGB22</BIC>
+						<Nm>CITIBANK NA LONDON</Nm>
+					</FinInstnId>
+					<BrnchId>
+						<Id>600</Id>
+						<Nm>CITIBANK NA LONDON</Nm>
+					</BrnchId>
+				</Svcr>
+			</Acct>
+			<Bal>
+				<Tp>
+					<CdOrPrtry>
+						<Cd>OPBD</Cd>
+					</CdOrPrtry>
+				</Tp>
+				<Amt Ccy="USD">0.00</Amt>
+				<CdtDbtInd>CRDT</CdtDbtInd>
+				<Dt>
+					<Dt>2017-04-03</Dt>
+				</Dt>
+			</Bal>
+			<Bal>
+				<Tp>
+					<CdOrPrtry>
+						<Cd>CLBD</Cd>
+					</CdOrPrtry>
+				</Tp>
+				<Amt Ccy="USD">0.00</Amt>
+				<CdtDbtInd>CRDT</CdtDbtInd>
+				<Dt>
+					<Dt>2017-04-03</Dt>
+				</Dt>
+			</Bal>
+			<Bal>
+				<Tp>
+					<CdOrPrtry>
+						<Cd>OPAV</Cd>
+					</CdOrPrtry>
+				</Tp>
+				<Amt Ccy="USD">0.00</Amt>
+				<CdtDbtInd>CRDT</CdtDbtInd>
+				<Dt>
+					<Dt>2017-04-03</Dt>
+				</Dt>
+			</Bal>
+			<Bal>
+				<Tp>
+					<CdOrPrtry>
+						<Cd>CLAV</Cd>
+					</CdOrPrtry>
+				</Tp>
+				<Amt Ccy="USD">0.00</Amt>
+				<CdtDbtInd>CRDT</CdtDbtInd>
+				<Dt>
+					<Dt>2017-04-03</Dt>
+				</Dt>
+			</Bal>
+			<Bal>
+				<Tp>
+					<CdOrPrtry>
+						<Cd>PRCD</Cd>
+					</CdOrPrtry>
+				</Tp>
+				<Amt Ccy="USD">0.00</Amt>
+				<CdtDbtInd>CRDT</CdtDbtInd>
+				<Dt>
+					<Dt>2017-03-31</Dt>
+				</Dt>
+			</Bal>
+		</Stmt>
+	</BkToCstmrStmt>
+</Document>

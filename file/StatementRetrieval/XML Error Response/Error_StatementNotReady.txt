@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<errormessage>
+	<httpCode>500</httpCode>
+	<httpMessage>STATEMENT_NOT_READY</httpMessage>
+	<moreInformation>File is still being processed and it is not yet ready for download. Please try again later.</moreInformation>
+</errormessage>

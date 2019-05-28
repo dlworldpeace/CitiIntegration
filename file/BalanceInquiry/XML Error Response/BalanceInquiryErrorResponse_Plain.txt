@@ -1,0 +1,5 @@
+<errormessage>
+	<httpCode>401</httpCode>
+	<httpMessage>BALANCE_DATES_GREATER_THAN_180_DAYS_FROM_CURRENT_DATE</httpMessage>
+	<moreInformation>The balance date(s) are greater than 180 days. Please resubmit with dates less than 180 days.</moreInformation>
+</errormessage>

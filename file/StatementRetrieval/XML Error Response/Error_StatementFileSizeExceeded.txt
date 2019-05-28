@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<errormessage>
+	<httpCode>500</httpCode>
+	<httpMessage>STATEMENT_FILE_SIZE_EXCEEDED</httpMessage>
+	<moreInformation>File is too large to download.</moreInformation>
+</errormessage>

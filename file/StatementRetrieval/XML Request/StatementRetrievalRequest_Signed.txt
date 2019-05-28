@@ -1,0 +1,69 @@
+<statementRetrievalRequest
+	xmlns="http://com.citi.citiconnect/services/types/attachments/v1">
+	<statementId>12312312</statementId>
+	<ds:Signature
+		xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+		<ds:SignedInfo>
+			<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+			<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+			<ds:Reference URI="">
+				<ds:Transforms>
+					<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+					<ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+				</ds:Transforms>
+				<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+				<ds:DigestValue>iDgT4xT1K2RUfsUW65B4t6QvDzU=</ds:DigestValue>
+			</ds:Reference>
+		</ds:SignedInfo>
+		<ds:SignatureValue>
+q+oQPegYtEpDilSG1tS07Un5txp+ESbuwyGuLoMJYyiQehfiKNm7erhK5oMyhOnY5YvpjEhLr1we
+YSzi9Kk7ea+PPbyg8ZhXtAx2yC91FMg6NeZGdu+c94p14uP48wPknBks+OaZiRyCIsTHs7pQVa8E
+XP1Ni7L+HoU9Llu//kHL0ePAQdtfLLrAQ+dh+bkqHEqm8fBGUi/idjr2pC992l3dVLUchFt8sBTW
+hj0m/sWAOAXOuA0PyP7s4fAIwFPEbys2PH+4m5CF3rYmFC5FMy/KDw4UCeT/Mezz0RPHMOXlKYiU
+pQ4vsB9kTFPtijK5qSR/gaS7gJ3x4/Tt5WU+hQ==
+</ds:SignatureValue>
+		<ds:KeyInfo>
+			<ds:X509Data>
+				<ds:X509IssuerSerial>
+					<ds:X509IssuerName>CN=Symantec Class 3 EV SSL CA - G3,OU=Symantec Trust Network,O=Symantec Corporation,C=US</ds:X509IssuerName>
+					<ds:X509SerialNumber>97208374037470510996738722499467429663</ds:X509SerialNumber>
+				</ds:X509IssuerSerial>
+				<ds:X509Certificate>
+MIIHQTCCBimgAwIBAgIQSSGm3wMesHVSsxHYaihHHzANBgkqhkiG9w0BAQsFADB3MQswCQYDVQQG
+EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xHzAdBgNVBAsTFlN5bWFudGVjIFRy
+dXN0IE5ldHdvcmsxKDAmBgNVBAMTH1N5bWFudGVjIENsYXNzIDMgRVYgU1NMIENBIC0gRzMwHhcN
+MTYwMzE4MDAwMDAwWhcNMTgwMzE5MjM1OTU5WjCCASgxEzARBgsrBgEEAYI3PAIBAxMCVVMxGTAX
+BgsrBgEEAYI3PAIBAgwIRGVsYXdhcmUxHTAbBgNVBA8TFFByaXZhdGUgT3JnYW5pemF0aW9uMRAw
+DgYDVQQFEwcyMTU0MjU0MQswCQYDVQQGEwJVUzEOMAwGA1UEEQwFMTAwNDMxETAPBgNVBAgMCE5l
+dyBZb3JrMREwDwYDVQQHDAhOZXcgWW9yazEYMBYGA1UECQwPMzk5IFBhcmsgQXZlbnVlMRcwFQYD
+VQQKDA5DaXRpZ3JvdXAgSW5jLjEMMAoGA1UECwwDVFRTMUEwPwYDVQQDDDhDQ0NEZWNyeXB0UGF5
+bG9hZENpdGlDbGllbnREaWdpdGFsU2lnblVhdC5uYW0ubnNyb290Lm5ldDCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAO0mQXzU4J+csVfopHSx6VYz8zIcMFM4shxlD0Scxvxe2hKWLEYK
+Uwq9viS0x5lrY6z52AQA2cg0YAhE9UBR4UEbKQcDf7BgxgwpOPn8ph/ijh4EnDUe1vZ7z6uaD7zY
+8NIisWaoV+5uS9BVYDGzVGl2Zdpx4Fz/KYuLvACLqRBfAqia9lMg2Xa4sF0yIsm71zgir90zPsPs
+WgIGO6mSoTPMnAKKja96Yp+HfSKoDWHeu03qv8LA9b62niNapega1kn8o+44KmlS0q6lNWoKIhl+
+IRpGNOlf0ztT2YwQx1EQ0m3KrV83qO5Deck8QEDFLkLyUhySZ5wuE8DIoDoxd9MCAwEAAaOCAxQw
+ggMQMEMGA1UdEQQ8MDqCOENDQ0RlY3J5cHRQYXlsb2FkQ2l0aUNsaWVudERpZ2l0YWxTaWduVWF0
+Lm5hbS5uc3Jvb3QubmV0MAkGA1UdEwQCMAAwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsG
+AQUFBwMBBggrBgEFBQcDAjBmBgNVHSAEXzBdMFsGC2CGSAGG+EUBBxcGMEwwIwYIKwYBBQUHAgEW
+F2h0dHBzOi8vZC5zeW1jYi5jb20vY3BzMCUGCCsGAQUFBwICMBkaF2h0dHBzOi8vZC5zeW1jYi5j
+b20vcnBhMB8GA1UdIwQYMBaAFAFZq+fdOgtZpmRj1s8gB1fVkedqMCsGA1UdHwQkMCIwIKAeoByG
+Gmh0dHA6Ly9zci5zeW1jYi5jb20vc3IuY3JsMFcGCCsGAQUFBwEBBEswSTAfBggrBgEFBQcwAYYT
+aHR0cDovL3NyLnN5bWNkLmNvbTAmBggrBgEFBQcwAoYaaHR0cDovL3NyLnN5bWNiLmNvbS9zci5j
+cnQwggF+BgorBgEEAdZ5AgQCBIIBbgSCAWoBaAB3AN3rHSt6DU+mIIuBrYFocH4ujp0B1VyIjT0R
+xM227L7MAAABU4f5+mQAAAQDAEgwRgIhAI8gbVN9mbwJ1nDSNyRyQtZiu5yFMu+fyx8baldhPrGD
+AiEAzClkMwiJkkIOaCEPYAzI+SWiqwvsxMyK0ToWwqLAl7sAdgCkuQmQtBhYFIe7E6LMZ3AKPDWY
+BPkb37jjd80OyA3cEAAAAVOH+fqlAAAEAwBHMEUCIQCuOa40GPEGdqH/smVmo67YyQAaoP6W4oTf
+KHOsw35MAwIgHmrnFeWMfsy169OJ4an8v+X9RQDANsQU/qsP7m0QlPQAdQBo9pj4H2SCvjqM7rko
+HUz8cVFdZ5PURNEKZ6y7T0/7xAAAAVOH+fqkAAAEAwBGMEQCIB2nJ9IOfKZInrdwwyFi/Y1Fkd6H
+Kc+1A0ZSLOI+3/QPAiAMXw7ii603WUITvibgcWrrUPtjQr/fMxbrmxxPRWcI/TANBgkqhkiG9w0B
+AQsFAAOCAQEAP2w+Uxa+Ck79iispyCPntW627A4yuef+PpVJX/mUDQRmmwA32W4V4OAABO4QoWNo
+nIwuwxARAM0+86oeTKly9KTBUsmL5GFHLXURdayVMsohIUlgwIM/JimiVN6KCrcDY0xgGpPiTIL4
+ZonsarHgvmbulOOXv/qQbbToVvqVjpB7y4upfYqAiF62ngOEjWfXa19Gxw6UXmht1j94oyimCYrI
+3GZbVGItKLIrmhib7FQe1cJI1uqNp6oUODDM0+eMXlIeJ/CTBOBf0Y1E4dR6WP3AZ3kD8bPDpOva
+g+euTfkYDPTOdnjWGHFPSlPhhCTaP7K1fdokhLVftDYe9TCjkw==
+</ds:X509Certificate>
+			</ds:X509Data>
+		</ds:KeyInfo>
+	</ds:Signature>
+</statementRetrievalRequest>

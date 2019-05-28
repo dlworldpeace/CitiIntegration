@@ -77,7 +77,10 @@ public class HandlerConstant {
           + "<statementRetrievalRequest xmlns=\"http://com.citi.citiconnect/services/types/attachments/v1\">\n"
           + "\t<statementId>ABC12312312</statementId>\n"
           + "</statementRetrievalRequest>";
-  public static final String statementRetUrl = "https://sit.api.citiconnect.citigroup.com/citidirect/uat/payments/v2/statement/retrieval";
+  public static final String statementRetUrl_UAT = "https://sit.api.citiconnect.citigroup.com/citidirect/uat/payments/v2/statement/retrieval";
+  public static final String statementRetUrl_PROD =
+      "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
+          + "statement/retrieval?client_id=<%s>"; // <%s> = API Client ID shared
 //  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12"
 //  public static final String certPwd = "pass123"
 //  public static final String proxyURL = "webproxy.abc.net"

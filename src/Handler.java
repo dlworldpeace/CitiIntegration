@@ -6,7 +6,6 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +35,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -94,11 +94,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * The API that supports all connection features to CitiSecurity
+ * This API supports all connection features to CitiConnect.
  *
- * @author Sagar Mahamuni and Xiao Delong
+ * @author Sagar Mahamuni and Xiao Delong.
  * @version 1.0
- * @since 2019-05-22
+ * @since 2019-05-22.
  */
 
 public class Handler {
@@ -106,9 +106,9 @@ public class Handler {
   /* Encryption Logic */
 
   /**
-   * Load Keystore file that has all certs
+   * Load Keystore file that has all certs.
    *
-   * @throws HandlerException custom exception for Handler class
+   * @throws HandlerException custom exception for Handler class.
    */
   public static void loadKeystore () throws HandlerException {
     try {
@@ -124,11 +124,11 @@ public class Handler {
   }
 
   /**
-   * Getting the XML payload as Document object
+   * Getting the XML payload as Document object.
    *
-   * @param xmlPayload original payload in xml format
-   * @return converted document object
-   * @throws HandlerException custom exception for Handler class
+   * @param xmlPayload original payload in xml format.
+   * @return converted document object.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static Document convertXMLPayloadToDoc (String xmlPayload)
       throws HandlerException {
@@ -145,10 +145,10 @@ public class Handler {
   }
 
   /**
-   * Getting public client signing key
+   * Getting public client signing key.
    *
-   * @return client public key
-   * @throws HandlerException custom exception for Handler class
+   * @return client public key.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static X509Certificate getClientPublicKey () throws HandlerException {
     try {
@@ -165,10 +165,10 @@ public class Handler {
   }
 
   /**
-   * Getting private client signing Key
+   * Getting private client signing Key.
    *
-   * @return PrivateKey client private key
-   * @throws HandlerException custom exception for Handler class
+   * @return PrivateKey client private key.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static PrivateKey getClientPrivateKey () throws HandlerException {
     try {
@@ -182,13 +182,13 @@ public class Handler {
   }
 
   /**
-   * Signing the XML payload document
+   * Signing the XML payload document.
    *
-   * @param xmlDoc xml document to be signed
-   * @param signCert certificate to be added in
-   * @param privateSignKey private key used to sign the document
+   * @param xmlDoc xml document to be signed.
+   * @param signCert certificate to be added in.
+   * @param privateSignKey private key used to sign the document.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the {@code xmlDoc}
+   *                              the {@code xmlDoc}.
    */
   public static void signXMLPayloadDoc (Document xmlDoc, X509Certificate signCert,
       PrivateKey privateSignKey) throws XMLSecurityException {
@@ -213,10 +213,10 @@ public class Handler {
   }
 
   /**
-   * Getting public citi encryption key
+   * Getting public citi encryption key.
    *
-   * @return citi public key
-   * @throws HandlerException custom exception for Handler class
+   * @return citi public key.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static PublicKey getCitiPublicKey () throws HandlerException {
     try {
@@ -235,11 +235,11 @@ public class Handler {
   /**
    * Encrypt the signed XML payload document
    *
-   * @param signedXmlDoc signed XML document
-   * @param publicEncryptKey public key used to encrypt the doc
+   * @param signedXmlDoc signed XML document.
+   * @param publicEncryptKey public key used to encrypt the doc.
    * @throws XMLEncryptionException if an unexpected exception occurs while
-   *                                encrypting the signed doc
-   * @throws HandlerException custom exception for Handler class
+   *                                encrypting the signed doc.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static Document encryptSignedXMLPayloadDoc (Document signedXmlDoc,
       PublicKey publicEncryptKey) throws XMLEncryptionException, HandlerException {
@@ -278,10 +278,10 @@ public class Handler {
   }
 
   /**
-   * Convert the Document object to String value
+   * Convert the Document object to String value.
    *
-   * @return string value of the document
-   * @throws HandlerException custom exception for Handler class
+   * @return string value of the document.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String convertDocToString (Document xmlDoc) throws HandlerException {
     try {
@@ -302,13 +302,13 @@ public class Handler {
 
   /**
    * Sign xml payload using our private key and citi cert, followed by encrypting
-   * it using citi public key
+   * it using citi public key.
    *
-   * @param payloadXML payload string in xml
-   * @return encrypted signed payload string
+   * @param payloadXML payload string in xml.
+   * @return encrypted signed payload string.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload
-   * @throws HandlerException custom exception for Handler class
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String signAndEncryptXML (String payloadXML)
       throws XMLSecurityException, HandlerException {
@@ -325,9 +325,9 @@ public class Handler {
   /* Decryption Logic */
 
   /**
-   * Load Keystore file that has all certs
+   * Load Keystore file that has all certs.
    *
-   * @throws HandlerException custom exception for Handler class
+   * @throws HandlerException custom exception for Handler class.
    */
   public static void loadKeystoreWithAllCerts () throws HandlerException {
     try {
@@ -344,10 +344,10 @@ public class Handler {
 
   // TODO remove this function since we have 2 methods that do the same job by taking diff arguments?
   /**
-   * Getting the XML Payload as Document object
+   * Getting the XML Payload as Document object.
    *
-   * @return converted document
-   * @throws HandlerException custom exception for Handler class
+   * @return converted document.
+   * @throws HandlerException custom exception for Handler class.
    */
 //  public Document getXMLResponsePayloadAsDoc (String responseXMLPayload) throws HandlerException {
 //    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -368,10 +368,10 @@ public class Handler {
 //  }
 
   /**
-   * Getting public client decryption key
+   * Getting public client decryption key.
    *
-   * @return public client decryption key
-   * @throws HandlerException custom exception for Handler class
+   * @return public client decryption key.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static X509Certificate getClientPublicDecrytionKey () throws HandlerException {
     try {
@@ -388,12 +388,12 @@ public class Handler {
   }
 
   /**
-   * Getting private client decryption key
+   * Getting private client decryption key.
    *
-   * @return private client decryption key
-   * @throws HandlerException custom exception for Handler class
+   * @return private client decryption key.
+   * @throws HandlerException custom exception for Handler class.
    */
-  public static PrivateKey getClientPrivateDecryotKey () throws HandlerException {
+  public static PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
     try {
       KeyStore ks = KeyStore.getInstance("JKS");
       return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
@@ -405,15 +405,16 @@ public class Handler {
   }
 
   /**
-   * Decrypt the encrypted & signed XML Response Payload Document
+   * Decrypt the encrypted & signed xml response payload document.
    *
-   * @param encryptedSignedDoc encrypted & signed XML doc
-   * @param privateDecryptKey private key used to decrypt
+   * @param encryptedSignedDoc encrypted & signed XML doc from server.
+   * @param privateDecryptKey client private key.
+   * @return decrypted xml document that is yet verified.
    * @throws XMLEncryptionException if an unexpected exception occurs while
-   *                                decrypting the encrypted & signed doc
-   * @throws HandlerException custom exception for Handler class
+   *                                decrypting the encrypted & signed doc.
+   * @throws HandlerException custom exception for Handler class.
    */
-  public static void decryptEncryptedAndSignedXML (Document encryptedSignedDoc,
+  public static Document decryptEncryptedAndSignedXML (Document encryptedSignedDoc,
       PrivateKey privateDecryptKey) throws XMLEncryptionException, HandlerException {
 
     org.apache.xml.security.Init.init();
@@ -467,13 +468,14 @@ public class Handler {
       }
     }
     decryptedDoc.normalize(); // TODO: add inside if loop?
+    return decryptedDoc;
   }
 
   /**
-   * Getting public citi verification key
+   * Getting public citi verification key.
    *
-   * @return public citi verification key
-   * @throws HandlerException custom exception for Handler class
+   * @return public citi verification key.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static X509Certificate getCitiVerficationKey () throws HandlerException {
     try {
@@ -490,16 +492,18 @@ public class Handler {
   }
 
   /**
-   * Verifying the Signature of decrypted XML response Payload Document
+   * Verifying the Signature of decrypted XML response Payload Document.
    *
-   * @param decryptedDoc decrypted XML doc to be verified
-   * @param signVerifyCert certificate used to verify the signature of the doc
-   * @throws CertificateEncodingException if an unexpected exception occurs while extracting cert info
-   * @throws XMLSecurityException if an unexpected exception occurs while verifying the signature
-   * @throws HandlerException custom exception for Handler class
+   * @param decryptedDoc decrypted XML doc to be verified.
+   * @param signVerifyCert certificate used to verify the signature of the doc.
+   * @throws CertificateEncodingException if an unexpected exception occurs while
+   *                                      extracting cert info.
+   * @throws XMLSecurityException if an unexpected exception occurs while
+   *                              verifying the signature.
+   * @throws HandlerException custom exception for Handler class.
    */
   // TODO: Check for the exception throwing
-  public static void verifySignatureofDecryptedXML (Document decryptedDoc,
+  public static void verifyDecryptedXML(Document decryptedDoc,
       X509Certificate signVerifyCert) throws CertificateEncodingException,
       XMLSecurityException, HandlerException {
 
@@ -549,58 +553,84 @@ public class Handler {
   }
 
   /**
-   * Decrypt Statement File
+   * Decrypt a received xml response first using client private key and then
+   * verify its authentication using citi's public verifying certificate.
    *
-   * @param encryptedStatementFile byteArray of encrypted statement file
-   * @return decrypted statement file as byteArray
-   * @throws HandlerException custom exception for Handler class
+   * @param encryptedSignedXMLResponse xml response to be decrypted followed by
+   *                                   verified.
+   * @return verified and decrypted xml response string.
+   * @throws CertificateEncodingException if an unexpected exception occurs while
+   *                                      extracting cert info.
+   * @throws XMLSecurityException if an unexpected exception occurs while
+   *                              verifying the signature.
+   * @throws HandlerException custom exception for Handler class.
    */
-  public static byte[] decryptStatementFile (byte[] encryptedStatementFile)
-      throws HandlerException {
-
-    String decryptionKey = "";
-    NodeList nodes = evalFromString(
-        "//statementRetrievalResponse//attachmentDecryptionKey",
-        decryptedStatementRetrievalResponse);
-    int len = (nodes != null) ? nodes.getLength() : 0;
-    if (len == 1) {
-      decryptionKey = nodes.item(0).getTextContent();
-    }
-    int ivLen = 8;
-    byte[] keyiv = new byte[ivLen];
-    System.arraycopy(encryptedStatementFile, 0, keyiv, 0, ivLen);
-    int dataLen = encryptedStatementFile.length - ivLen;
-    byte[] data = new byte[dataLen];
-    System.arraycopy(encryptedStatementFile, ivLen, data, 0, dataLen);
-
-    try {
-      DESedeKeySpec spec = new DESedeKeySpec(
-          Base64.decodeBase64(decryptionKey));
-      SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
-      Key deskey = keyfactory.generateSecret(spec);
-      Cipher cipher = Cipher
-          .getInstance("TripleDES/CBC/NoPadding");//PKCS5Padding NoPadding
-      IvParameterSpec ips = new IvParameterSpec(keyiv);
-      cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
-      byte[] bout = cipher.doFinal(data);
-      return Base64.decodeBase64(bout);
-    } catch (NoSuchAlgorithmException | InvalidKeyException |
-        NoSuchPaddingException | InvalidAlgorithmParameterException |
-        InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
+  public static String verifyAndDecryptXML (String encryptedSignedXMLResponse)
+      throws HandlerException, XMLSecurityException, CertificateEncodingException {
+    PrivateKey clientPrivateDecryptionKey = getClientPrivateDecryptionKey();
+    Document encryptedSignedXMLResponseDoc =
+        convertXMLPayloadToDoc(encryptedSignedXMLResponse);
+    Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
+        encryptedSignedXMLResponseDoc, clientPrivateDecryptionKey);
+    X509Certificate citiVerificationKey = getCitiVerficationKey();
+    verifyDecryptedXML(SignedXMLResponseDoc, citiVerificationKey);
+    return convertDocToString(SignedXMLResponseDoc);
   }
+
+  // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function
+//  /**
+//   * Decrypt statement file.
+//   *
+//   * @param encryptedStatementFile byteArray of encrypted statement file.
+//   * @return decrypted statement file as byteArray.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public static byte[] decryptStatementFile (byte[] encryptedStatementFile)
+//      throws HandlerException {
+//
+//    String decryptionKey = "";
+//    NodeList nodes = evalFromString(
+//        "//statementRetrievalResponse//attachmentDecryptionKey",
+//        decryptedStatementRetrievalResponse);
+//    int len = (nodes != null) ? nodes.getLength() : 0;
+//    if (len == 1) {
+//      decryptionKey = nodes.item(0).getTextContent();
+//    }
+//    int ivLen = 8;
+//    byte[] keyiv = new byte[ivLen];
+//    System.arraycopy(encryptedStatementFile, 0, keyiv, 0, ivLen);
+//    int dataLen = encryptedStatementFile.length - ivLen;
+//    byte[] data = new byte[dataLen];
+//    System.arraycopy(encryptedStatementFile, ivLen, data, 0, dataLen);
+//
+//    try {
+//      DESedeKeySpec spec = new DESedeKeySpec(
+//          Base64.decodeBase64(decryptionKey));
+//      SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
+//      Key deskey = keyfactory.generateSecret(spec);
+//      Cipher cipher = Cipher
+//          .getInstance("TripleDES/CBC/NoPadding");//PKCS5Padding NoPadding
+//      IvParameterSpec ips = new IvParameterSpec(keyiv);
+//      cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
+//      byte[] bout = cipher.doFinal(data);
+//      return Base64.decodeBase64(bout);
+//    } catch (NoSuchAlgorithmException | InvalidKeyException |
+//        NoSuchPaddingException | InvalidAlgorithmParameterException |
+//        InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
 
   /* Parsing Response Logic */
 
   /**
-   * Parsing response to show error or valid message logic
+   * Parsing response to show error or valid message logic.
    *
-   * @param responseDoc document to be parsed
-   * @param type "" for authType or "BASE64" for paymentType
-   * @return response message
-   * @throws HandlerException custom exception for Handler class
+   * @param responseDoc document to be parsed.
+   * @param type "" for authType or "BASE64" for paymentType.
+   * @return response message.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String handleResponse (Document responseDoc, String type)
       throws HandlerException {
@@ -664,65 +694,65 @@ public class Handler {
           return response;
         }
       } else {
-        throw new HandlerException("Empty content of responseDoc");  // TODO: Check if this logic is correct
+        throw new HandlerException("Empty content of responseDoc"); // TODO: Check if this logic is correct
       }
     }
   }
 
-  /**
-   * Parsing MTOM Response (Parser for Statement Retrieval Response)
-   *
-   * @param response MTOM response
-   * @return response in byteArray
-   * @throws HandlerException custom exception for Handler class
-   */
-  public static byte[] parseMTOPResponse (String response) throws HandlerException {
-    try {
-      MimeMultipart mp = new MimeMultipart(
-          new ByteArrayDataSource(response, MediaType.TEXT_XML));
-      for (int i = 0; i < mp.getCount(); i++) {
-        BodyPart bodyPart = mp.getBodyPart(i);
-        String contentType = bodyPart.getContentType();
-        Logger.getLogger(Handler.class.getName()).info("ContentType==>" + contentType);
-        if (bodyPart.isMimeType("text/xml")) {// if text/xml
-          responseStatRetXMLStr = (String) bodyPart
-              .getContent(); // TODO: Find out why is this never used
-        } else {
-          ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
-              .getContent();
-          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-          int nRead;
-          byte[] data = new byte[1024];
-          while ((nRead = bais.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-          }
-          buffer.flush();
-          return buffer.toByteArray();
-        }
-      }
-    } catch (MessagingException | IOException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
+  // TODO: check if this can be removed because it is of duplicate with the other parseMIMEResponse
+//  /**
+//   * Parsing MTOM Response (Parser for Statement Retrieval Response).
+//   *
+//   * @param response MTOM response.
+//   * @return response in byteArray.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public static byte[] parseMTOMResponse (String response)
+//      throws HandlerException {
+//    try {
+//      MimeMultipart mp = new MimeMultipart(
+//          new ByteArrayDataSource(response, MediaType.TEXT_XML));
+//      for (int i = 0; i < mp.getCount(); i++) {
+//        BodyPart bodyPart = mp.getBodyPart(i);
+//        String contentType = bodyPart.getContentType();
+//        Logger.getLogger(Handler.class.getName()).info("ContentType==>" + contentType);
+//        if (bodyPart.isMimeType("text/xml")) {// if text/xml
+//          responseStatRetXMLStr = (String) bodyPart.getContent();
+//        } else {
+//          ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
+//              .getContent();
+//          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+//          int nRead;
+//          byte[] data = new byte[1024];
+//          while ((nRead = bais.read(data, 0, data.length)) != -1) {
+//            buffer.write(data, 0, nRead);
+//          }
+//          buffer.flush();
+//          return buffer.toByteArray();
+//        }
+//      }
+//    } catch (MessagingException | IOException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
 
   /* API Calling Logics */
 
   /**
-   * Authentication Calling Logic: establish handshake through keys
+   * Authentication Calling Logic: establish handshake through keys.
    *
-   * @param oAuthPayload request body in xml
-   * @return response received from the successful handshake with Citi API
+   * @param oAuthPayload request body in xml.
+   * @return response received from the successful handshake with Citi API.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload
-   * @throws HandlerException custom exception for Handler class
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String authenticate (String oAuthPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore
-          .load(new FileInputStream(HandlerConstant.sslCertFilePath),
+      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
               HandlerConstant.certPwd.toCharArray());
 
       KeyManagerFactory kmf = KeyManagerFactory
@@ -768,13 +798,12 @@ public class Handler {
   }
 
   /**
-   * Payment Initiation API: Generate Base64 Input Request from ISO XML Payload
+   * Payment Initiation API: Generate Base64 Input Request from ISO XML Payload.
    *
-   * @param isoPayInXML input xml string
-   * @return base64 string generated
+   * @param isoPayInXML input xml string.
+   * @return base64 string generated.
    */
   public static String generateBase64InputFromISOXMLPayload (String isoPayInXML) {
-
     StringBuffer xmlStrSb = new StringBuffer();
     final char pem_array[] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -830,12 +859,12 @@ public class Handler {
   }
 
   /**
-   * Payment initiation logic
+   * Payment initiation logic.
    *
-   * @return response that contains the wanted statement ID(s)
+   * @return response that contains the wanted statement ID(s).
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload
-   * @throws HandlerException custom exception for Handler class
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String initPayment (String payInitPayload)
       throws XMLSecurityException, HandlerException {
@@ -884,13 +913,13 @@ public class Handler {
   }
 
   /**
-   * Balance inquiry logic
+   * Balance inquiry logic.
    *
-   * @param balanceInquiryPayload request body in xml
-   * @return response xml that contains the balance for the
+   * @param balanceInquiryPayload request body in xml.
+   * @return response xml that contains the balance value.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload
-   * @throws HandlerException custom exception for Handler class
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
    */
   public static String checkBalance (String balanceInquiryPayload)
       throws XMLSecurityException, HandlerException {
@@ -898,8 +927,7 @@ public class Handler {
     // TODO: check if this function body follows the body of initPayment() or not, since it follows 6.2 Payment Inquiry but there is no sample code for that
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore
-          .load(new FileInputStream(HandlerConstant.sslCertFilePath),
+      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
               HandlerConstant.certPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -937,23 +965,32 @@ public class Handler {
   }
 
   /**
-   * Statement retrieval logic
+   * Statement retrieval logic using statement ID as part of request body.
    *
-   * @param statementRetrievalPayload request body in xml
-   * @return the Account Statement file in the required format: SWIFT MT940, or
-   *         ISO XML camt.053.001.02 or SWIFT MT942 or ISO XML camt.052.001.02.
+   * @param requestStatementPayload request body in xml.
+   * @return a MIME response which has 2 parts. First part is of XML encrypted
+   *         which has to be decrypted and VerifySigned to get a plain XML
+   *         response. The plain response has an AttachmentDecryptionKey and is
+   *         used to decrypt the Binary Statement (2nd part of MIME) which is the
+   *         expected Statement file.
+   *
+   *         The second part contains the Statement File attached in MTOM format
+   *         which follows SWIFT MT940, or ISO XML camt.053.001.02 or SWIFT MT942
+   *         or ISO XML camt.052.001.02 standards. If the file size exceeds 4 MB,
+   *         then there will be an error message in response will be sent back
+   *         to the partner.
+   *
    *         If the request is rejected due to validation errors or data issues,
    *         the response follows a custom XML format.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload
-   * @throws HandlerException custom exception for Handler class
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
    */
-  public static InputStream retrieveStatement (String statementRetrievalPayload)
+  public static InputStream requestForStatement (String requestStatementPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore
-          .load(new FileInputStream(HandlerConstant.sslCertFilePath),
+      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
               HandlerConstant.certPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -972,14 +1009,17 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.statementRetUrl)
+      WebResource webResource = client.resource(HandlerConstant.statementRetUrl_UAT)
           .queryParam("client_id", HandlerConstant.clientID);
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + HandlerConstant.oAuthToken);
       String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
-          statementRetrievalPayload);
+          requestStatementPayload);
+
+      // TODO: check if POST method which is not mentioned in doc returns same response result as GET method which is mentioned in doc
+
       ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
           .post(ClientResponse.class, statementRetrievalPayload_SignedEncrypted);
       return clientResponse.getEntityInputStream();
@@ -990,8 +1030,7 @@ public class Handler {
     }
   }
 
-  /* Response Retrieval Logic */
-
+  /* Statement Retrieval Response Consumption Logic */
 //  Statement Retrieval Instructions
 //      1.	Get the Cipher instance of TripleDES/CBC/NoPadding
 //      2.	Get the instance of IvParameterSpec with the first 8 bytes of the encrypted attachment (Attachment MTOM response)
@@ -1005,16 +1044,13 @@ public class Handler {
 //      3.	Get the instance of SecretKeyFactory with DESede
 //      4.	Get the decryption key using SecretKeyFactory instance with DESedeKeySpec instance
 
-  /* Webservice Logic */
-
   /**
-   *
+   * Webservice logic
    *
    * @return
    */
-  public static ResponseEntity<?> ss() {
-    ResponseEntity<?> responseEntity = restTemplate
-        .exchange(uri, httpMethod, requestEntity, byte[].class);
+  public static ResponseEntity<?> httpExchange() {
+    HashMap<String, >
     try {
       ResponseEntity<?> responseEntity = restTemplate
           .exchange(uri, httpMethod, requestEntity, byte[].class);
@@ -1030,90 +1066,112 @@ public class Handler {
   }
 
   /**
-   * Response extraction
+   * Response extraction logic.
    *
-   * @param response
-   * @param path
-   * @return
-   * @throws MessagingException
-   * @throws IOException
+   * @param response the original MIME response received from citi without header.
+   * @param path file path provided for writing the MTOM document attachment into.
+   * @return the encrypted xml section of the response body consisting of the
+   *         decryption key, while a statement file at the {@code path} specified
+   *         will be created.
+   * @throws HandlerException custom exception for Handler class.
    */
-  private String extractMTOM(byte[] response, Path path) throws MessagingException, IOException {
+  private String parseMIMEResponse(byte[] response, Path path)
+      throws HandlerException{
 //    response= responseEntity.getBody()
 //    path= attachment file location
-    String responseStatRetXMLStr = "";
-    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(response,
-        org.springframework.http.MediaType.TEXT_XML_VALUE));
-    for (int i = 0; i < mp.getCount(); i++) {
-      BodyPart bodyPart = mp.getBodyPart(i);
-      String contentType = bodyPart.getContentType();
-      Logger.getLogger(Handler.class.getName()).info("ContentType==>" + contentType)
-      Logger.getLogger(Handler.class.getName()).info("Content==>" + bodyPart.getContent());
+    try {
+      String responseStatRetXMLStr = "";
+      /* need to import javax.activation.DataSource for this */
+      MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(response,
+          org.springframework.http.MediaType.TEXT_XML_VALUE));
+      for (int i = 0; i < mp.getCount(); i++) {
+        BodyPart bodyPart = mp.getBodyPart(i);
+        String contentType = bodyPart.getContentType();
+        Logger.getLogger(Handler.class.getName())
+            .info("ContentType==>" + contentType);
+        Logger.getLogger(Handler.class.getName())
+            .info("Content==>" + bodyPart.getContent());
 
-      //TODO
-      if(bodyPart.isMimeType("text/xml") || bodyPart.isMimeType("application/xml")) {// if text/xml
-        if(SharedByteArrayInputStream.class.equals(bodyPart.getContent().getClass())) {
-          responseStatRetXMLStr = IOUtils.toString((SharedByteArrayInputStream)bodyPart.getContent(), StandardCharsets.UTF_8);
-        } else {
-          responseStatRetXMLStr = (String)bodyPart.getContent();
-        }
-        continue;
-      } else { //if application/octet-stream or application/xop+xml
-        if(String.class.equals(bodyPart.getContent().getClass())) {
-          Files.write(path, ((String)bodyPart.getContent()).getBytes());
-        } else {
-          ByteArrayInputStream bais = (ByteArrayInputStream)bodyPart.getContent();
-          Files.copy(bais, path);
+        if (bodyPart.isMimeType("text/xml") ||
+            bodyPart.isMimeType("application/xml")) {
+          if (SharedByteArrayInputStream.class
+              .equals(bodyPart.getContent().getClass())) {
+            responseStatRetXMLStr = IOUtils.toString((SharedByteArrayInputStream)
+                    bodyPart.getContent(), StandardCharsets.UTF_8);
+          } else {
+            responseStatRetXMLStr = (String) bodyPart.getContent();
+          }
+        } else { //if application/octet-stream or application/xop+xml
+          // TODO: return this as byte[] instead of writing into file
+          if (String.class.equals(bodyPart.getContent().getClass())) {
+            Files.write(path, ((String) bodyPart.getContent()).getBytes());
+          } else {
+            ByteArrayInputStream bais =
+                (ByteArrayInputStream) bodyPart.getContent();
+            Files.copy(bais, path);
+          }
         }
       }
-    }
+      return responseStatRetXMLStr;
 
-    return responseStatRetXMLStr;
+    } catch (MessagingException | IOException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
   }
 
   /**
-   * Attachment Decryption Logic
+   * Decrypt the encrypted attachment (excluding its first 8 bytes) using the
+   * decryption key and IvParameterSpec instance from the xml section of MIME
+   * response.
    *
-   * @param decryptionKey
-   * @param input
-   * @return
-   * @throws InvalidKeyException
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeySpecException
-   * @throws NoSuchPaddingException
-   * @throws InvalidAlgorithmParameterException
-   * @throws IllegalBlockSizeException
-   * @throws BadPaddingException
+   * @param decryptionKey the decryption key.
+   * @param input encrypted attachment (including first 8 bytes).
+   * @return decrypted statement file.
+   * @throws HandlerException custom exception for Handler class.
    */
-  private byte[] des3DecodeCBC(String decryptionKey, byte[] input)
-      throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException,
-      NoSuchPaddingException, InvalidAlgorithmParameterException,
-      IllegalBlockSizeException, BadPaddingException {
+  private static byte[] des3DecodeCBC(String decryptionKey, byte[] input)
+      throws HandlerException {
+    try {
+      // attachment byte array from MIME response
+      int ivLen = 8;
+      byte[] keyiv = new byte[ivLen];
+      System.arraycopy(input, 0, keyiv, 0, ivLen);
 
-    // attachment byte array from MIME response
-    int ivLen = 8;
-    byte[] keyiv = new byte[ivLen];
-    for(int i=0 ; i<ivLen ; i++) {
-      keyiv[i] = input[i];
+      int dataLen = input.length - ivLen;
+      byte[] data = new byte[dataLen];
+      System.arraycopy(input, ivLen, data, 0, dataLen);
+
+      DESedeKeySpec spec = new DESedeKeySpec(
+          Base64.decodeBase64(decryptionKey));
+      SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
+      Key desKey = keyFactory.generateSecret(spec);
+
+      Cipher cipher = Cipher.getInstance("TripleDES/CBC/NoPadding");
+      IvParameterSpec ips = new IvParameterSpec(keyiv);
+      cipher.init(Cipher.DECRYPT_MODE, desKey, ips);
+
+      byte[] bout = cipher.doFinal(data);
+
+      return Base64.decodeBase64(bout);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException |
+        InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException
+        | InvalidAlgorithmParameterException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
     }
+  }
 
-    int dataLen = input.length-ivLen;
-    byte[] data = new byte[dataLen];
-    for (int i=0 ; i<dataLen ; i++) {
-      data[i] = input[i+ivLen];
-    }
-
-    DESedeKeySpec spec = new DESedeKeySpec(Base64.decodeBase64(decryptionKey));
-    SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
-    Key deskey = keyfactory.generateSecret(spec);
-
-    Cipher cipher = Cipher.getInstance("TripleDES/CBC/NoPadding");
-    IvParameterSpec ips = new IvParameterSpec(keyiv);
-    cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
-
-    byte[] bout = cipher.doFinal(data);
-
-    return Base64.decodeBase64(bout);
+  public static Byte[] retrieveStatement (String requestStatementPayload) {
+    // TODO: get the xml response
+    // TODO: do different logic for different type of xml response received, either successful res or error msg
+    String encryptedSignedXMLResponse;
+    String response = verifyAndDecryptXML(encryptedSignedXMLResponse);
+    // TODO: get the key from the response
+    String decryptionKey;
+    // TODO: get the encrypted statement as byte[]
+    Byte[] encryptedStatement;
+    return des3DecodeCBC(decryptionKey, encryptedStatement);
   }
 
 }

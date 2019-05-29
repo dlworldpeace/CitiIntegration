@@ -1,3 +1,8 @@
+import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
+import static org.springframework.http.MediaType.APPLICATION_XML;
+import static org.springframework.http.MediaType.TEXT_XML_VALUE;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -16,8 +21,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -35,6 +38,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,8 +88,13 @@ import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.transforms.Transforms;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xml.security.utils.ElementProxy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -565,7 +574,7 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String verifyAndDecryptXML (String encryptedSignedXMLResponse)
+  public static String decryptAndVerifyXML(String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey = getClientPrivateDecryptionKey();
     Document encryptedSignedXMLResponseDoc =
@@ -898,7 +907,7 @@ public class Handler {
           .queryParam("client_id", HandlerConstant.clientID);
       Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + HandlerConstant.oAuthToken); // TODO: How can we store the oAuthToken obtained from authentication. suggested HashMap...
+          "Bearer " + oAuthToken); // TODO: How can we store the oAuthToken obtained from authentication. suggested HashMap...
       builder.header("payloadType",
           "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
       String payInitPayload_SignedEncrypted = signAndEncryptXML(payInitPayload);
@@ -951,7 +960,7 @@ public class Handler {
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + HandlerConstant.oAuthToken);
+          "Bearer " + oAuthToken);
       String balanceInquiryPayload_SignedEncrypted = signAndEncryptXML(
           balanceInquiryPayload);
       ClientResponse clientResponse = builder.post(ClientResponse.class,
@@ -1014,7 +1023,7 @@ public class Handler {
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + HandlerConstant.oAuthToken);
+          "Bearer " + oAuthToken);
       String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
           requestStatementPayload);
 
@@ -1045,45 +1054,59 @@ public class Handler {
 //      4.	Get the decryption key using SecretKeyFactory instance with DESedeKeySpec instance
 
   /**
-   * Webservice logic
+   * Abstraction of HTTP client webservice logic.
    *
-   * @return
+   * @param uri URL of the server for sending the http request to.
+   * @param httpMethod request method used, e.g. POST or GET.
+   * @param signedEncryptedXMLPayload signed and encrypted XML payload
+   * @return a HashMap of the response segmented with keys of HEADER, STATUS and
+   *         BODY.
+   * @throws RestClientException if an unexpected exception occurs while sending
+   *                             the http request in exchange for http response.
    */
-  public static ResponseEntity<?> httpExchange() {
-    HashMap<String, >
+  public static HashMap<String, Object> httpHandler (String uri,
+      HttpMethod httpMethod, String signedEncryptedXMLPayload)
+      throws RestClientException {
+
+    HashMap<String, Object> response = new HashMap<>();
     try {
+      RestTemplate restTemplate = new RestTemplate();
+      org.springframework.http.HttpHeaders headers =
+          new org.springframework.http.HttpHeaders();
+      headers.setAccept(Arrays.asList(APPLICATION_XML, APPLICATION_OCTET_STREAM));
+      headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+      HttpEntity<String> entity =
+          new HttpEntity<>(signedEncryptedXMLPayload, headers);
       ResponseEntity<?> responseEntity = restTemplate
-          .exchange(uri, httpMethod, requestEntity, byte[].class);
-      response.put("HDR", responseEntity.getHeaders());
+          .exchange(uri, httpMethod, entity, byte[].class);
+      response.put("HEADER", responseEntity.getHeaders());
       response.put("STATUS", responseEntity.getStatusCode());
       response.put("BODY", responseEntity.getBody());
-    } catch (HttpStatusCodeException e) { // TODO: why is this inheriting from java.lang.throwable but still raises an error
-      response.put("HDR", e.getResponseHeaders());
+    } catch (HttpStatusCodeException e) {
+      response.put("HEADER", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
       response.put("BODY", e.getResponseBodyAsByteArray());
     }
-    return responseEntity;
+    return response;
   }
 
   /**
    * Response extraction logic.
    *
    * @param response the original MIME response received from citi without header.
-   * @param path file path provided for writing the MTOM document attachment into.
-   * @return the encrypted xml section of the response body consisting of the
-   *         decryption key, while a statement file at the {@code path} specified
-   *         will be created.
+   * @return a HashMap that contains the encrypted decryption key from the xml
+   *         part of {@code response}, which is used to decrypt the encrypted
+   *         statement file from the second part of {@code response}.
    * @throws HandlerException custom exception for Handler class.
    */
-  private String parseMIMEResponse(byte[] response, Path path)
+  private static HashMap<String, Object> parseMIMEResponse(byte[] response)
       throws HandlerException{
-//    response= responseEntity.getBody()
-//    path= attachment file location
     try {
       String responseStatRetXMLStr = "";
-      /* need to import javax.activation.DataSource for this */
-      MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(response,
-          org.springframework.http.MediaType.TEXT_XML_VALUE));
+      byte[] encryptedStatByteArray = null;
+      /* need to import javax.activation.DataSource for this below */
+      MimeMultipart mp = new MimeMultipart(
+          new ByteArrayDataSource(response, TEXT_XML_VALUE));
       for (int i = 0; i < mp.getCount(); i++) {
         BodyPart bodyPart = mp.getBodyPart(i);
         String contentType = bodyPart.getContentType();
@@ -1102,17 +1125,23 @@ public class Handler {
             responseStatRetXMLStr = (String) bodyPart.getContent();
           }
         } else { //if application/octet-stream or application/xop+xml
-          // TODO: return this as byte[] instead of writing into file
           if (String.class.equals(bodyPart.getContent().getClass())) {
-            Files.write(path, ((String) bodyPart.getContent()).getBytes());
+            encryptedStatByteArray = ((String) bodyPart.getContent()).getBytes();
           } else {
             ByteArrayInputStream bais =
                 (ByteArrayInputStream) bodyPart.getContent();
-            Files.copy(bais, path);
+            encryptedStatByteArray = toByteArray(bais);
           }
         }
       }
-      return responseStatRetXMLStr;
+
+      if (responseStatRetXMLStr.isEmpty() || encryptedStatByteArray == null)
+        throw new HandlerException("Fail to parse the MIME response into 2 parts");
+
+      HashMap<String, Object> result = new HashMap<>();
+      result.put("ENCRYPTED_KEY", responseStatRetXMLStr);
+      result.put("ENCRYPTED_FILE", encryptedStatByteArray);
+      return result;
 
     } catch (MessagingException | IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1162,16 +1191,34 @@ public class Handler {
     }
   }
 
-  public static Byte[] retrieveStatement (String requestStatementPayload) {
-    // TODO: get the xml response
-    // TODO: do different logic for different type of xml response received, either successful res or error msg
-    String encryptedSignedXMLResponse;
-    String response = verifyAndDecryptXML(encryptedSignedXMLResponse);
-    // TODO: get the key from the response
-    String decryptionKey;
-    // TODO: get the encrypted statement as byte[]
-    Byte[] encryptedStatement;
-    return des3DecodeCBC(decryptionKey, encryptedStatement);
+  /**
+   * Get the intended statement file using its statement ID.
+   *
+   * @param requestStatementPayload the xml payload that contains statement ID.
+   * @return the expected statement file decrypted.
+   * @throws XMLSecurityException if an unexpected exception occurs while
+   *                              decrypting the xml section of the body.
+   * @throws CertificateEncodingException if an unexpected exception occurs while
+   *                                      verifying the xml section of the body.
+   * @throws HandlerException if an unexpected exception occurs while requesting
+   *                          for the specific statement file from the server.
+   */
+  public static byte[] retrieveStatement (String requestStatementPayload)
+      throws XMLSecurityException, CertificateEncodingException, HandlerException {
+
+    HashMap<String, Object> response = httpHandler(
+        HandlerConstant.statementRetUrl_UAT, HttpMethod.GET, requestStatementPayload);
+    HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+    if (statusCode == HttpStatus.OK) {
+      HashMap<String, Object> body =
+          parseMIMEResponse((byte[]) response.get("BODY"));
+      String decryptionKey =
+          decryptAndVerifyXML((String) body.get("ENCRYPTED_KEY"));
+      return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
+    } else { // error msg received instead of expected statement
+      throw new HandlerException(new String((byte[]) response.get("BODY")));
+    }
   }
 
 }

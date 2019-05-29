@@ -1040,18 +1040,6 @@ public class Handler {
   }
 
   /* Statement Retrieval Response Consumption Logic */
-//  Statement Retrieval Instructions
-//      1.	Get the Cipher instance of TripleDES/CBC/NoPadding
-//      2.	Get the instance of IvParameterSpec with the first 8 bytes of the encrypted attachment (Attachment MTOM response)
-//      3.	Set the Cipher instance as decrypt mode with the decryption key and IvParameterSpec instance.
-//      4.	Decrypt the encrypted attachment (excluding first 8 bytes) using the cipher instance.
-//      5.	Use  decrypted response (from #4) and decrypt using base64 to get the decrypted statement file.
-//
-//  Decryption Key retrieval logic:
-//      1.	Get the attachment decryption key from xPath //statementRetrievalResponse//attachmentDecryptionKey
-//      2.	Get the instance of DESedeKeySpec with the Base64 decoded of attachment decrypted key.
-//      3.	Get the instance of SecretKeyFactory with DESede
-//      4.	Get the decryption key using SecretKeyFactory instance with DESedeKeySpec instance
 
   /**
    * Abstraction of HTTP client webservice logic.
@@ -1091,22 +1079,38 @@ public class Handler {
   }
 
   /**
-   * Response extraction logic.
+   * Parse MIME response into 2 parts: 1. encrypted and signed decryption key
+   * and 2. encrypted statement file.
    *
-   * @param response the original MIME response received from citi without header.
+   * @param XMLResponse a MIME response which has 2 parts. First part is of XML
+   *                    encrypted which has to be decrypted and VerifySigned to
+   *                    get a plain XML response. The plain response has an
+   *                    AttachmentDecryptionKey and is used to decrypt the Binary
+   *                    Statement (2nd part of MIME) which is the expected
+   *                    Statement file.
+   *
+   *                    The second part contains the Statement File attached in
+   *                    MTOM format which follows SWIFT MT940, or ISO XML
+   *                    camt.053.001.02 or SWIFT MT942 or ISO XML camt.052.001.02
+   *                    standards. If the file size exceeds 4 MB, then there will
+   *                    be an error message in response will be sent back to the
+   *                    partner.
+   *
+   *                    If the request is rejected due to validation errors or
+   *                    data issues, the response follows a custom XML format.
    * @return a HashMap that contains the encrypted decryption key from the xml
    *         part of {@code response}, which is used to decrypt the encrypted
    *         statement file from the second part of {@code response}.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static HashMap<String, Object> parseMIMEResponse(byte[] response)
+  private static HashMap<String, Object> parseMIMEResponse(byte[] XMLResponse)
       throws HandlerException{
     try {
       String responseStatRetXMLStr = "";
       byte[] encryptedStatByteArray = null;
       /* need to import javax.activation.DataSource for this below */
       MimeMultipart mp = new MimeMultipart(
-          new ByteArrayDataSource(response, TEXT_XML_VALUE));
+          new ByteArrayDataSource(XMLResponse, TEXT_XML_VALUE));
       for (int i = 0; i < mp.getCount(); i++) {
         BodyPart bodyPart = mp.getBodyPart(i);
         String contentType = bodyPart.getContentType();

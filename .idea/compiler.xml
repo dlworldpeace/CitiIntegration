@@ -2,7 +2,7 @@
 <project version="4">
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Test" options="--add-exports=jdk.internal.le/jdk.internal.jline.internal=ALL-UNNAMED" />
+      <module name="fintech" options="--add-exports=jdk.internal.le/jdk.internal.jline.internal=ALL-UNNAMED" />
     </option>
   </component>
 </project>

@@ -586,7 +586,7 @@ public class Handler {
     return convertDocToString(SignedXMLResponseDoc);
   }
 
-  // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function
+  // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function. But, there is no decryption key here.
 //  /**
 //   * Decrypt statement file.
 //   *
@@ -638,10 +638,11 @@ public class Handler {
    *
    * @param responseDoc document to be parsed.
    * @param type "" for authType or "BASE64" for paymentType.
+   * @param tagName TODO: Add description or remove this
    * @return response message.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String handleResponse (Document responseDoc, String type)
+  public static String handleResponse (Document responseDoc, String type, String tagName)
       throws HandlerException {
 
     XPath xpath = XPathFactory.newInstance().newXPath();

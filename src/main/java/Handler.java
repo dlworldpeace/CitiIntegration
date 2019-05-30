@@ -1,3 +1,5 @@
+package main.java;
+
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;

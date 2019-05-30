@@ -1,3 +1,5 @@
+package main.java;
+
 public class HandlerException extends Exception {
 
   public HandlerException(Throwable cause) {

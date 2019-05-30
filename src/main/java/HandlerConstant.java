@@ -1,3 +1,5 @@
+package main.java;
+
 public class HandlerConstant {
 
   /* Inputs to the Encryption Logic */

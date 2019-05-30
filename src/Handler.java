@@ -112,6 +112,8 @@ import org.xml.sax.SAXException;
 
 public class Handler {
 
+  public static String oAuthToken = null;
+
   /* Encryption Logic */
 
   /**
@@ -439,20 +441,20 @@ public class Handler {
               "EncryptedData");
       if (childs == null || childs.getLength() == 0) {
         throw new HandlerException(
-            "Encrypted Data not found on XML Document while parsing  to decrypt");
+            "Encrypted Data not found on XML Document while parsing to decrypt");
       }
       dataEL = childs.item(0);
     }
     if (dataEL == null) {
       throw new HandlerException(
-          "Encrypted Data not found on XML Document while parsing  to decrypt");
+          "Encrypted Data not found on XML Document while parsing to decrypt");
     }
     NodeList keyList = ((Element) dataEL)
         .getElementsByTagNameNS("http://www.w3.org/2001/04/xmlenc#",
             "EncryptedKey");
     if (keyList == null || keyList.getLength() == 0) {
       throw new HandlerException(
-          "Encrypted Key not found on XML Document while parsing  to decrypt");
+          "Encrypted Key not found on XML Document while parsing to decrypt");
     }
     keyEL = keyList.item(0);
     XMLCipher cipher = XMLCipher.getInstance();
@@ -471,13 +473,16 @@ public class Handler {
       try {
         Document decryptedDoc = cipher
             .doFinal(encryptedSignedDoc, (Element) dataEL);
+        decryptedDoc.normalize(); // TODO: check if it rightly belongs here
+        return decryptedDoc;
       } catch (Exception e) {
         Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
         throw new HandlerException(e.getMessage());
       }
-    }
-    decryptedDoc.normalize(); // TODO: add inside if loop?
-    return decryptedDoc;
+    } else
+      throw new HandlerException("No encrypted data or encrypted key to proceed "
+          + "with decrypting the response XML");
+
   }
 
   /**
@@ -642,8 +647,8 @@ public class Handler {
    * @return response message.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String handleResponse (Document responseDoc, String type, String tagName)
-      throws HandlerException {
+  public static String handleResponse (Document responseDoc, String type,
+      String tagName) throws HandlerException, XPathExpressionException {
 
     XPath xpath = XPathFactory.newInstance().newXPath();
 
@@ -693,7 +698,7 @@ public class Handler {
     if (errorInResponse.trim().length() > 0) {
       throw new HandlerException(errorInResponse);
     } else {
-      NodeList nodes = (NodeList) xpath.compile(xpath.compile(tagName)) // TODO: Find out what tagName is
+      NodeList nodes = (NodeList) xpath.compile(tagName) // TODO: Find out what tagName is
           .evaluate(responseDoc, XPathConstants.NODESET);
       if (nodes != null && nodes.getLength() == 1) {
         String response = nodes.item(0).getNodeValue();
@@ -895,7 +900,7 @@ public class Handler {
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
-              if (proxy == null && !proxyURL.isEmpty()) {
+              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
                 proxy = new Proxy(Proxy.Type.HTTP,
                     new InetSocketAddress(HandlerConstant.proxyURL, 8080));
               } else {

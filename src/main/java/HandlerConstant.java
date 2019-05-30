@@ -13,10 +13,10 @@ public class HandlerConstant {
   public static final String citiVerifyKeyAlias = "CitiSignaturePublicKey";
 
   /* Inputs to the Parsing Response Logic */
-  public static final String authType = ""; // for Authentication
-  public static final String paymentType = "BASE64"; // for Payment Initiation
-  public static final String tagName = "//access_token/text()” for Authentication & "
-      + "“//Response/text()” for Payment Initiation";
+  public static final String authType = "";
+  public static final String paymentType = "BASE64";
+  public static final String tagName_Auth = "//access_token/text()";
+  public static final String tagName_PaymentInit = "//Response/text()";
 
   /* Sample Authentication Payload */
   public static final String oAuthPayload_CCF =
@@ -55,6 +55,7 @@ public class HandlerConstant {
   public static final String payInitURL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
           + "initiation?client_id=<%s>"; // <%s> = API Client ID shared
+
 //  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12";
 //  public static final String certPwd = "pass123";
 //  public static final String proxyURL = "webproxy.abc.net";
@@ -89,6 +90,7 @@ public class HandlerConstant {
   public static final String statementRetUrl_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
           + "statement/retrieval?client_id=<%s>"; // <%s> = API Client ID shared
+
 //  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12"
 //  public static final String certPwd = "pass123"
 //  public static final String proxyURL = "webproxy.abc.net"

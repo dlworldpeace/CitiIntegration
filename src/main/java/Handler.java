@@ -645,7 +645,9 @@ public class Handler {
    *
    * @param responseDoc document to be parsed.
    * @param type "" for authType or "BASE64" for paymentType.
-   * @param tagName TODO: Add description or remove this
+   * @param tagName differentiate between response handling logic:
+   *        "//access_token/text()" for Authentication & "//Response/text()"
+   *        for Payment Initiation.
    * @return response message.
    * @throws HandlerException custom exception for Handler class.
    */
@@ -700,7 +702,7 @@ public class Handler {
     if (errorInResponse.trim().length() > 0) {
       throw new HandlerException(errorInResponse);
     } else {
-      NodeList nodes = (NodeList) xpath.compile(tagName) // TODO: Find out what tagName is
+      NodeList nodes = (NodeList) xpath.compile(tagName)
           .evaluate(responseDoc, XPathConstants.NODESET);
       if (nodes != null && nodes.getLength() == 1) {
         String response = nodes.item(0).getNodeValue();

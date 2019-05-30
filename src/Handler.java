@@ -903,13 +903,14 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.payInitURL)
+      WebResource webResource = client.resource(HandlerConstant.payInitURL_UAT)
           .queryParam("client_id", HandlerConstant.clientID);
       Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + oAuthToken); // TODO: How can we store the oAuthToken obtained from authentication. suggested HashMap...
       builder.header("payloadType",
-          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
+          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); // TODO: make it flexible by allowing for bot Direct Debit and US FAST.
+//    or "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
       String payInitPayload_SignedEncrypted = signAndEncryptXML(payInitPayload);
       ClientResponse clientResponse = builder
           .post(ClientResponse.class, payInitPayload_SignedEncrypted);

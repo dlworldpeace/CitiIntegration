@@ -45,8 +45,14 @@ public class HandlerConstant {
       + "<Request><paymentBase64>--Base64EncodedISOPaymentXML--</paymentBase64></Request>";
 
   /* Inputs to the Payment Initiation API Calling Logic */
-  public static final String samplePayInitPayload;
-  public static final String payInitURL = "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/payment/initiation";
+  public static final String samplePayInitPayload =
+      "";
+  public static final String payInitURL_UAT =
+      "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/"
+          + "payment/initiation?client_id=<%s>"; // <%s> = API Client ID shared
+  public static final String payInitURL_PROD =
+      "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
+          + "initiation?client_id=<%s>"; // <%s> = API Client ID shared
 //  public static final String sslCertFilePath = "C:\\API\\Cert\\SSL.p12";
 //  public static final String certPwd = "pass123";
 //  public static final String proxyURL = "webproxy.abc.net";

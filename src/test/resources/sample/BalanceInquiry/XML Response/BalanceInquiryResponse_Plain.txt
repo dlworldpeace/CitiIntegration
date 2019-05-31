@@ -1,7 +1,4 @@
-
-<Document
-	xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.02"
-	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.02" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
 	<BkToCstmrAcctRpt>
 		<GrpHdr>
 			<MsgId>CITIBANK/20170509-PSR/1956706383</MsgId>

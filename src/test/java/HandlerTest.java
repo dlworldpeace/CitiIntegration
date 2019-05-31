@@ -7,18 +7,23 @@ import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -32,48 +37,65 @@ public class HandlerTest {
 //  }
 
   @Test
-  public void convertStringToDocToString_xmlStr_remainsSame () {
-    try {
-      String str = new String(Files.readAllBytes(Paths.get(
-          "test/resources/sample/BalanceInquiry/XML Request/"
-              + "BalanceInquiryRequest_Signed.txt")));
-      assertEquals(str, convertDocToString(convertStringToDoc(str)));
-    }
-    catch (IOException | HandlerException e) {
-      e.printStackTrace();
-    }
+  public void convertStringToDocToString_xmlStr_remainsSame ()
+      throws HandlerException, IOException {
+
+    String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+    String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
+
+    assertEquals(strWithoutFirstLine,
+        convertDocToString(convertStringToDoc(strWithoutFirstLine)));
   }
 
   @Test
-  public void decryptEncryptedAndSignedXML_encryptSignedXMLPayloadDoc_remainsSame () {
-    try {
+  public void decryptEncryptedAndSignedXML_encryptSignedXMLPayloadDoc_remainsSame ()
+      throws IOException, HandlerException, XMLEncryptionException,
+      NoSuchAlgorithmException, InvalidKeySpecException, URISyntaxException {
 
-      PKCS8EncodedKeySpec spec =
-          new PKCS8EncodedKeySpec(Files.readAllBytes(Paths.get(
-              "main/resources/key/deskera/deskera_customer_private.key")));
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      PrivateKey clientPrivateKey =kf.generatePrivate(spec);
+    org.apache.xml.security.Init.init();
 
-      X509EncodedKeySpec pspec =
-          new X509EncodedKeySpec(Files.readAllBytes(Paths.get(
-              "main/resources/key/deskera/deskera_sign_encryption_pubkey.crt")));
-      KeyFactory pkf = KeyFactory.getInstance("RSA");
-      PublicKey clientPublicKey = pkf.generatePublic(pspec);
+    String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Response/"
+            + "BalanceInquiryResponse_Plain.txt")));
 
-      String str = new String(Files.readAllBytes(Paths.get(
-          "test/resources/sample/BalanceInquiry/XML Response/"
-              + "BalanceInquiryResponse_Plain.txt")));
-      Document encryptedDoc = encryptSignedXMLPayloadDoc(
-          convertStringToDoc(str), clientPublicKey);
-      String decryptedStr = convertDocToString(
-          decryptEncryptedAndSignedXML(encryptedDoc, clientPrivateKey));
-      assertEquals(str, decryptedStr);
+    String privateKeyContent = new String(Files.readAllBytes(
+        Paths.get(ClassLoader.getSystemResource(
+            "src/main/resources/key/deskera/deskera_customer_private.key").toURI())));
+    String publicKeyContent = new String(Files.readAllBytes(
+        Paths.get(ClassLoader.getSystemResource(
+            "src/main/resources/key/deskera/deskera_pubkey.pem").toURI())));
 
-    } catch (IOException | HandlerException | XMLEncryptionException |
-        NoSuchAlgorithmException | InvalidKeySpecException e) {
-      e.printStackTrace();
-    }
+    privateKeyContent = privateKeyContent.replaceAll("\\n", "")
+        .replace("-----BEGIN PRIVATE KEY-----", "")
+        .replace("-----END PRIVATE KEY-----", "");
+    publicKeyContent = publicKeyContent.replaceAll("\\n", "")
+        .replace("-----BEGIN PUBLIC KEY-----", "")
+        .replace("-----END PUBLIC KEY-----", "");
+
+    KeyFactory kf = KeyFactory.getInstance("RSA");
+
+    PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(
+        Base64.getDecoder().decode(privateKeyContent));
+    PrivateKey privKey = kf.generatePrivate(keySpecPKCS8);
+
+    X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(
+        Base64.getDecoder().decode(publicKeyContent));
+    PublicKey pubKey = kf.generatePublic(keySpecX509);
+
+    Document encryptedDoc = encryptSignedXMLPayloadDoc(
+        convertStringToDoc(str), pubKey);
+    String decryptedStr = convertDocToString(
+        decryptEncryptedAndSignedXML(encryptedDoc, privKey));
+    assertEquals(str, decryptedStr);
   }
+
+//  @Test(expected = IndexOutOfBoundsException.class)
+//  public void testIndexOutOfBoundsException() {
+//    ArrayList emptyList = new ArrayList();
+//    Object o = emptyList.get(0);
+//  }
 
 //  @Test
 //  public void convertStringToDoc() {

@@ -114,7 +114,10 @@ import org.xml.sax.SAXException;
 
 public class Handler {
 
-  public static String oAuthToken = null;
+  /* Instance Variables */
+
+  private String oAuthToken;
+  private KeyStore ks;
 
   /* Encryption Logic */
 
@@ -123,9 +126,9 @@ public class Handler {
    *
    * @throws HandlerException custom exception for Handler class.
    */
-  public static void loadKeystore () throws HandlerException {
+  public void loadKeystore () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
+      ks = KeyStore.getInstance("JKS");
       FileInputStream fis = new FileInputStream(HandlerConstant.keyStoreFilePath);
       ks.load(fis, HandlerConstant.keyStorePwd.toCharArray());
       fis.close();
@@ -143,7 +146,7 @@ public class Handler {
    * @return converted document object.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static Document convertXMLPayloadToDoc (String xmlPayload)
+  public static Document convertStringToDoc(String xmlPayload)
       throws HandlerException {
 
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -163,9 +166,8 @@ public class Handler {
    * @return client public key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static X509Certificate getClientPublicKey () throws HandlerException {
+  public X509Certificate getClientPublicKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       X509Certificate signCert = (X509Certificate) ks
           .getCertificate(HandlerConstant.clientSignKeyAlias);
       signCert.checkValidity();
@@ -183,9 +185,8 @@ public class Handler {
    * @return PrivateKey client private key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static PrivateKey getClientPrivateKey () throws HandlerException {
+  public PrivateKey getClientPrivateKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       return (PrivateKey) ks.getKey(
           HandlerConstant.clientSignKeyAlias, HandlerConstant.keyStorePwd.toCharArray());
     } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
@@ -231,9 +232,8 @@ public class Handler {
    * @return citi public key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static PublicKey getCitiPublicKey () throws HandlerException {
+  public PublicKey getCitiPublicKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       X509Certificate encryptCert = (X509Certificate) ks
           .getCertificate(HandlerConstant.citiEncryptKeyAlias);
       encryptCert.checkValidity();
@@ -293,7 +293,7 @@ public class Handler {
   /**
    * Convert the Document object to String value.
    *
-   * @return string value of the document.
+   * @return xml string value of the document.
    * @throws HandlerException custom exception for Handler class.
    */
   public static String convertDocToString (Document xmlDoc) throws HandlerException {
@@ -305,6 +305,7 @@ public class Handler {
       transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
 
       // TODO check what kind of string value is returned: XML?
+      // It is XML without the XML header
 
       return writer.getBuffer().toString();
     } catch (TransformerException e) {
@@ -323,9 +324,9 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String signAndEncryptXML (String payloadXML)
+  public String signAndEncryptXML (String payloadXML)
       throws XMLSecurityException, HandlerException {
-    Document payloadDoc = convertXMLPayloadToDoc(payloadXML);
+    Document payloadDoc = convertStringToDoc(payloadXML);
     PrivateKey clientPrivateKey = getClientPrivateKey();
     X509Certificate clientSigningCert = getClientPublicKey();
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
@@ -342,14 +343,12 @@ public class Handler {
    *
    * @throws HandlerException custom exception for Handler class.
    */
-  public static void loadKeystoreWithAllCerts () throws HandlerException {
+  public void loadKeystoreWithAllCerts () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       FileInputStream fis = new FileInputStream(HandlerConstant.keyStoreFilePath);
       ks.load(fis, HandlerConstant.keyStorePwd.toCharArray());
       fis.close();
-    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-        KeyStoreException e) {
+    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -386,9 +385,8 @@ public class Handler {
    * @return public client decryption key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static X509Certificate getClientPublicDecrytionKey () throws HandlerException {
+  public X509Certificate getClientPublicDecrytionKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       X509Certificate decryptCert = (X509Certificate) ks
           .getCertificate(HandlerConstant.clientDecryptKeyAlias);
       decryptCert.checkValidity();
@@ -406,9 +404,8 @@ public class Handler {
    * @return private client decryption key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
+  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
               HandlerConstant.keyStorePwd.toCharArray());
     } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
@@ -493,9 +490,8 @@ public class Handler {
    * @return public citi verification key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static X509Certificate getCitiVerficationKey () throws HandlerException {
+  public X509Certificate getCitiVerficationKey () throws HandlerException {
     try {
-      KeyStore ks = KeyStore.getInstance("JKS");
       X509Certificate signVerifyCert = (X509Certificate) ks
           .getCertificate(HandlerConstant.citiVerifyKeyAlias);
       signVerifyCert.checkValidity();
@@ -581,11 +577,11 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String decryptAndVerifyXML(String encryptedSignedXMLResponse)
+  public String decryptAndVerifyXML(String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey = getClientPrivateDecryptionKey();
     Document encryptedSignedXMLResponseDoc =
-        convertXMLPayloadToDoc(encryptedSignedXMLResponse);
+        convertStringToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
         encryptedSignedXMLResponseDoc, clientPrivateDecryptionKey);
     X509Certificate citiVerificationKey = getCitiVerficationKey();
@@ -645,7 +641,7 @@ public class Handler {
    *
    * @param responseDoc document to be parsed.
    * @param type "" for authType or "BASE64" for paymentType.
-   * @param tagName differentiate between response handling logic:
+   * @param tagName differentiate between response handling logic: use
    *        "//access_token/text()" for Authentication & "//Response/text()"
    *        for Payment Initiation.
    * @return response message.
@@ -767,7 +763,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String authenticate (String oAuthPayload)
+  public String authenticate (String oAuthPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
@@ -885,7 +881,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String initPayment (String payInitPayload)
+  public String initPayment (String payInitPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
@@ -941,7 +937,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String checkBalance (String balanceInquiryPayload)
+  public String checkBalance (String balanceInquiryPayload)
       throws XMLSecurityException, HandlerException {
 
     // TODO: check if this function body follows the body of initPayment() or not, since it follows 6.2 Payment Inquiry but there is no sample code for that
@@ -1006,7 +1002,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static InputStream requestForStatement (String requestStatementPayload)
+  public InputStream requestForStatement (String requestStatementPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
@@ -1063,7 +1059,7 @@ public class Handler {
    * @throws RestClientException if an unexpected exception occurs while sending
    *                             the http request in exchange for http response.
    */
-  public static HashMap<String, Object> httpHandler (String uri,
+  public HashMap<String, Object> httpHandler (String uri,
       HttpMethod httpMethod, String signedEncryptedXMLPayload)
       throws RestClientException {
 
@@ -1218,7 +1214,7 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public static byte[] retrieveStatement (String requestStatementPayload)
+  public byte[] retrieveStatement (String requestStatementPayload)
       throws XMLSecurityException, CertificateEncodingException, HandlerException {
 
     HashMap<String, Object> response = httpHandler(
@@ -1235,5 +1231,10 @@ public class Handler {
       throw new HandlerException(new String((byte[]) response.get("BODY")));
     }
   }
+
+  // TODO: add this converter
+//  public static String convertXSDToXML (String XSD) {
+//
+//  }
 
 }

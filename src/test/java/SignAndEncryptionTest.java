@@ -227,7 +227,7 @@
 //   * @return converted document object
 //   * @throws HandlerException custom exception for Handler class
 //   */
-//  private static Document convertXMLPayloadToDoc (String xmlPayload)
+//  private static Document convertStringToDoc (String xmlPayload)
 //      throws HandlerException {
 //
 //    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -409,7 +409,7 @@
 //   */
 //  private static String signAndEncryptXML (String payloadXML)
 //      throws XMLSecurityException, HandlerException {
-//    Document payloadDoc = convertXMLPayloadToDoc(payloadXML);
+//    Document payloadDoc = convertStringToDoc(payloadXML);
 //    PrivateKey clientPrivateKey = getClientPrivateKey();
 //    X509Certificate clientSigningCert = getClientPublicKey();
 //    signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);

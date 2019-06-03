@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>GBP161111000001</MsgId>
+      <CreDtTm>2016-11-11T03:51:15</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>1.00</CtrlSum>
+      <InitgPty>
+        <Nm>ABC</Nm>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>98765432 Fund Transfer Domestic</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>1.00</CtrlSum>
+      <PmtTpInf>
+        <SvcLvl>
+          <Cd>URGP</Cd>
+        </SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt>2016-11-16</ReqdExctnDt>
+      <Dbtr>
+        <Nm>ABCD DEMO</Nm>
+        <PstlAdr>
+          <Ctry>GB</Ctry>
+        </PstlAdr>
+        <Id>
+          <OrgId>
+            <BICOrBEI>CITIGB2L</BICOrBEI>
+          </OrgId>
+        </Id>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <Othr>
+            <Id>12345678</Id>
+          </Othr>
+        </Id>
+        <Ccy>USD</Ccy>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BIC>CITIGB2L</BIC>
+          <PstlAdr>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+        </FinInstnId>
+      </DbtrAgt>
+      <ChrgBr>DEBT</ChrgBr>
+      <CdtTrfTxInf>
+        <PmtId>
+          <EndToEndId>ABC1234</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="USD">1.00</InstdAmt>
+        </Amt>
+        <UltmtDbtr>
+          <Id>
+            <PrvtId>
+              <Othr>
+                <Id>ABCDEF UK BR600 012345</Id>
+                <SchmeNm>
+                  <Prtry>INST</Prtry>
+                </SchmeNm>
+              </Othr>
+            </PrvtId>
+          </Id>
+        </UltmtDbtr>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>CITIGB2L</BIC>
+            <ClrSysMmbId>
+              <MmbId>185008</MmbId>
+            </ClrSysMmbId>
+            <Nm>CITIBANK(ISO)</Nm>
+            <PstlAdr>
+              <Ctry>GB</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>8010643122X XXXXXXXXXXXXX XXX</Nm>
+          <PstlAdr>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+          <CtctDtls>
+            <Nm>ABC LIMITED</Nm>
+          </CtctDtls>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <IBAN>GB27CITI18500812345678</IBAN>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>TR002638</Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>

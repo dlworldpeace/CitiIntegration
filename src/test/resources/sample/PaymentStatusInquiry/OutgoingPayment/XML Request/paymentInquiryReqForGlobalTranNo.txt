@@ -1,0 +1,3 @@
+globalTranNo=ASIAAPR001
+requiredExecutionDate=09-01-2017
+creationDate=09-01-2017

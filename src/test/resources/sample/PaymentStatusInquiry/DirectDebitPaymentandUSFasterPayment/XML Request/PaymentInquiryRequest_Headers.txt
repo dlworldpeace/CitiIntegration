@@ -1,0 +1,8 @@
+POST https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/payment/inquiry?client_id=1234a5b6-cde7-8f90-12gh-345ij6789012 HTTP/1.1
+Accept-Encoding: gzip,deflate
+Content-Type: application/xml
+Authorization: Bearer PWU+nuh00BB7vM/KHL/wrNuPplTTMRMY4UuPufdxjxpTm6i49Z8CJ98JwjHrgWzYZ9M+2aS3qjtmTFPvFT9QJV3fxC/6aH8X6hTY7hDzByV/r5ARQY425P8pRRK12ldVUVepviO9Ob1zkdLJK16tEcLGcQuXJgzQtF/bYjgpFEcZk75R7i5LjN9I9vL32nYSEhDG+YeCVM9UVtp+N+Acov0NqMbBglRYxXSLolFIK1KsPy22GbjcwU6H6KAg3nnz4AcaAjYL8lWOzjETpiG3ZNnBFhSDhH5UBdj0iC1r41wPeVfyCJudfUnv+7/+8AhKeeB6l9Z/izOnJFKC+GyoNifaMlxskJ62mXPDb5mIbJvBMlfolTV1+sxk/dkzd+YFz1fvQhcpmk2rS2aEOzTBrKEpkzMS7S0t9088gRfhuilOat/6xhh5AnSG3s6h1zJx
+Content-Length: 6519
+Host: tts.sandbox.apib2b.citi.com
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.1 (java 1.5)

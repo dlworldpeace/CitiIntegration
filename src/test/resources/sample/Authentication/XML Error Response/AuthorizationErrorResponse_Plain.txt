@@ -1,0 +1,5 @@
+<errormessage>
+	<httpCode>400</httpCode>
+	<httpMessage>BadRequest</httpMessage>
+	<moreInformation>Schema Validation Failed</moreInformation>
+</errormessage>

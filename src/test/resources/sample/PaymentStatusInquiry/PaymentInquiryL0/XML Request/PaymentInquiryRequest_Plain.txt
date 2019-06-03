@@ -1,0 +1,4 @@
+<paymentInquiryRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/payment/v1">
+  <EndToEndId>SN0409201803R</EndToEndId>
+  <MsgId>60423038</MsgId>
+</paymentInquiryRequest>

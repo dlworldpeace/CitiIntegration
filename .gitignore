@@ -27,3 +27,4 @@ hs_err_pid*
 deskera_customer_private.key
 deskera_sign_encryption_pubkey.crt
 deskera_pubkey.pem
+deskera.p12

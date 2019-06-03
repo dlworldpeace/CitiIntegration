@@ -1,0 +1,8 @@
+POST https://tts.sandbox.apib2b.citi.com/citiconnect/sb/authenticationservices/v1/oauth/token HTTP/1.1
+Accept-Encoding: gzip,deflate
+Content-Type: application/xml
+Authorization: Basic MTIzNGE1YjYtY2RlNy04ZjkwLTEyZ2gtMzQ1aWo2Nzg5MDEyOmFiY2RlZmdoaWprbG1ub3A=
+Content-Length: 6572
+Host: tts.sandbox.apib2b.citi.com
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.1 (java 1.5)

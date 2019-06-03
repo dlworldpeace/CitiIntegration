@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02">
+<CstmrDrctDbtInitn>
+<GrpHdr>
+<MsgId>10006050058</MsgId>
+<CreDtTm>2017-05-16T14:35:23-05:00</CreDtTm>
+<NbOfTxs>1</NbOfTxs>
+<InitgPty>
+<Nm>abc</Nm>
+<Id>
+<OrgId>
+<Othr>
+<Id>12345678</Id>
+</Othr>
+</OrgId>
+</Id>
+</InitgPty>
+</GrpHdr>
+<PmtInf>
+<PmtInfId>ASIA</PmtInfId>
+<PmtMtd>DD</PmtMtd>
+<NbOfTxs>1</NbOfTxs>
+<ReqdColltnDt>2017-12-13</ReqdColltnDt>
+<Cdtr>
+<Nm>efg</Nm>
+<PstlAdr>
+<Ctry>AU</Ctry>
+<AdrLine>City View</AdrLine>
+<AdrLine>165 Km</AdrLine>
+</PstlAdr>
+<Id>
+<OrgId>
+<Othr>
+<Id>000-30-7059</Id>
+</Othr>
+</OrgId>
+</Id>
+</Cdtr>
+<CdtrAcct>
+<Id>
+<Othr>
+<Id>205000014</Id>
+<SchmeNm>
+<Prtry>Other</Prtry>
+</SchmeNm>
+</Othr>
+</Id>
+<Ccy>AUD</Ccy>
+</CdtrAcct>
+<CdtrAgt>
+<FinInstnId>
+<BIC>CITICATTXXX</BIC>
+<ClrSysMmbId>
+<MmbId>44000079</MmbId>
+</ClrSysMmbId>
+<PstlAdr>
+<Ctry>AU</Ctry>
+</PstlAdr>
+</FinInstnId>
+<BrnchId>
+<Id>102</Id>
+</BrnchId>
+</CdtrAgt>
+<ChrgBr>CRED</ChrgBr>
+<DrctDbtTxInf>
+<PmtId>
+<EndToEndId>ASIADD2615</EndToEndId>
+</PmtId>
+<PmtTpInf>
+<!-- <SvcLvl>
+<Cd>NURG</Cd>
+</SvcLvl> -->
+<LclInstrm>
+<Cd>DDI</Cd>
+<!-- <Prtry>ACSD</Prtry>   -->
+</LclInstrm>
+<!-- <CtgyPurp>
+<Prtry>20</Prtry>
+</CtgyPurp>-->
+</PmtTpInf>
+<InstdAmt Ccy="AUD">200.00</InstdAmt>
+<!-- <Amt>
+<InstdAmt Ccy="CAD">200.00</InstdAmt>
+</Amt> -->
+<DbtrAgt>
+<FinInstnId>
+<ClrSysMmbId>
+<MmbId>000001</MmbId>
+</ClrSysMmbId>
+<Nm>abcdef</Nm>
+</FinInstnId>
+<BrnchId>
+<Id>102</Id>
+</BrnchId>
+</DbtrAgt>
+<Dbtr>
+<Nm>24</Nm>
+<PstlAdr>
+<AdrLine>Address 1</AdrLine>
+</PstlAdr>
+<!-- <Id>
+<OrgId>
+<BICOrBEI>sss</BICOrBEI>
+</OrgId>
+</Id>-->
+</Dbtr>
+<DbtrAcct>
+<Id>
+<Othr>
+<Id>200000027</Id>
+</Othr>
+</Id>
+<Nm>qwert</Nm>
+</DbtrAcct>
+<InstrForCdtrAgt>/CONFIDENTIAL/Y</InstrForCdtrAgt>
+<RltdRmtInf>
+<RmtLctnMtd>EMAL</RmtLctnMtd>
+<RmtLctnElctrncAdr>sk@gmail.com</RmtLctnElctrncAdr>
+</RltdRmtInf>
+<RmtInf>
+<Ustrd>/GLTT/87</Ustrd>
+<Strd>
+<RfrdDocInf>
+<Nb>SK12345</Nb>
+</RfrdDocInf>
+</Strd>
+</RmtInf>
+</DrctDbtTxInf>
+</PmtInf>
+</CstmrDrctDbtInitn>
+</Document>

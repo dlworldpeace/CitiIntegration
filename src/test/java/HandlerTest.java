@@ -12,14 +12,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import main.java.Handler;
 import main.java.HandlerException;
@@ -102,6 +97,19 @@ public class HandlerTest {
     Document doc = convertStringToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     verifyDecryptedXML(doc, signingCert);
+  }
+
+  @Test
+  public void authenticate_dummyHeaderValues_requestSentSuccess ()
+      throws IOException, XMLSecurityException, HandlerException {
+
+    String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/Authentication/OutgoingPayment/"
+            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+
+    String response = handler.authenticate(str);
+
+    System.out.println(response);
   }
 
 //  @Test(expected = IndexOutOfBoundsException.class)

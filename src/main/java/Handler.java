@@ -3,6 +3,8 @@ package main.java;
 import static main.java.HandlerConstant.clientSignKeyAlias;
 import static main.java.HandlerConstant.keyStoreFilePath;
 import static main.java.HandlerConstant.keyStorePwd;
+import static main.java.HandlerConstant.sslCertFilePath;
+import static main.java.HandlerConstant.sslCertPwd;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -40,6 +42,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
@@ -132,8 +135,7 @@ public class Handler {
   public void loadKeystore () throws HandlerException {
     try {
       ks = KeyStore.getInstance("PKCS12");
-      FileInputStream fis =
-          new FileInputStream(keyStoreFilePath);
+      FileInputStream fis = new FileInputStream(keyStoreFilePath);
       ks.load(fis, keyStorePwd.toCharArray());
       fis.close();
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException |
@@ -235,14 +237,14 @@ public class Handler {
    * @return citi public key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public PublicKey getCitiPublicKey () throws HandlerException {
+  public static PublicKey getCitiPublicKey () throws HandlerException {
     try {
-      X509Certificate encryptCert = (X509Certificate) ks
-          .getCertificate(HandlerConstant.citiEncryptKeyAlias);
-      encryptCert.checkValidity();
-      return encryptCert.getPublicKey();
-    } catch (CertificateNotYetValidException | CertificateExpiredException |
-        KeyStoreException e) {
+      CertificateFactory fact = CertificateFactory.getInstance("X.509");
+      FileInputStream is = new FileInputStream (
+          "src/main/resources/key/citi/citi_encryption.pem");
+      X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
+      return cer.getPublicKey();
+    } catch (IOException | CertificateException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -770,16 +772,16 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
-              HandlerConstant.certPwd.toCharArray());
+      clientStore.load(new FileInputStream(sslCertFilePath),
+          sslCertPwd.toCharArray());
 
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
-      kmf.init(clientStore, HandlerConstant.certPwd.toCharArray());
+      kmf.init(clientStore, sslCertPwd.toCharArray());
 
       SSLContext sslContext = SSLContext
-          .getInstance("TLSv1.2"); // SSL standard
+          .getInstance("TLSv1.2"); // The SSL standard
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
           .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
@@ -808,8 +810,7 @@ public class Handler {
       ClientResponse clientResponse = builder.post(ClientResponse.class,
               oAuthPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
-    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-        UnrecoverableKeyException | KeyManagementException | KeyStoreException e) {
+    } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException | KeyStoreException | IOException | CertificateException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -888,11 +889,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
-          HandlerConstant.certPwd.toCharArray());
+      clientStore.load(new FileInputStream(sslCertFilePath),
+          sslCertPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, HandlerConstant.certPwd.toCharArray());
+      kmf.init(clientStore, sslCertPwd.toCharArray());
       SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
@@ -946,11 +947,11 @@ public class Handler {
     // TODO: check if this function body follows the body of initPayment() or not, since it follows 6.2 Payment Inquiry but there is no sample code for that
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
-              HandlerConstant.certPwd.toCharArray());
+      clientStore.load(new FileInputStream(sslCertFilePath),
+              sslCertPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, HandlerConstant.certPwd.toCharArray());
+      kmf.init(clientStore, sslCertPwd.toCharArray());
       SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
@@ -1009,11 +1010,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(HandlerConstant.sslCertFilePath),
-              HandlerConstant.certPwd.toCharArray());
+      clientStore.load(new FileInputStream(sslCertFilePath),
+              sslCertPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, HandlerConstant.certPwd.toCharArray());
+      kmf.init(clientStore, sslCertPwd.toCharArray());
       SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection

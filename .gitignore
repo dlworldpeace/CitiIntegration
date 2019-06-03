@@ -24,7 +24,5 @@
 hs_err_pid*
 
 # specific key files
-deskera_customer_private.key
-deskera_sign_encryption_pubkey.crt
-deskera_pubkey.pem
 deskera.p12
+deskera_ssl.p12

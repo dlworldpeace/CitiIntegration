@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.HandlerConstant.balanceInquiryUrl_UAT;
 import static main.java.HandlerConstant.clientSignKeyAlias;
 import static main.java.HandlerConstant.keyStoreFilePath;
 import static main.java.HandlerConstant.keyStorePwd;
@@ -29,6 +30,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -126,6 +129,12 @@ public class Handler {
   private String oAuthToken;
   private KeyStore ks;
 
+  /* Setters */
+
+  public void setOAuthToken(String oAuthToken) {
+    this.oAuthToken = oAuthToken;
+  }
+
   /* Encryption Logic */
 
   /**
@@ -141,6 +150,38 @@ public class Handler {
       fis.close();
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException |
         IOException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * get client id to be used in request header.
+   *
+   * @return client id.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static String getClientId () throws HandlerException {
+    try {
+      return new String(Files.readAllBytes(Paths.get(
+          "src/main/resources/key/deskera/deskera_client_id.txt")));
+    } catch (IOException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * get client secret key to be used in request header.
+   *
+   * @return client secret key.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static String getSecretKey () throws HandlerException {
+    try {
+      return new String(Files.readAllBytes(Paths.get(
+          "src/main/resources/key/deskera/deskera_secret_key.txt")));
+    } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -343,22 +384,22 @@ public class Handler {
   }
 
   /* Decryption Logic */
-
-  /**
-   * Load Keystore file that has all certs.
-   *
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public void loadKeystoreWithAllCerts () throws HandlerException {
-    try {
-      FileInputStream fis = new FileInputStream(keyStoreFilePath);
-      ks.load(fis, keyStorePwd.toCharArray());
-      fis.close();
-    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
+//
+//  /**
+//   * Load Keystore file that has all certs.
+//   *
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public void loadKeystoreWithAllCerts () throws HandlerException {
+//    try {
+//      FileInputStream fis = new FileInputStream(keyStoreFilePath);
+//      ks.load(fis, keyStorePwd.toCharArray());
+//      fis.close();
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
 
   // TODO remove this function since we have 2 methods that do the same job by taking diff arguments?
   /**
@@ -385,6 +426,7 @@ public class Handler {
 //    }
 //  }
 
+  // TODO: check if we need this.
   /**
    * Getting public client decryption key.
    *
@@ -803,8 +845,8 @@ public class Handler {
           }), new DefaultClientConfig());
       WebResource webResource = client.resource(HandlerConstant.oAuthURL_UAT);
       WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
-              (HandlerConstant.clientID + ":" + HandlerConstant.clientSecretKey)
+      builder.header(HttpHeaders.AUTHORIZATION, "Basic "
+          + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
                   .getBytes()).replaceAll("([\\r\\n])", ""));
       String oAuthPayload_SignedEncrypted = signAndEncryptXML(oAuthPayload);
       ClientResponse clientResponse = builder.post(ClientResponse.class,
@@ -914,7 +956,7 @@ public class Handler {
             }
           }), new DefaultClientConfig());
       WebResource webResource = client.resource(HandlerConstant.payInitURL_UAT)
-          .queryParam("client_id", HandlerConstant.clientID);
+          .queryParam("client_id", getClientId());
       Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + oAuthToken); // TODO: How can we store the oAuthToken obtained from authentication. suggested HashMap...
@@ -936,7 +978,8 @@ public class Handler {
    * Balance inquiry logic.
    *
    * @param balanceInquiryPayload request body in xml.
-   * @return response xml that contains the balance value.
+   * @return response xml that contains the balance value, which follow ISO20022
+   *         v2 (camt.052.001.02) standards.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
@@ -966,8 +1009,9 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.balanceInquiryUrl_UAT)
-          .queryParam("client_id", HandlerConstant.clientID);
+      String clientId = getClientId();
+      WebResource webResource = client.resource(balanceInquiryUrl_UAT)
+          .queryParam("client_id", clientId);
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
@@ -1030,7 +1074,7 @@ public class Handler {
             }
           }), new DefaultClientConfig());
       WebResource webResource = client.resource(HandlerConstant.statementRetUrl_UAT)
-          .queryParam("client_id", HandlerConstant.clientID);
+          .queryParam("client_id", getClientId());
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,

@@ -6,6 +6,7 @@ import static main.java.HandlerConstant.keyStoreFilePath;
 import static main.java.HandlerConstant.keyStorePwd;
 import static main.java.HandlerConstant.sslCertFilePath;
 import static main.java.HandlerConstant.sslCertPwd;
+import static main.java.HandlerConstant.statementRetUrl_UAT;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -1073,12 +1074,11 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.statementRetUrl_UAT)
+      WebResource webResource = client.resource(statementRetUrl_UAT)
           .queryParam("client_id", getClientId());
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + oAuthToken);
+      builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
       String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
           requestStatementPayload);
 
@@ -1266,7 +1266,7 @@ public class Handler {
       throws XMLSecurityException, CertificateEncodingException, HandlerException {
 
     HashMap<String, Object> response = httpHandler(
-        HandlerConstant.statementRetUrl_UAT, HttpMethod.GET, requestStatementPayload);
+        statementRetUrl_UAT, HttpMethod.GET, requestStatementPayload);
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

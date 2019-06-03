@@ -4,17 +4,22 @@ import static main.java.Handler.convertDocToString;
 import static main.java.Handler.convertStringToDoc;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
+import static main.java.Handler.handleResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
+import static main.java.HandlerConstant.authType;
+import static main.java.HandlerConstant.tagName_Auth;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import javax.xml.xpath.XPathExpressionException;
 import main.java.Handler;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
@@ -141,7 +146,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void authenticate_dummyHeaderValues_requestSentSuccess ()
+  public void authenticate_responseReceivedSuccess ()
       throws IOException, XMLSecurityException, HandlerException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
@@ -149,59 +154,31 @@ public class HandlerTest {
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
 
     String response = handler.authenticate(str);
-
-    System.out.println(response);
   }
 
-//  @Test(expected = IndexOutOfBoundsException.class)
-//  public void testIndexOutOfBoundsException() {
-//    ArrayList emptyList = new ArrayList();
-//    Object o = emptyList.get(0);
-//  }
+  @Test
+  public void authentication_success_balanceInquiry_success ()
+      throws IOException, XMLSecurityException, HandlerException,
+      CertificateEncodingException, XPathExpressionException {
 
-//  @Test
-//  public void convertStringToDoc() {
-//  }
-//
-//  @Test
-//  public void getClientSigningCert() {
-//  }
-//
-//  @Test
-//  public void getClientPrivateKey() {
-//  }
-//
-//  @Test
-//  public void signXMLPayloadDoc() {
-//  }
-//
-//  @Test
-//  public void getCitiPublicKey() {
-//  }
-//
-//  @Test
-//  public void encryptSignedXMLPayloadDoc() {
-//  }
-//
-//  @Test
-//  public void convertDocToString() {
-//  }
-//
-//  @Test
-//  public void signAndEncryptXML() {
-//  }
-//
-//  @Test
-//  public void loadKeystoreWithAllCerts() {
-//  }
-//
-//  @Test
-//  public void getClientPublicDecrytionKey() {
-//  }
-//
-//  @Test
-//  public void getClientPrivateDecryptionKey() {
-//  }
+    final String strAuth = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/Authentication/OutgoingPayment/"
+            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+
+    String response = handler.authenticate(strAuth);
+    String decryptedVerifiedResponse = handler.decryptAndVerifyXML(response);
+    String oAuthToken = handleResponse(convertStringToDoc(decryptedVerifiedResponse),
+        authType, tagName_Auth);
+    handler.setOAuthToken(oAuthToken);
+
+    final String strStatRet = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/"
+            + "XML Request/StatementRetrievalRequest_Plain.txt")));
+
+    InputStream is = handler.requestForStatement(strStatRet);
+
+  }
+
 //
 //  @Test
 //  public void decryptEncryptedAndSignedXML() {

@@ -8,7 +8,6 @@ import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
 import static org.junit.Assert.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,9 +22,16 @@ import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.w3c.dom.Document;
 
+@RunWith(JUnit4.class)
 public class HandlerTest {
+
+  private final static String EMPTY_STRING = "";
+  private final static String SPACE_STRING = " ";
+  private final static String SOME_XML = "<hi>123</hi>";
 
   private Handler handler;
 
@@ -52,13 +58,65 @@ public class HandlerTest {
   public void convertStringToDocToString_xmlStr_remainsSame ()
       throws HandlerException, IOException {
 
-    String str = new String(Files.readAllBytes(Paths.get(
+    final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain.txt")));
-    String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
+    final String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
 
     assertEquals(strWithoutFirstLine,
         convertDocToString(convertStringToDoc(strWithoutFirstLine)));
+  }
+
+  @Test
+  public void convertStringToDoc_improperXmlStr_success()
+      throws HandlerException {
+    convertStringToDoc(SOME_XML);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void convertStringToDoc_emptyStr_throwsHandlerException ()
+      throws HandlerException {
+    convertStringToDoc(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void convertStringToDoc_nonXmlStr_throwsHandlerException ()
+      throws HandlerException {
+    convertStringToDoc(SPACE_STRING);
+  }
+
+  @Test
+  public void signXMLPayloadDoc_verifyDecryptedXML_success ()
+      throws IOException, HandlerException, XMLSecurityException,
+      CertificateEncodingException {
+
+    final String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+
+    X509Certificate signingCert = handler.getClientSigningCert();
+    PrivateKey privKey = handler.getClientPrivateKey();
+
+    Document doc = convertStringToDoc(str);
+    signXMLPayloadDoc(doc, signingCert, privKey);
+    verifyDecryptedXML(doc, signingCert);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void signXMLPayloadDoc_wrongPairofCertandPrivKey_throwsHandlerException ()
+      throws IOException, HandlerException, XMLSecurityException,
+      CertificateEncodingException {
+
+    final String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+
+    X509Certificate signingCert = Handler.getCitiSigningCert();
+    PrivateKey privKey = handler.getClientPrivateKey();
+
+    Document doc = convertStringToDoc(str);
+    signXMLPayloadDoc(doc, signingCert, privKey);
+    verifyDecryptedXML(doc, signingCert);
   }
 
   @Test
@@ -67,7 +125,7 @@ public class HandlerTest {
 
     org.apache.xml.security.Init.init();
 
-    String str = new String(Files.readAllBytes(Paths.get(
+    final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
 
@@ -83,27 +141,10 @@ public class HandlerTest {
   }
 
   @Test
-  public void signXMLPayloadDoc_verifyDecryptedXML_success ()
-      throws IOException, HandlerException, XMLSecurityException,
-      CertificateEncodingException {
-
-    String str = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/BalanceInquiry/XML Request/"
-            + "BalanceInquiryRequest_Plain.txt")));
-
-    X509Certificate signingCert = handler.getClientSigningCert();
-    PrivateKey privKey = handler.getClientPrivateKey();
-
-    Document doc = convertStringToDoc(str);
-    signXMLPayloadDoc(doc, signingCert, privKey);
-    verifyDecryptedXML(doc, signingCert);
-  }
-
-  @Test
   public void authenticate_dummyHeaderValues_requestSentSuccess ()
       throws IOException, XMLSecurityException, HandlerException {
 
-    String str = new String(Files.readAllBytes(Paths.get(
+    final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/OutgoingPayment/"
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
 
@@ -167,7 +208,7 @@ public class HandlerTest {
 //  }
 //
 //  @Test
-//  public void getCitiVerficationKey() {
+//  public void getCitiSigningCert() {
 //  }
 //
 //  @Test

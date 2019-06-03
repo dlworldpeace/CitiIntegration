@@ -19,6 +19,7 @@ import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -495,14 +496,13 @@ public class Handler {
    * @return public citi verification key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public X509Certificate getCitiVerficationKey () throws HandlerException {
+  public static X509Certificate getCitiSigningCert() throws HandlerException {
     try {
-      X509Certificate signVerifyCert = (X509Certificate) ks
-          .getCertificate(HandlerConstant.citiVerifyKeyAlias);
-      signVerifyCert.checkValidity();
-      return signVerifyCert;
-    } catch (CertificateNotYetValidException | CertificateExpiredException |
-        KeyStoreException e) {
+      CertificateFactory fact = CertificateFactory.getInstance("X.509");
+      FileInputStream is = new FileInputStream (
+          "src/main/resources/key/citi/citi_signature.pem");
+      return (X509Certificate) fact.generateCertificate(is);
+    } catch (CertificateException | FileNotFoundException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -589,7 +589,7 @@ public class Handler {
         convertStringToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
         encryptedSignedXMLResponseDoc, clientPrivateDecryptionKey);
-    X509Certificate citiVerificationKey = getCitiVerficationKey();
+    X509Certificate citiVerificationKey = getCitiSigningCert();
     verifyDecryptedXML(SignedXMLResponseDoc, citiVerificationKey);
     return convertDocToString(SignedXMLResponseDoc);
   }

@@ -1,5 +1,8 @@
 package main.java;
 
+import static main.java.HandlerConstant.clientSignKeyAlias;
+import static main.java.HandlerConstant.keyStoreFilePath;
+import static main.java.HandlerConstant.keyStorePwd;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -128,9 +131,10 @@ public class Handler {
    */
   public void loadKeystore () throws HandlerException {
     try {
-      ks = KeyStore.getInstance("JKS");
-      FileInputStream fis = new FileInputStream(HandlerConstant.keyStoreFilePath);
-      ks.load(fis, HandlerConstant.keyStorePwd.toCharArray());
+      ks = KeyStore.getInstance("PKCS12");
+      FileInputStream fis =
+          new FileInputStream(keyStoreFilePath);
+      ks.load(fis, keyStorePwd.toCharArray());
       fis.close();
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException |
         IOException e) {
@@ -161,15 +165,15 @@ public class Handler {
   }
 
   /**
-   * Getting public client signing key.
+   * Getting public client signing cert.
    *
-   * @return client public key.
+   * @return client signing cert.
    * @throws HandlerException custom exception for Handler class.
    */
-  public X509Certificate getClientPublicKey () throws HandlerException {
+  public X509Certificate getClientSigningCert() throws HandlerException {
     try {
       X509Certificate signCert = (X509Certificate) ks
-          .getCertificate(HandlerConstant.clientSignKeyAlias);
+          .getCertificate(clientSignKeyAlias);
       signCert.checkValidity();
       return signCert;
     } catch (CertificateNotYetValidException | CertificateExpiredException |
@@ -187,8 +191,7 @@ public class Handler {
    */
   public PrivateKey getClientPrivateKey () throws HandlerException {
     try {
-      return (PrivateKey) ks.getKey(
-          HandlerConstant.clientSignKeyAlias, HandlerConstant.keyStorePwd.toCharArray());
+      return (PrivateKey) ks.getKey(clientSignKeyAlias, keyStorePwd.toCharArray());
     } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -227,7 +230,7 @@ public class Handler {
   }
 
   /**
-   * Getting public citi encryption key.
+   * Getting public citi encryption public key.
    *
    * @return citi public key.
    * @throws HandlerException custom exception for Handler class.
@@ -305,7 +308,7 @@ public class Handler {
       transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
 
       // TODO check what kind of string value is returned: XML?
-      // It is XML without the XML header
+      // It is XML but without the XML header
 
       return writer.getBuffer().toString();
     } catch (TransformerException e) {
@@ -328,7 +331,7 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertStringToDoc(payloadXML);
     PrivateKey clientPrivateKey = getClientPrivateKey();
-    X509Certificate clientSigningCert = getClientPublicKey();
+    X509Certificate clientSigningCert = getClientSigningCert();
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
     PublicKey citiPublicKey = getCitiPublicKey();
     Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(
@@ -345,8 +348,8 @@ public class Handler {
    */
   public void loadKeystoreWithAllCerts () throws HandlerException {
     try {
-      FileInputStream fis = new FileInputStream(HandlerConstant.keyStoreFilePath);
-      ks.load(fis, HandlerConstant.keyStorePwd.toCharArray());
+      FileInputStream fis = new FileInputStream(keyStoreFilePath);
+      ks.load(fis, keyStorePwd.toCharArray());
       fis.close();
     } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -407,7 +410,7 @@ public class Handler {
   public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
     try {
       return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
-              HandlerConstant.keyStorePwd.toCharArray());
+              keyStorePwd.toCharArray());
     } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());

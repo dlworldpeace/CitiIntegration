@@ -3,13 +3,13 @@ package main.java;
 public class HandlerConstant {
 
   /* Inputs to the Encryption Logic */
-  public static final String keyStoreFilePath = "C:\\API\\Cert\\ClientKeyStore.jks";
-  public static final String keyStorePwd = "pass123";
-  public static final String clientSignKeyAlias = "ClientSignaturePrivateKey";
+  public static final String keyStoreFilePath = "src/main/resources/key/deskera/deskera.p12";
+  public static final String keyStorePwd = "clientpass";
+  public static final String clientSignKeyAlias = "1";
   public static final String citiEncryptKeyAlias = "CitiEncryptPublicKey";
 
   /* Inputs to the Decryption Logic */
-  public static final String clientDecryptKeyAlias = "ClientEncryptionPrivateKey";
+  public static final String clientDecryptKeyAlias = "1";
   public static final String citiVerifyKeyAlias = "CitiSignaturePublicKey";
 
   /* Inputs to the Parsing Response Logic */

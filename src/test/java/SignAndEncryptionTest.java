@@ -247,7 +247,7 @@
 //   * @return client public key
 //   * @throws HandlerException custom exception for Handler class
 //   */
-//  private static X509Certificate getClientPublicKey () throws HandlerException {
+//  private static X509Certificate getClientSigningCert () throws HandlerException {
 //    try {
 //      KeyStore ks = KeyStore.getInstance("JKS");
 //      X509Certificate signCert = (X509Certificate) ks
@@ -411,7 +411,7 @@
 //      throws XMLSecurityException, HandlerException {
 //    Document payloadDoc = convertStringToDoc(payloadXML);
 //    PrivateKey clientPrivateKey = getClientPrivateKey();
-//    X509Certificate clientSigningCert = getClientPublicKey();
+//    X509Certificate clientSigningCert = getClientSigningCert();
 //    signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
 //    PublicKey citiPublicKey = getCitiPublicKey();
 //    Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(

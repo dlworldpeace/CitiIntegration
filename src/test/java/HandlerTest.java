@@ -4,37 +4,54 @@ import static main.java.Handler.convertDocToString;
 import static main.java.Handler.convertStringToDoc;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
+import static main.java.Handler.signXMLPayloadDoc;
+import static main.java.Handler.verifyDecryptedXML;
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import main.java.Handler;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class HandlerTest {
 
-//  @BeforeClass
-//  public static void setupBeforeClass() throws HandlerException {
-//    Handler handler = new Handler();
-//    handler.loadKeystore();
-//  }
+  private Handler handler;
+
+  /**
+   * Sets up the test fixture.
+   * (Called before every test case method.)
+   */
+  @Before
+  public void setUp() throws HandlerException {
+    handler = new Handler();
+    handler.loadKeystore();
+  }
+
+  /**
+   * Tears down the test fixture.
+   * (Called after every test case method.)
+   */
+  @After
+  public void tearDown() {
+    handler = null;
+  }
 
   @Test
   public void convertStringToDocToString_xmlStr_remainsSame ()
@@ -51,8 +68,7 @@ public class HandlerTest {
 
   @Test
   public void decryptEncryptedAndSignedXML_encryptSignedXMLPayloadDoc_remainsSame ()
-      throws IOException, HandlerException, XMLEncryptionException,
-      NoSuchAlgorithmException, InvalidKeySpecException, URISyntaxException {
+      throws IOException, HandlerException, XMLEncryptionException {
 
     org.apache.xml.security.Init.init();
 
@@ -60,35 +76,32 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
 
-    String privateKeyContent = new String(Files.readAllBytes(
-        Paths.get(ClassLoader.getSystemResource(
-            "src/main/resources/key/deskera/deskera_customer_private.key").toURI())));
-    String publicKeyContent = new String(Files.readAllBytes(
-        Paths.get(ClassLoader.getSystemResource(
-            "src/main/resources/key/deskera/deskera_pubkey.pem").toURI())));
-
-    privateKeyContent = privateKeyContent.replaceAll("\\n", "")
-        .replace("-----BEGIN PRIVATE KEY-----", "")
-        .replace("-----END PRIVATE KEY-----", "");
-    publicKeyContent = publicKeyContent.replaceAll("\\n", "")
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "");
-
-    KeyFactory kf = KeyFactory.getInstance("RSA");
-
-    PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(
-        Base64.getDecoder().decode(privateKeyContent));
-    PrivateKey privKey = kf.generatePrivate(keySpecPKCS8);
-
-    X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(
-        Base64.getDecoder().decode(publicKeyContent));
-    PublicKey pubKey = kf.generatePublic(keySpecX509);
+    PublicKey pubKey = handler.getClientSigningCert().getPublicKey();
+    PrivateKey privKey = handler.getClientPrivateKey();
 
     Document encryptedDoc = encryptSignedXMLPayloadDoc(
         convertStringToDoc(str), pubKey);
     String decryptedStr = convertDocToString(
         decryptEncryptedAndSignedXML(encryptedDoc, privKey));
+
     assertEquals(str, decryptedStr);
+  }
+
+  @Test
+  public void signXMLPayloadDoc_verifyDecryptedXML_success ()
+      throws IOException, HandlerException, XMLSecurityException,
+      CertificateEncodingException {
+
+    String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+
+    X509Certificate signingCert = handler.getClientSigningCert();
+    PrivateKey privKey = handler.getClientPrivateKey();
+
+    Document doc = convertStringToDoc(str);
+    signXMLPayloadDoc(doc, signingCert, privKey);
+    verifyDecryptedXML(doc, signingCert);
   }
 
 //  @Test(expected = IndexOutOfBoundsException.class)
@@ -102,7 +115,7 @@ public class HandlerTest {
 //  }
 //
 //  @Test
-//  public void getClientPublicKey() {
+//  public void getClientSigningCert() {
 //  }
 //
 //  @Test

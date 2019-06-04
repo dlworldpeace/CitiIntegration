@@ -988,7 +988,6 @@ public class Handler {
   public String checkBalance (String balanceInquiryPayload)
       throws XMLSecurityException, HandlerException {
 
-    // TODO: check if this function body follows the body of initPayment() or not, since it follows 6.2 Payment Inquiry but there is no sample code for that
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
       clientStore.load(new FileInputStream(sslCertFilePath),
@@ -1007,6 +1006,12 @@ public class Handler {
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
+              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+                proxy = new Proxy(Proxy.Type.HTTP,
+                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+              } else {
+                proxy = Proxy.NO_PROXY;
+              }
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
@@ -1071,6 +1076,12 @@ public class Handler {
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
+              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+                proxy = new Proxy(Proxy.Type.HTTP,
+                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+              } else {
+                proxy = Proxy.NO_PROXY;
+              }
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
@@ -1265,8 +1276,10 @@ public class Handler {
   public byte[] retrieveStatement (String requestStatementPayload)
       throws XMLSecurityException, CertificateEncodingException, HandlerException {
 
-    HashMap<String, Object> response = httpHandler(
-        statementRetUrl_UAT, HttpMethod.GET, requestStatementPayload);
+    String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
+        requestStatementPayload);
+    HashMap<String, Object> response = httpHandler(statementRetUrl_UAT,
+        HttpMethod.POST, statementRetrievalPayload_SignedEncrypted);
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

@@ -22,6 +22,7 @@ import java.security.cert.X509Certificate;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.Handler;
 import main.java.HandlerException;
+import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.junit.After;
@@ -164,7 +165,6 @@ public class HandlerTest {
     final String strAuth = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/OutgoingPayment/"
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
-
     String response = handler.authenticate(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXML(response);
     String oAuthToken = handleResponse(convertStringToDoc(decryptedVerifiedResponse),
@@ -174,9 +174,17 @@ public class HandlerTest {
     final String strStatRet = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/"
             + "XML Request/StatementRetrievalRequest_Plain.txt")));
-
     InputStream is = handler.requestForStatement(strStatRet);
+    String resStatRet = IOUtils.toString(is, "UTF-8");
+    System.out.println(resStatRet);
 
+    final String strBalance = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/"
+            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+    String resBalance = handler.checkBalance(strBalance);
+    System.out.println(resBalance);
+
+    
   }
 
 //

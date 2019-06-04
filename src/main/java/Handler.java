@@ -132,7 +132,7 @@ public class Handler {
 
   /* Setters */
 
-  public void setOAuthToken(String oAuthToken) {
+  public void setOAuthToken (String oAuthToken) {
     this.oAuthToken = oAuthToken;
   }
 
@@ -195,7 +195,7 @@ public class Handler {
    * @return converted document object.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static Document convertStringToDoc(String xmlPayload)
+  public static Document convertStringToDoc (String xmlPayload)
       throws HandlerException {
 
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -215,7 +215,7 @@ public class Handler {
    * @return client signing cert.
    * @throws HandlerException custom exception for Handler class.
    */
-  public X509Certificate getClientSigningCert() throws HandlerException {
+  public X509Certificate getClientSigningCert () throws HandlerException {
     try {
       X509Certificate signCert = (X509Certificate) ks
           .getCertificate(clientSignKeyAlias);
@@ -385,6 +385,7 @@ public class Handler {
   }
 
   /* Decryption Logic */
+//  // TODO: check if we need this.
 //
 //  /**
 //   * Load Keystore file that has all certs.
@@ -401,14 +402,13 @@ public class Handler {
 //      throw new HandlerException(e.getMessage());
 //    }
 //  }
-
-  // TODO remove this function since we have 2 methods that do the same job by taking diff arguments?
-  /**
-   * Getting the XML Payload as Document object.
-   *
-   * @return converted document.
-   * @throws HandlerException custom exception for Handler class.
-   */
+//  // TODO: check if we need this.
+//  /**
+//   * Getting the XML Payload as Document object.
+//   *
+//   * @return converted document.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
 //  public Document getXMLResponsePayloadAsDoc (String responseXMLPayload) throws HandlerException {
 //    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //    factory.setNamespaceAware(true);
@@ -426,42 +426,41 @@ public class Handler {
 //      throw new HandlerException(e.getMessage());
 //    }
 //  }
-
-  // TODO: check if we need this.
-  /**
-   * Getting public client decryption key.
-   *
-   * @return public client decryption key.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public X509Certificate getClientPublicDecrytionKey () throws HandlerException {
-    try {
-      X509Certificate decryptCert = (X509Certificate) ks
-          .getCertificate(HandlerConstant.clientDecryptKeyAlias);
-      decryptCert.checkValidity();
-      return decryptCert;
-    } catch (CertificateExpiredException | CertificateNotYetValidException |
-        KeyStoreException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
-
-  /**
-   * Getting private client decryption key.
-   *
-   * @return private client decryption key.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
-    try {
-      return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
-              keyStorePwd.toCharArray());
-    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
+//  // TODO: check if we need this.
+//  /**
+//   * Getting public client decryption key.
+//   *
+//   * @return public client decryption key.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public X509Certificate getClientPublicDecrytionKey () throws HandlerException {
+//    try {
+//      X509Certificate decryptCert = (X509Certificate) ks
+//          .getCertificate(HandlerConstant.clientDecryptKeyAlias);
+//      decryptCert.checkValidity();
+//      return decryptCert;
+//    } catch (CertificateExpiredException | CertificateNotYetValidException |
+//        KeyStoreException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+//  // TODO: check if we need this.
+//  /**
+//   * Getting private client decryption key.
+//   *
+//   * @return private client decryption key.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
+//    try {
+//      return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
+//              keyStorePwd.toCharArray());
+//    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
 
   /**
    * Decrypt the encrypted & signed xml response payload document.
@@ -539,7 +538,7 @@ public class Handler {
    * @return public citi verification key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static X509Certificate getCitiSigningCert() throws HandlerException {
+  public static X509Certificate getCitiSigningCert () throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
       FileInputStream is = new FileInputStream (
@@ -563,7 +562,7 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   // TODO: Check for the exception throwing
-  public static void verifyDecryptedXML(Document decryptedDoc,
+  public static void verifyDecryptedXML (Document decryptedDoc,
       X509Certificate signVerifyCert) throws CertificateEncodingException,
       XMLSecurityException, HandlerException {
 
@@ -625,9 +624,9 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String decryptAndVerifyXML(String encryptedSignedXMLResponse)
+  public String decryptAndVerifyXML (String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
-    PrivateKey clientPrivateDecryptionKey = getClientPrivateDecryptionKey();
+    PrivateKey clientPrivateDecryptionKey = getClientPrivateKey();
     Document encryptedSignedXMLResponseDoc =
         convertStringToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
@@ -695,7 +694,7 @@ public class Handler {
    * @return response message.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String handleResponse (Document responseDoc, String type,
+  public static String parseAuthOrPayInitResponse(Document responseDoc, String type,
       String tagName) throws HandlerException, XPathExpressionException {
 
     XPath xpath = XPathFactory.newInstance().newXPath();
@@ -988,21 +987,20 @@ public class Handler {
   public String checkBalance (String balanceInquiryPayload)
       throws XMLSecurityException, HandlerException {
 
-    try {
-      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(sslCertFilePath),
-              sslCertPwd.toCharArray());
-      KeyManagerFactory kmf = KeyManagerFactory
-          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, sslCertPwd.toCharArray());
-      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
-      HttpsURLConnection
-          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+//    try {
+//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+//      clientStore.load(new FileInputStream(sslCertFilePath),
+//              sslCertPwd.toCharArray());
+//      KeyManagerFactory kmf = KeyManagerFactory
+//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//      kmf.init(clientStore, sslCertPwd.toCharArray());
+//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+//      HttpsURLConnection
+//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
       Client client = new Client(new URLConnectionClientHandler(
           new HttpURLConnectionFactory() {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP,
-                new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+            Proxy proxy = null;
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
@@ -1015,9 +1013,8 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      String clientId = getClientId();
       WebResource webResource = client.resource(balanceInquiryUrl_UAT)
-          .queryParam("client_id", clientId);
+          .queryParam("client_id", getClientId());
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
@@ -1027,11 +1024,11 @@ public class Handler {
       ClientResponse clientResponse = builder.post(ClientResponse.class,
               balanceInquiryPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
-    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
+//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
   }
 
   /**
@@ -1058,21 +1055,20 @@ public class Handler {
    */
   public InputStream requestForStatement (String requestStatementPayload)
       throws XMLSecurityException, HandlerException {
-    try {
-      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(sslCertFilePath),
-              sslCertPwd.toCharArray());
-      KeyManagerFactory kmf = KeyManagerFactory
-          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, sslCertPwd.toCharArray());
-      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
-      HttpsURLConnection
-          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+//    try {
+//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+//      clientStore.load(new FileInputStream(sslCertFilePath),
+//              sslCertPwd.toCharArray());
+//      KeyManagerFactory kmf = KeyManagerFactory
+//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//      kmf.init(clientStore, sslCertPwd.toCharArray());
+//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+//      HttpsURLConnection
+//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
       Client client = new Client(new URLConnectionClientHandler(
           new HttpURLConnectionFactory() {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP,
-                new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+            Proxy proxy = null;
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
@@ -1092,17 +1088,14 @@ public class Handler {
       builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
       String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
           requestStatementPayload);
-
-      // TODO: check if POST method which is not mentioned in doc returns same response result as GET method which is mentioned in doc
-
       ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
           .post(ClientResponse.class, statementRetrievalPayload_SignedEncrypted);
       return clientResponse.getEntityInputStream();
-    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
+//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
   }
 
   /* Statement Retrieval Response Consumption Logic */
@@ -1111,16 +1104,14 @@ public class Handler {
    * Abstraction of HTTP client webservice logic.
    *
    * @param uri URL of the server for sending the http request to.
-   * @param httpMethod request method used, e.g. POST or GET.
    * @param signedEncryptedXMLPayload signed and encrypted XML payload
    * @return a HashMap of the response segmented with keys of HEADER, STATUS and
    *         BODY.
    * @throws RestClientException if an unexpected exception occurs while sending
    *                             the http request in exchange for http response.
    */
-  public HashMap<String, Object> httpHandler (String uri,
-      HttpMethod httpMethod, String signedEncryptedXMLPayload)
-      throws RestClientException {
+  public HashMap<String, Object> handleHttp(String uri,
+      String signedEncryptedXMLPayload) throws RestClientException {
 
     HashMap<String, Object> response = new HashMap<>();
     try {
@@ -1132,7 +1123,7 @@ public class Handler {
       HttpEntity<String> entity =
           new HttpEntity<>(signedEncryptedXMLPayload, headers);
       ResponseEntity<?> responseEntity = restTemplate
-          .exchange(uri, httpMethod, entity, byte[].class);
+          .exchange(uri, HttpMethod.POST, entity, byte[].class);
       response.put("HEADER", responseEntity.getHeaders());
       response.put("STATUS", responseEntity.getStatusCode());
       response.put("BODY", responseEntity.getBody());
@@ -1278,8 +1269,8 @@ public class Handler {
 
     String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
         requestStatementPayload);
-    HashMap<String, Object> response = httpHandler(statementRetUrl_UAT,
-        HttpMethod.POST, statementRetrievalPayload_SignedEncrypted);
+    HashMap<String, Object> response = handleHttp(statementRetUrl_UAT,
+        statementRetrievalPayload_SignedEncrypted);
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
@@ -1289,7 +1280,9 @@ public class Handler {
           decryptAndVerifyXML((String) body.get("ENCRYPTED_KEY"));
       return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
     } else { // error msg received instead of expected statement
-      throw new HandlerException(new String((byte[]) response.get("BODY")));
+      String errorMsg = new String((byte[]) response.get("BODY"));
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
+      throw new HandlerException(errorMsg);
     }
   }
 

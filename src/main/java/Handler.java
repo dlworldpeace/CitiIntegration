@@ -341,7 +341,7 @@ public class Handler {
   /**
    * Convert the Document object to String value.
    *
-   * @return xml string value of the document.
+   * @return xml string value of the document WITHOUT the xml header.
    * @throws HandlerException custom exception for Handler class.
    */
   public static String convertDocToString (Document xmlDoc) throws HandlerException {
@@ -351,10 +351,6 @@ public class Handler {
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
       StringWriter writer = new StringWriter();
       transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
-
-      // TODO check what kind of string value is returned: XML?
-      // It is XML but without the XML header
-
       return writer.getBuffer().toString();
     } catch (TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);

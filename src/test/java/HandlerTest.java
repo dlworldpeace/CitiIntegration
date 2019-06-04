@@ -4,12 +4,16 @@ import static main.java.Handler.convertDocToString;
 import static main.java.Handler.convertStringToDoc;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
+import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
 import static main.java.HandlerConstant.authType;
+import static main.java.HandlerConstant.paymentType;
 import static main.java.HandlerConstant.tagName_Auth;
+import static main.java.HandlerConstant.tagName_PaymentInit;
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +29,9 @@ import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.w3c.dom.Document;
@@ -34,10 +40,13 @@ import org.w3c.dom.Document;
 public class HandlerTest {
 
   private final static String EMPTY_STRING = "";
-  private final static String SPACE_STRING = " ";
+  private final static String WHITE_SPACE = " ";
   private final static String SOME_XML = "<hi>123</hi>";
 
   private Handler handler;
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
   /**
    * Sets up the test fixture.
@@ -86,7 +95,7 @@ public class HandlerTest {
   @Test (expected = HandlerException.class)
   public void convertStringToDoc_nonXmlStr_throwsHandlerException ()
       throws HandlerException {
-    convertStringToDoc(SPACE_STRING);
+    convertStringToDoc(WHITE_SPACE);
   }
 
   @Test
@@ -136,20 +145,7 @@ public class HandlerTest {
     String payloadSignedOnce = convertDocToString(doc);
     signXMLPayloadDoc(doc, signingCert, privKey);
     String payloadSignedTwice = convertDocToString(doc);
-    assertEquals(payloadSignedOnce, payloadSignedTwice);
-  }
-
-  @Test (expected = HandlerException.class)
-  public void decryptEncryptedAndSignedXML_nonEncryptedXml_throwsHandlerException ()
-      throws HandlerException, XMLEncryptionException, IOException {
-
-    final String str = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/BalanceInquiry/XML Response/"
-            + "BalanceInquiryResponse_Plain.txt")));
-
-    PrivateKey privKey = handler.getClientPrivateKey();
-    Document nonEncryptedDoc = convertStringToDoc(str);
-    decryptEncryptedAndSignedXML(nonEncryptedDoc, privKey);
+    assertThat(payloadSignedOnce, not(equalTo(payloadSignedTwice)));
   }
 
   @Test
@@ -171,17 +167,33 @@ public class HandlerTest {
     assertEquals(str, decryptedStr);
   }
 
-
-
-  @Test
-  public void authenticate_responseReceivedSuccess ()
-      throws IOException, XMLSecurityException, HandlerException {
+  @Test (expected = HandlerException.class)
+  public void decryptEncryptedAndSignedXML_nonEncryptedXml_throwsHandlerException ()
+      throws HandlerException, XMLEncryptionException, IOException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/OutgoingPayment/"
-            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+        "src/test/resources/sample/BalanceInquiry/XML Response/"
+            + "BalanceInquiryResponse_Plain.txt")));
 
-    String response = handler.authenticate(str);
+    PrivateKey privKey = handler.getClientPrivateKey();
+    Document nonEncryptedDoc = convertStringToDoc(str);
+    decryptEncryptedAndSignedXML(nonEncryptedDoc, privKey);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void verifyDecryptedXML_verifySignWithWrongCert_throwsHandlerException ()
+      throws HandlerException, XMLSecurityException, CertificateEncodingException,
+      IOException {
+    final String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+
+    X509Certificate clientSigningCert = handler.getClientSigningCert();
+    X509Certificate citiSigningCert = getCitiSigningCert();
+    PrivateKey privKey = handler.getClientPrivateKey();
+    Document doc = convertStringToDoc(str);
+    signXMLPayloadDoc(doc, clientSigningCert, privKey);
+    verifyDecryptedXML(doc, citiSigningCert);
   }
 
   @Test
@@ -199,7 +211,44 @@ public class HandlerTest {
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
         convertStringToDoc(response), authType, tagName_Auth);
-    assertEquals(oAuthTokenParsed, oAuthToken);
+    assertEquals(oAuthToken, oAuthTokenParsed);
+  }
+
+  @Test
+  public void parseAuthOrPayInitResponse_successResponse_wrongParameter_throwsException ()
+      throws HandlerException, XPathExpressionException, IOException {
+
+    final String response = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/Authentication/"
+            + "DirectDebitPaymentandUSFasterPayment/"
+            + "XML Response/AuthorizationResponse_Signed.txt")));
+    final String oAuthToken = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/Authentication/"
+            + "DirectDebitPaymentandUSFasterPayment/"
+            + "XML Response/AuthorizationResponse_Token.txt")));
+
+    String oAuthTokenParsed = parseAuthOrPayInitResponse(
+        convertStringToDoc(response), paymentType, tagName_Auth);
+    assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
+
+    exception.expect(HandlerException.class);
+
+    parseAuthOrPayInitResponse(
+        convertStringToDoc(response), authType, tagName_PaymentInit);
+
+    parseAuthOrPayInitResponse(
+        convertStringToDoc(response), paymentType, tagName_PaymentInit);
+  }
+
+  @Test
+  public void authenticate_responseReceivedSuccess ()
+      throws IOException, XMLSecurityException, HandlerException {
+
+    final String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/Authentication/OutgoingPayment/"
+            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+
+    handler.authenticate(str);
   }
 
   @Test

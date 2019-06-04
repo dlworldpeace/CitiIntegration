@@ -195,7 +195,7 @@ public class Handler {
    * @return converted document object.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static Document convertStringToDoc (String xmlPayload)
+  public static Document convertXMLStrToDoc(String xmlPayload)
       throws HandlerException {
 
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -344,7 +344,7 @@ public class Handler {
    * @return xml string value of the document WITHOUT the xml header.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String convertDocToString (Document xmlDoc) throws HandlerException {
+  public static String convertDocToXMLStr(Document xmlDoc) throws HandlerException {
     try {
       TransformerFactory tf = TransformerFactory.newInstance();
       Transformer transformer = tf.newTransformer();
@@ -370,14 +370,14 @@ public class Handler {
    */
   public String signAndEncryptXML (String payloadXML)
       throws XMLSecurityException, HandlerException {
-    Document payloadDoc = convertStringToDoc(payloadXML);
+    Document payloadDoc = convertXMLStrToDoc(payloadXML);
     PrivateKey clientPrivateKey = getClientPrivateKey();
     X509Certificate clientSigningCert = getClientSigningCert();
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
     PublicKey citiPublicKey = getCitiPublicKey();
     Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(
         payloadDoc, citiPublicKey);
-    return convertDocToString(encryptedSignedXMLPayloadDoc);
+    return convertDocToXMLStr(encryptedSignedXMLPayloadDoc);
   }
 
   /* Decryption Logic */
@@ -473,8 +473,8 @@ public class Handler {
 
     org.apache.xml.security.Init.init();
     Element docRoot = encryptedSignedDoc.getDocumentElement();
-    Node dataEL = null;
-    Node keyEL = null;
+    Node dataEL;
+    Node keyEL;
     if ("http://www.w3.org/2001/04/xmlenc#".equals(docRoot.getNamespaceURI())
         && "EncryptedData".equals(docRoot.getLocalName())) {
       dataEL = docRoot;
@@ -624,12 +624,12 @@ public class Handler {
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey = getClientPrivateKey();
     Document encryptedSignedXMLResponseDoc =
-        convertStringToDoc(encryptedSignedXMLResponse);
+        convertXMLStrToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
         encryptedSignedXMLResponseDoc, clientPrivateDecryptionKey);
     X509Certificate citiVerificationKey = getCitiSigningCert();
     verifyDecryptedXML(SignedXMLResponseDoc, citiVerificationKey);
-    return convertDocToString(SignedXMLResponseDoc);
+    return convertDocToXMLStr(SignedXMLResponseDoc);
   }
 
   // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function. But, there is no decryption key here.

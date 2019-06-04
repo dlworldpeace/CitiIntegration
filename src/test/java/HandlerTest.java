@@ -1,7 +1,7 @@
 package test.java;
 
-import static main.java.Handler.convertDocToString;
-import static main.java.Handler.convertStringToDoc;
+import static main.java.Handler.convertDocToXMLStr;
+import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.getCitiSigningCert;
@@ -77,25 +77,25 @@ public class HandlerTest {
     final String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
 
     assertEquals(strWithoutFirstLine,
-        convertDocToString(convertStringToDoc(strWithoutFirstLine)));
+        convertDocToXMLStr(convertXMLStrToDoc(strWithoutFirstLine)));
   }
 
   @Test
   public void convertStringToDoc_improperXmlStr_success()
       throws HandlerException {
-    convertStringToDoc(SOME_XML);
+    convertXMLStrToDoc(SOME_XML);
   }
 
   @Test (expected = HandlerException.class)
   public void convertStringToDoc_emptyStr_throwsHandlerException ()
       throws HandlerException {
-    convertStringToDoc(EMPTY_STRING);
+    convertXMLStrToDoc(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
   public void convertStringToDoc_nonXmlStr_throwsHandlerException ()
       throws HandlerException {
-    convertStringToDoc(WHITE_SPACE);
+    convertXMLStrToDoc(WHITE_SPACE);
   }
 
   @Test
@@ -109,7 +109,7 @@ public class HandlerTest {
 
     X509Certificate signingCert = handler.getClientSigningCert();
     PrivateKey privKey = handler.getClientPrivateKey();
-    Document doc = convertStringToDoc(str);
+    Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     verifyDecryptedXML(doc, signingCert);
   }
@@ -125,7 +125,7 @@ public class HandlerTest {
 
     X509Certificate signingCert = Handler.getCitiSigningCert();
     PrivateKey privKey = handler.getClientPrivateKey();
-    Document doc = convertStringToDoc(str);
+    Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     verifyDecryptedXML(doc, signingCert);
   }
@@ -140,11 +140,11 @@ public class HandlerTest {
 
     X509Certificate signingCert = Handler.getCitiSigningCert();
     PrivateKey privKey = handler.getClientPrivateKey();
-    Document doc = convertStringToDoc(str);
+    Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
-    String payloadSignedOnce = convertDocToString(doc);
+    String payloadSignedOnce = convertDocToXMLStr(doc);
     signXMLPayloadDoc(doc, signingCert, privKey);
-    String payloadSignedTwice = convertDocToString(doc);
+    String payloadSignedTwice = convertDocToXMLStr(doc);
     assertThat(payloadSignedOnce, not(equalTo(payloadSignedTwice)));
   }
 
@@ -161,8 +161,8 @@ public class HandlerTest {
     PublicKey pubKey = handler.getClientSigningCert().getPublicKey();
     PrivateKey privKey = handler.getClientPrivateKey();
     Document encryptedDoc = encryptSignedXMLPayloadDoc(
-        convertStringToDoc(str), pubKey);
-    String decryptedStr = convertDocToString(
+        convertXMLStrToDoc(str), pubKey);
+    String decryptedStr = convertDocToXMLStr(
         decryptEncryptedAndSignedXML(encryptedDoc, privKey));
     assertEquals(str, decryptedStr);
   }
@@ -176,7 +176,7 @@ public class HandlerTest {
             + "BalanceInquiryResponse_Plain.txt")));
 
     PrivateKey privKey = handler.getClientPrivateKey();
-    Document nonEncryptedDoc = convertStringToDoc(str);
+    Document nonEncryptedDoc = convertXMLStrToDoc(str);
     decryptEncryptedAndSignedXML(nonEncryptedDoc, privKey);
   }
 
@@ -191,7 +191,7 @@ public class HandlerTest {
     X509Certificate clientSigningCert = handler.getClientSigningCert();
     X509Certificate citiSigningCert = getCitiSigningCert();
     PrivateKey privKey = handler.getClientPrivateKey();
-    Document doc = convertStringToDoc(str);
+    Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, clientSigningCert, privKey);
     verifyDecryptedXML(doc, citiSigningCert);
   }
@@ -210,7 +210,7 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertStringToDoc(response), authType, tagName_Auth);
+        convertXMLStrToDoc(response), authType, tagName_Auth);
     assertEquals(oAuthToken, oAuthTokenParsed);
   }
 
@@ -228,16 +228,16 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertStringToDoc(response), paymentType, tagName_Auth);
+        convertXMLStrToDoc(response), paymentType, tagName_Auth);
     assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
 
     exception.expect(HandlerException.class);
 
     parseAuthOrPayInitResponse(
-        convertStringToDoc(response), authType, tagName_PaymentInit);
+        convertXMLStrToDoc(response), authType, tagName_PaymentInit);
 
     parseAuthOrPayInitResponse(
-        convertStringToDoc(response), paymentType, tagName_PaymentInit);
+        convertXMLStrToDoc(response), paymentType, tagName_PaymentInit);
   }
 
   @Test
@@ -263,7 +263,7 @@ public class HandlerTest {
     String response = handler.authenticate(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXML(response);
     String oAuthToken = parseAuthOrPayInitResponse(
-        convertStringToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
+        convertXMLStrToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
     handler.setOAuthToken(oAuthToken);
 
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(

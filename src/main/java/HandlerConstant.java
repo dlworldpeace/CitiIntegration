@@ -47,6 +47,12 @@ public class HandlerConstant {
   public static final String balanceInquiryUrl_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
           + "balance/inquiry?";
+  public static final String statementInitUrl_UAT =
+      "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
+          + "v1/statement/initiation?";
+  public static final String statementInitUrl_PROD =
+      "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
+          + "statement/initiation?";
   public static final String statementRetUrl_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
           + "v1/statement/retrieval?";

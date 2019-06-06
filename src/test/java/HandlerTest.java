@@ -196,8 +196,21 @@ public class HandlerTest {
     verifyDecryptedXML(doc, citiSigningCert);
   }
 
+  @Test (expected = XMLSecurityException.class)
+  public void signAndEncryptXMLForCiti_decryptAndVerifyXMLFromCiti_throwsXMLSecurityException ()
+      throws IOException, XMLSecurityException, HandlerException,
+      CertificateEncodingException {
+
+    final String str = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain.txt")));
+
+    String signedEncryptedStr = handler.signAndEncryptXMLForCiti(str);
+    handler.decryptAndVerifyXMLFromCiti(signedEncryptedStr);
+  }
+
   @Test
-  public void parseAuthOrPayInitResponse_successResponse_parseSuccess ()
+  public void parseAuthOrPayInitResponse_AuthResponse_parseSuccess ()
       throws HandlerException, XPathExpressionException, IOException {
 
     final String response = new String(Files.readAllBytes(Paths.get(
@@ -215,7 +228,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void parseAuthOrPayInitResponse_successResponse_wrongParameter_throwsException ()
+  public void parseAuthOrPayInitResponse_AuthResponse_wrongArgsThrowsException ()
       throws HandlerException, XPathExpressionException, IOException {
 
     final String response = new String(Files.readAllBytes(Paths.get(
@@ -232,12 +245,20 @@ public class HandlerTest {
     assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
 
     exception.expect(HandlerException.class);
-
     parseAuthOrPayInitResponse(
         convertXMLStrToDoc(response), authType, tagName_PaymentInit);
-
     parseAuthOrPayInitResponse(
         convertXMLStrToDoc(response), paymentType, tagName_PaymentInit);
+  }
+
+  @Test
+  public void parseAuthOrPayInitResponse_someXml_throwsHandlerException ()
+      throws HandlerException, XPathExpressionException {
+
+    exception.expect(HandlerException.class);
+    exception.expectMessage("No content extracted from response");
+    parseAuthOrPayInitResponse(
+        convertXMLStrToDoc(SOME_XML), paymentType, tagName_Auth);
   }
 
   @Test
@@ -252,7 +273,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void authentication_validateAPIs_success ()
+  public void authentication_validateAllPIs_success ()
       throws IOException, XMLSecurityException, HandlerException,
       CertificateEncodingException, XPathExpressionException {
 
@@ -261,7 +282,7 @@ public class HandlerTest {
             + "DirectDebitPaymentandUSFasterPayment/XML Request/"
             + "AuthorizationRequest_V3_Plain.txt")));
     String response = handler.authenticate(strAuth);
-    String decryptedVerifiedResponse = handler.decryptAndVerifyXML(response);
+    String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
     handler.setOAuthToken(oAuthToken);
@@ -274,7 +295,7 @@ public class HandlerTest {
 
 //    InputStream is = handler.requestForStatement(strStatRet);
 //    String resStatRet_Encrypted = IOUtils.toString(is, "UTF-8");
-//    String resStatRet = handler.decryptAndVerifyXML(resStatRet_Encrypted);
+//    String resStatRet = handler.decryptAndVerifyXMLFromCiti(resStatRet_Encrypted);
 //    System.out.println(resStatRet);
 
     final String strBalance = new String(Files.readAllBytes(Paths.get(
@@ -284,52 +305,4 @@ public class HandlerTest {
     System.out.println(resBalance);
   }
 
-//
-//  @Test
-//  public void decryptEncryptedAndSignedXML() {
-//  }
-//
-//  @Test
-//  public void getCitiSigningCert() {
-//  }
-//
-//  @Test
-//  public void verifyDecryptedXML() {
-//  }
-//
-//  @Test
-//  public void decryptAndVerifyXML() {
-//  }
-//
-//  @Test
-//  public void parseAuthOrPayInitResponse() {
-//  }
-//
-//  @Test
-//  public void authenticate() {
-//  }
-//
-//  @Test
-//  public void generateBase64InputFromISOXMLPayload() {
-//  }
-//
-//  @Test
-//  public void initPayment() {
-//  }
-//
-//  @Test
-//  public void checkBalance() {
-//  }
-//
-//  @Test
-//  public void requestForStatement() {
-//  }
-//
-//  @Test
-//  public void handleHttp() {
-//  }
-//
-//  @Test
-//  public void retrieveStatement() {
-//  }
 }

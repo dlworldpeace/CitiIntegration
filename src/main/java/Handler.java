@@ -4,6 +4,9 @@ import static main.java.HandlerConstant.balanceInquiryUrl_UAT;
 import static main.java.HandlerConstant.clientSignKeyAlias;
 import static main.java.HandlerConstant.keyStoreFilePath;
 import static main.java.HandlerConstant.keyStorePwd;
+import static main.java.HandlerConstant.outgoingPaymentType;
+import static main.java.HandlerConstant.payInitURL_UAT;
+import static main.java.HandlerConstant.paymentTypeHeader;
 import static main.java.HandlerConstant.sslCertFilePath;
 import static main.java.HandlerConstant.sslCertPwd;
 import static main.java.HandlerConstant.statementRetUrl_UAT;
@@ -20,6 +23,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,6 +57,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -848,9 +853,41 @@ public class Handler {
    * Payment Initiation API: Generate Base64 Input Request from ISO XML Payload.
    *
    * @param isoPayInXML input xml string.
-   * @return base64 string generated.
+   * @return base64 string generated surrounded by tags.
+   * @throws HandlerException a custom exception for Handler class is triggered
+   *                          when the input is not of the correct ISO XML form
+   *                          or unexpected event occurred during XML parsing.
    */
-  public static String generateBase64InputFromISOXMLPayload (String isoPayInXML) {
+  public static String generateBase64PayloadFromISOXML (String isoPayInXML)
+      throws HandlerException {
+
+    if(isoPayInXML.trim().equals("")) {
+      String message = "Fatal: Non-ISO format string received";
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, message);
+      throw new HandlerException(message);
+    }
+
+    // TODO: Check if we can validate ISO v3 through this logic
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setNamespaceAware(true);
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document doc = builder.parse(
+          new ByteArrayInputStream(isoPayInXML.getBytes(StandardCharsets.UTF_8)));
+      Element root = doc.getDocumentElement();
+      String nameSpace = root.getNamespaceURI();
+
+      if (nameSpace == null || !nameSpace.equals(outgoingPaymentType)) {
+        String message = "Fatal: Non-ISO format string received";
+        Logger.getLogger(Handler.class.getName())
+            .log(Level.SEVERE, null, message);
+        throw new HandlerException(message);
+      }
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+
     StringBuffer xmlStrSb = new StringBuffer();
     final char pem_array[] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -913,7 +950,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String initPayment (String payInitPayload)
+  public String initialisePayment (String payInitPayload)
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
@@ -945,11 +982,12 @@ public class Handler {
           .queryParam("client_id", getClientId());
       Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + oAuthToken); // TODO: How can we store the oAuthToken obtained from authentication. suggested HashMap...
+          "Bearer " + oAuthToken);
       builder.header("payloadType",
-          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); // TODO: make it flexible by allowing for bot Direct Debit and US FAST.
+          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); // TODO: make it flexible by allowing both Direct Debit and US FAST.
 //    or "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
-      String payInitPayload_SignedEncrypted = signAndEncryptXMLForCiti(payInitPayload);
+      String payInitPayload_SignedEncrypted =
+          signAndEncryptXMLForCiti(payInitPayload);
       ClientResponse clientResponse = builder
           .post(ClientResponse.class, payInitPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
@@ -957,6 +995,38 @@ public class Handler {
         NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * Payment initiation logic via Outgoing Payment method, which takes the
+   * necessary data required in ISOXML V3 (pain.001.001.03)
+   *
+   * @param ISOXML ISOXML V3 data in XML format.
+   * @return a response that denotes whether the payment has passed the basic
+   *         validations. The Partner has the ability to view transaction/payment
+   *         status at any later point using the Payment Status Inquiry API.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public byte[] initPayment (String ISOXML) throws XMLSecurityException,
+      HandlerException {
+    String base64Payload = generateBase64PayloadFromISOXML(ISOXML);
+    String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
+    Map<String, String> headerList = new HashMap<>();
+    headerList.put(paymentTypeHeader, outgoingPaymentType);
+    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+    HashMap<String, Object> response = handleHttp(headerList,
+        payload_SignedEncrypted, payInitURL_UAT + "client_id=" + getClientId());
+    HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+    if (statusCode == HttpStatus.OK) {
+      return (byte[]) response.get("BODY");
+    } else { // error msg received instead of expected statement
+      String errorMsg = new String((byte[]) response.get("BODY"));
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
+      throw new HandlerException(errorMsg);
     }
   }
 
@@ -1096,8 +1166,8 @@ public class Handler {
    * @throws RestClientException if an unexpected exception occurs while sending
    *                             the http request in exchange for http response.
    */
-  public HashMap<String, Object> handleHttp(String uri,
-      String signedEncryptedXMLPayload) throws RestClientException {
+  public HashMap<String, Object> handleHttp(Map<String, String> headerList,
+      String signedEncryptedXMLPayload, String uri) throws RestClientException {
 
     HashMap<String, Object> response = new HashMap<>();
     try {
@@ -1105,7 +1175,9 @@ public class Handler {
       org.springframework.http.HttpHeaders headers =
           new org.springframework.http.HttpHeaders();
       headers.setAccept(Arrays.asList(APPLICATION_XML, APPLICATION_OCTET_STREAM));
-      headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+      for (Map.Entry<String, String> entry : headerList.entrySet()) {
+        headers.set(entry.getKey(), entry.getValue());
+      }
       HttpEntity<String> entity =
           new HttpEntity<>(signedEncryptedXMLPayload, headers);
       ResponseEntity<?> responseEntity = restTemplate
@@ -1241,7 +1313,7 @@ public class Handler {
   /**
    * Get the intended statement file using its statement ID.
    *
-   * @param requestStatementPayload the xml payload that contains statement ID.
+   * @param payload the xml payload that contains statement ID.
    * @return the expected statement file decrypted.
    * @throws XMLSecurityException if an unexpected exception occurs while
    *                              decrypting the xml section of the body.
@@ -1250,13 +1322,14 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public byte[] retrieveStatement (String requestStatementPayload)
+  public byte[] retrieveStatement (String payload)
       throws XMLSecurityException, CertificateEncodingException, HandlerException {
 
-    String statementRetrievalPayload_SignedEncrypted = signAndEncryptXMLForCiti(
-        requestStatementPayload);
-    HashMap<String, Object> response = handleHttp(statementRetUrl_UAT,
-        statementRetrievalPayload_SignedEncrypted);
+    String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
+    Map<String, String> headerList = new HashMap<>();
+    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+    HashMap<String, Object> response = handleHttp(headerList,
+         payload_SignedEncrypted, statementRetUrl_UAT);
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

@@ -278,9 +278,8 @@ public class HandlerTest {
       CertificateEncodingException, XPathExpressionException {
 
     final String strAuth = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/"
-            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
-            + "AuthorizationRequest_V3_Plain.txt")));
+        "src/test/resources/sample/Authentication/OutgoingPayment/"
+            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
     String response = handler.authenticate(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
@@ -341,7 +340,7 @@ public class HandlerTest {
   @Test (expected = HandlerException.class)
   public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
       throws HandlerException {
-    String s = generateBase64PayloadFromISOXML(SOME_XML);
+    generateBase64PayloadFromISOXML(SOME_XML);
   }
 
 }

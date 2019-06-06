@@ -154,8 +154,8 @@ public class Handler {
       FileInputStream fis = new FileInputStream(keyStoreFilePath);
       ks.load(fis, keyStorePwd.toCharArray());
       fis.close();
-    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException |
-        IOException e) {
+    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException
+        | IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -987,7 +987,7 @@ public class Handler {
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + oAuthToken);
       builder.header("payloadType",
-          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); 
+          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
       String payInitPayload_SignedEncrypted =
           signAndEncryptXMLForCiti(payInitPayload);
       ClientResponse clientResponse = builder
@@ -1004,10 +1004,11 @@ public class Handler {
    * Payment initiation logic via Outgoing Payment method, which takes the
    * necessary data required in ISOXML V3 (pain.001.001.03)
    *
-   * @param ISOXML ISOXML V3 data in XML format.
+   * @param ISOXML data in ISOXML V3 format.
    * @return a response that denotes whether the payment has passed the basic
-   *         validations. The Partner has the ability to view transaction/payment
-   *         status at any later point using the Payment Status Inquiry API.
+   *         validations. The Partner has the ability to view transaction or
+   *         payment status at any later point using the Payment Status Inquiry
+   *         API.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
@@ -1331,7 +1332,8 @@ public class Handler {
     Map<String, String> headerList = new HashMap<>();
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
-         payload_SignedEncrypted, statementRetUrl_UAT);
+         payload_SignedEncrypted,
+        statementRetUrl_UAT + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

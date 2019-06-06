@@ -368,7 +368,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String signAndEncryptXML (String payloadXML)
+  public String signAndEncryptXMLForCiti(String payloadXML)
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertXMLStrToDoc(payloadXML);
     PrivateKey clientPrivateKey = getClientPrivateKey();
@@ -620,7 +620,7 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String decryptAndVerifyXML (String encryptedSignedXMLResponse)
+  public String decryptAndVerifyXMLFromCiti(String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey = getClientPrivateKey();
     Document encryptedSignedXMLResponseDoc =
@@ -752,7 +752,7 @@ public class Handler {
           return response;
         }
       } else {
-        throw new HandlerException("Empty content of responseDoc"); // TODO: Check if this logic is correct
+        throw new HandlerException("No content extracted from response"); // TODO: Check if this logic is correct
       }
     }
   }
@@ -806,36 +806,26 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String authenticate (String oAuthPayload)
-      throws XMLSecurityException, HandlerException {
+  public String authenticate (String oAuthPayload) throws XMLSecurityException,
+      HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
       clientStore.load(new FileInputStream(sslCertFilePath),
           sslCertPwd.toCharArray());
-
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-
       kmf.init(clientStore, sslCertPwd.toCharArray());
-
       SSLContext sslContext = SSLContext
           .getInstance("TLSv1.2"); // The SSL standard
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
           .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-
       Client client = new Client(new URLConnectionClientHandler(
           new HttpURLConnectionFactory() {
-            Proxy proxy = null;
+            Proxy proxy = Proxy.NO_PROXY;
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
-              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
-                proxy = new Proxy(Proxy.Type.HTTP,
-                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
-              } else {
-                proxy = Proxy.NO_PROXY;
-              }
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
@@ -844,7 +834,7 @@ public class Handler {
       builder.header(HttpHeaders.AUTHORIZATION, "Basic "
           + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
                   .getBytes()).replaceAll("([\\r\\n])", ""));
-      String oAuthPayload_SignedEncrypted = signAndEncryptXML(oAuthPayload);
+      String oAuthPayload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
       ClientResponse clientResponse = builder.post(ClientResponse.class,
               oAuthPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
@@ -959,7 +949,7 @@ public class Handler {
       builder.header("payloadType",
           "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); // TODO: make it flexible by allowing for bot Direct Debit and US FAST.
 //    or "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
-      String payInitPayload_SignedEncrypted = signAndEncryptXML(payInitPayload);
+      String payInitPayload_SignedEncrypted = signAndEncryptXMLForCiti(payInitPayload);
       ClientResponse clientResponse = builder
           .post(ClientResponse.class, payInitPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
@@ -1015,7 +1005,7 @@ public class Handler {
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + oAuthToken);
-      String balanceInquiryPayload_SignedEncrypted = signAndEncryptXML(
+      String balanceInquiryPayload_SignedEncrypted = signAndEncryptXMLForCiti(
           balanceInquiryPayload);
       ClientResponse clientResponse = builder.post(ClientResponse.class,
               balanceInquiryPayload_SignedEncrypted);
@@ -1082,7 +1072,7 @@ public class Handler {
       Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
           .accept(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
-      String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
+      String statementRetrievalPayload_SignedEncrypted = signAndEncryptXMLForCiti(
           requestStatementPayload);
       ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
           .post(ClientResponse.class, statementRetrievalPayload_SignedEncrypted);
@@ -1263,7 +1253,7 @@ public class Handler {
   public byte[] retrieveStatement (String requestStatementPayload)
       throws XMLSecurityException, CertificateEncodingException, HandlerException {
 
-    String statementRetrievalPayload_SignedEncrypted = signAndEncryptXML(
+    String statementRetrievalPayload_SignedEncrypted = signAndEncryptXMLForCiti(
         requestStatementPayload);
     HashMap<String, Object> response = handleHttp(statementRetUrl_UAT,
         statementRetrievalPayload_SignedEncrypted);
@@ -1273,7 +1263,7 @@ public class Handler {
       HashMap<String, Object> body =
           parseMIMEResponse((byte[]) response.get("BODY"));
       String decryptionKey =
-          decryptAndVerifyXML((String) body.get("ENCRYPTED_KEY"));
+          decryptAndVerifyXMLFromCiti((String) body.get("ENCRYPTED_KEY"));
       return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
     } else { // error msg received instead of expected statement
       String errorMsg = new String((byte[]) response.get("BODY"));

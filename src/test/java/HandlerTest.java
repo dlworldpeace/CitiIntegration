@@ -4,6 +4,7 @@ import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
+import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.signXMLPayloadDoc;
@@ -27,7 +28,6 @@ import main.java.Handler;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,14 +58,14 @@ public class HandlerTest {
     handler.loadKeystore();
   }
 
-  /**
-   * Tears down the test fixture.
-   * (Called after every test case method.)
-   */
-  @After
-  public void tearDown() {
-    handler = null;
-  }
+//  /**
+//   * Tears down the test fixture.
+//   * (Called after every test case method.)
+//   */
+//  @After
+//  public void tearDown() {
+//    handler = null;
+//  }
 
   @Test
   public void convertStringToDocToString_xmlStr_remainsSame ()
@@ -273,7 +273,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void authentication_validateAllPIs_success ()
+  public void authentication_validateAllAPIs_success ()
       throws IOException, XMLSecurityException, HandlerException,
       CertificateEncodingException, XPathExpressionException {
 
@@ -287,6 +287,12 @@ public class HandlerTest {
         convertXMLStrToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
     handler.setOAuthToken(oAuthToken);
 
+    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+    String resInitPay = new String(handler.initPayment(ISOXMLInitPay));
+    System.out.println(resInitPay);
+
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementRetrieval/"
 //            + "XML Request/StatementRetrievalRequest_Plain.txt")));
@@ -298,11 +304,44 @@ public class HandlerTest {
 //    String resStatRet = handler.decryptAndVerifyXMLFromCiti(resStatRet_Encrypted);
 //    System.out.println(resStatRet);
 
-    final String strBalance = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/BalanceInquiry/"
-            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    String resBalance = handler.checkBalance(strBalance);
-    System.out.println(resBalance);
+//    final String strBalance = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/BalanceInquiry/"
+//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+//    String resBalance = handler.checkBalance(strBalance);
+//    System.out.println(resBalance);
+  }
+
+  @Test
+  public void generateBase64InputFromISOXMLPayload_success ()
+      throws IOException, HandlerException {
+
+    final String payloadSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_Plain.txt")));
+    final String ISOXML = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+
+    String ISOXML_base64 = generateBase64PayloadFromISOXML(ISOXML);
+    assertEquals(payloadSample, ISOXML_base64);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void generateBase64PayloadFromISOXML_emptyStr_throwsException ()
+      throws HandlerException {
+    generateBase64PayloadFromISOXML(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void generateBase64PayloadFromISOXML_whiteSpace_throwsException ()
+      throws HandlerException {
+    generateBase64PayloadFromISOXML(WHITE_SPACE);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
+      throws HandlerException {
+    String s = generateBase64PayloadFromISOXML(SOME_XML);
   }
 
 }

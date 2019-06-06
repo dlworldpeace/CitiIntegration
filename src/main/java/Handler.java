@@ -843,17 +843,20 @@ public class Handler {
       ClientResponse clientResponse = builder.post(ClientResponse.class,
               oAuthPayload_SignedEncrypted);
       return clientResponse.getEntity(String.class);
-    } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException | KeyStoreException | IOException | CertificateException e) {
+    } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
+        KeyManagementException | KeyStoreException | IOException |
+        CertificateException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
   }
 
   /**
-   * Payment Initiation API: Generate Base64 Input Request from ISO XML Payload.
+   * Payment Initiation API: Generate Base64 request payload from ISO XML Payload.
    *
    * @param isoPayInXML input xml string.
-   * @return base64 string generated surrounded by tags.
+   * @return base64 string generated from {@code isoPayInXML} placed in
+   *         <Request><paymentBase64> tag.
    * @throws HandlerException a custom exception for Handler class is triggered
    *                          when the input is not of the correct ISO XML form
    *                          or unexpected event occurred during XML parsing.
@@ -984,8 +987,7 @@ public class Handler {
       builder.header(HttpHeaders.AUTHORIZATION,
           "Bearer " + oAuthToken);
       builder.header("payloadType",
-          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); // TODO: make it flexible by allowing both Direct Debit and US FAST.
-//    or "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
+          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"); 
       String payInitPayload_SignedEncrypted =
           signAndEncryptXMLForCiti(payInitPayload);
       ClientResponse clientResponse = builder

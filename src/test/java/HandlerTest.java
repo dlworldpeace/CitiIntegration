@@ -2,6 +2,7 @@ package test.java;
 
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
+import static main.java.Handler.marshalToISOMXL;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromISOXML;
@@ -278,19 +279,20 @@ public class HandlerTest {
       CertificateEncodingException, XPathExpressionException {
 
     final String strAuth = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/OutgoingPayment/"
-            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+        "src/test/resources/sample/Authentication/"
+            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
+            + "AuthorizationRequest_V3_Plain.txt")));
     String response = handler.authenticate(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
     handler.setOAuthToken(oAuthToken);
 
-    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
-            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    String resInitPay = new String(handler.initPayment(ISOXMLInitPay));
-    System.out.println(resInitPay);
+//    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+//            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+//    String resInitPay = new String(handler.initPayment(ISOXMLInitPay));
+//    System.out.println(resInitPay);
 
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementRetrieval/"
@@ -303,11 +305,12 @@ public class HandlerTest {
 //    String resStatRet = handler.decryptAndVerifyXMLFromCiti(resStatRet_Encrypted);
 //    System.out.println(resStatRet);
 
-//    final String strBalance = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/BalanceInquiry/"
-//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-//    String resBalance = handler.checkBalance(strBalance);
-//    System.out.println(resBalance);
+    final String strBalance = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/"
+            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+    String resBalance_Encypted = handler.checkBalance(strBalance);
+    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+    System.out.println(resBalance);
   }
 
   @Test
@@ -341,6 +344,16 @@ public class HandlerTest {
   public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
       throws HandlerException {
     generateBase64PayloadFromISOXML(SOME_XML);
+  }
+
+  @Test
+  public  void marshalToISOMXL_resultSameAsSample () throws IOException, HandlerException {
+    final String payloadSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+    final String payloadCreated = marshalToISOMXL();
+
+    assertEquals(payloadSample, payloadCreated);
   }
 
 }

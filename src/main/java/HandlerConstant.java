@@ -24,11 +24,12 @@ public class HandlerConstant {
 
   /* Inputs to APIs Calling Logic */
 
-  public static final String sslCertFilePath =
+  public static final String deskeraSSLCertFilePath =
       "src/main/resources/key/deskera/deskera_ssl.p12";
-//      "src/main/resources/key/citi/keystore.jks";
-  public static final String sslCertPwd = "sslpass";
-//    "citissl";
+  public static final String deskeraSSLCertPwd = "sslpass";
+  public static final String citiSSLCertFilePath =
+      "src/main/resources/key/citi/keystore.jks";
+  public static final String citiSSLCertPwd = "citissl";
   public static final String proxyURL = ""; // what is this? Guess if it is intranet proxy
   public static final String paymentTypeHeader = "payloadType";
   public static final String outgoingPaymentType =

@@ -1,14 +1,16 @@
 package main.java;
 
 import static main.java.HandlerConstant.balanceInquiryUrl_UAT;
+import static main.java.HandlerConstant.citiSSLCertFilePath;
+import static main.java.HandlerConstant.citiSSLCertPwd;
 import static main.java.HandlerConstant.clientSignKeyAlias;
 import static main.java.HandlerConstant.keyStoreFilePath;
 import static main.java.HandlerConstant.keyStorePwd;
 import static main.java.HandlerConstant.outgoingPaymentType;
 import static main.java.HandlerConstant.payInitURL_UAT;
 import static main.java.HandlerConstant.paymentTypeHeader;
-import static main.java.HandlerConstant.sslCertFilePath;
-import static main.java.HandlerConstant.sslCertPwd;
+import static main.java.HandlerConstant.deskeraSSLCertFilePath;
+import static main.java.HandlerConstant.deskeraSSLCertPwd;
 import static main.java.HandlerConstant.statementRetUrl_UAT;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
@@ -23,13 +25,13 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -57,6 +59,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,8 +79,15 @@ import javax.mail.util.SharedByteArrayInputStream;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -91,6 +101,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import main.java.pain.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.encryption.EncryptedData;
@@ -815,14 +826,22 @@ public class Handler {
       HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(sslCertFilePath),
-          sslCertPwd.toCharArray());
+      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+          deskeraSSLCertPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, sslCertPwd.toCharArray());
-      SSLContext sslContext = SSLContext
-          .getInstance("TLSv1.2"); // The SSL standard
-      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+
+      KeyStore trustStore = KeyStore.getInstance("JKS");
+      trustStore.load(new FileInputStream(citiSSLCertFilePath),
+          citiSSLCertPwd.toCharArray());
+      TrustManagerFactory tmf = TrustManagerFactory
+          .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmf.init(trustStore);
+
+      SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // The SSL standard
+      sslContext.init(
+          kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
       HttpsURLConnection
           .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
       Client client = new Client(new URLConnectionClientHandler(
@@ -1133,11 +1152,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(sslCertFilePath),
-          sslCertPwd.toCharArray());
+      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+          deskeraSSLCertPwd.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, sslCertPwd.toCharArray());
+      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
       SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
@@ -1224,11 +1243,11 @@ public class Handler {
 
 //    try {
 //      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(sslCertFilePath),
-//              sslCertPwd.toCharArray());
+//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+//              deskeraSSLCertPwd.toCharArray());
 //      KeyManagerFactory kmf = KeyManagerFactory
 //          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, sslCertPwd.toCharArray());
+//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
 //      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 //      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
 //      HttpsURLConnection
@@ -1250,10 +1269,9 @@ public class Handler {
           }), new DefaultClientConfig());
       WebResource webResource = client.resource(balanceInquiryUrl_UAT)
           .queryParam("client_id", getClientId());
-      Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
-          .accept(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + oAuthToken);
+      Builder builder = webResource.accept(MediaType.APPLICATION_XML);
+      builder.header("Content-Type", "application/xml");
+      builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
       String balanceInquiryPayload_SignedEncrypted = signAndEncryptXMLForCiti(
           balanceInquiryPayload);
       ClientResponse clientResponse = builder.post(ClientResponse.class,
@@ -1292,11 +1310,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
 //    try {
 //      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(sslCertFilePath),
-//              sslCertPwd.toCharArray());
+//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+//              deskeraSSLCertPwd.toCharArray());
 //      KeyManagerFactory kmf = KeyManagerFactory
 //          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, sslCertPwd.toCharArray());
+//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
 //      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 //      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
 //      HttpsURLConnection

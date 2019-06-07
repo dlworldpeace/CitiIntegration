@@ -1030,8 +1030,7 @@ public class Handler {
       /* End of Document */
 
       /* Marshal to XML String */
-      JAXBContext jaxbContext = JAXBContext.newInstance(
-          "main.java.pain", main.java.pain.ObjectFactory.class.getClassLoader());
+      JAXBContext jaxbContext = JAXBContext.newInstance("main.java.pain");
       Marshaller marshaller = jaxbContext.createMarshaller();
       JAXBElement<main.java.pain.Document> documentElement =
           (new ObjectFactory()).createDocument(document);

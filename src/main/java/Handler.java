@@ -97,7 +97,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -187,7 +186,7 @@ public class Handler {
   public static String getClientId () throws HandlerException {
     try {
       return new String(Files.readAllBytes(Paths.get(
-          "src/main/resources/key/deskera/deskera_client_id.txt")));
+          "src/main/resources/key/deskera/deskera_client_id.txt"))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -203,7 +202,7 @@ public class Handler {
   public static String getSecretKey () throws HandlerException {
     try {
       return new String(Files.readAllBytes(Paths.get(
-          "src/main/resources/key/deskera/deskera_secret_key.txt")));
+          "src/main/resources/key/deskera/deskera_secret_key.txt"))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());

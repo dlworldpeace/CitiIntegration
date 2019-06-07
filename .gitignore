@@ -24,8 +24,9 @@
 hs_err_pid*
 
 # specific key files
-deskera.p12
-deskera_ssl.p12
+*.p12
+*.pem
+*.jks
 deskera_client_id.txt
 deskera_secret_key.txt
 BalanceInquiryRequest_Plain_Real.txt

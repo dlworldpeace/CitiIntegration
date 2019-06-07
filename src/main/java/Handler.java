@@ -300,7 +300,7 @@ public class Handler {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
       FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_encryption.pem");
+          "src/main/resources/key/citi/citi_encryption_uat.pem");
       X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
       return cer.getPublicKey();
     } catch (IOException | CertificateException e) {
@@ -554,7 +554,7 @@ public class Handler {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
       FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_signature.pem");
+          "src/main/resources/key/citi/citi_signature_uat.pem");
       return (X509Certificate) fact.generateCertificate(is);
     } catch (CertificateException | FileNotFoundException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);

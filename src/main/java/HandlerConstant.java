@@ -28,7 +28,7 @@ public class HandlerConstant {
       "src/main/resources/key/deskera/deskera_ssl.p12";
   public static final String deskeraSSLCertPwd = "sslpass";
   public static final String citiSSLCertFilePath =
-      "src/main/resources/key/citi/keystore.jks";
+      "src/main/resources/key/citi/citi_ssl_uat.jks";
   public static final String citiSSLCertPwd = "citissl";
   public static final String proxyURL = ""; // what is this? Guess if it is intranet proxy
   public static final String paymentTypeHeader = "payloadType";

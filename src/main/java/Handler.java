@@ -25,10 +25,12 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -87,14 +89,18 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -890,10 +896,13 @@ public class Handler {
           /* Start of GrpHdr */
       GroupHeader32 grpHdr = new GroupHeader32();
       grpHdr.setMsgId("GBP161111000001");
-      grpHdr.setCreDtTm(
-          dataType.newXMLGregorianCalendar(2016,11,11,3, 51, 15, 0, 0));
+      XMLGregorianCalendar creDtTm =
+          dataType.newXMLGregorianCalendar(2016,11,11,3, 51, 15, 0, 0);
+      creDtTm.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+      creDtTm.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+      grpHdr.setCreDtTm(creDtTm);
       grpHdr.setNbOfTxs("1");
-      grpHdr.setCtrlSum(new BigDecimal(1.00));
+      grpHdr.setCtrlSum(new BigDecimal("1.00"));
       PartyIdentification32 initgPty = new PartyIdentification32();
       initgPty.setNm("ABC");
       grpHdr.setInitgPty(initgPty);
@@ -906,14 +915,16 @@ public class Handler {
       pmtInf.setPmtInfId("98765432 Fund Transfer Domestic");
       pmtInf.setPmtMtd(PaymentMethod3Code.TRF);
       pmtInf.setNbOfTxs("1");
-      pmtInf.setCtrlSum(new BigDecimal(1.00));
+      pmtInf.setCtrlSum(new BigDecimal("1.00"));
       PaymentTypeInformation19 pmtTpInf = new PaymentTypeInformation19();
       ServiceLevel8Choice svcLvl = new ServiceLevel8Choice();
       svcLvl.setCd("URGP");
       pmtTpInf.setSvcLvl(svcLvl);
       pmtInf.setPmtTpInf(pmtTpInf);
-      pmtInf.setReqdExctnDt(
-          dataType.newXMLGregorianCalendarDate(2016,11,16, 0));
+      XMLGregorianCalendar reqdExctnDt =
+          dataType.newXMLGregorianCalendarDate(2016,11,16, 0);
+      reqdExctnDt.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+      pmtInf.setReqdExctnDt(reqdExctnDt);
             /* Start of Dbtr */
       PartyIdentification32 dbtr = new PartyIdentification32();
       dbtr.setNm("ABCD DEMO");
@@ -965,7 +976,7 @@ public class Handler {
       ActiveOrHistoricCurrencyAndAmount instdAmt =
           new ActiveOrHistoricCurrencyAndAmount();
       instdAmt.setCcy("USD");
-      instdAmt.setValue(new BigDecimal(1.00));
+      instdAmt.setValue(new BigDecimal("1.00"));
       amt.setInstdAmt(instdAmt);
       cdtTrfTxInf.setAmt(amt);
               /* Start of UltmtDbtr */
@@ -1034,12 +1045,17 @@ public class Handler {
       Marshaller marshaller = jaxbContext.createMarshaller();
       JAXBElement<main.java.pain.Document> documentElement =
           (new ObjectFactory()).createDocument(document);
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      StringWriter stringWriter = new StringWriter();
-      marshaller.marshal(documentElement, stringWriter);
-      return stringWriter.toString();
+      OutputStream out = new ByteArrayOutputStream();
+      DOMResult domResult = new DOMResult();
+      marshaller.marshal(documentElement, domResult);
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+      transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
+      return out.toString();
 
-    } catch (JAXBException | DatatypeConfigurationException e) {
+    } catch (JAXBException | DatatypeConfigurationException | TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }

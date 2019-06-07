@@ -5,5 +5,12 @@
 //         Generated on: 2019.06.06 at 05:49:31 PM CST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(
+    namespace = "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03",
+    elementFormDefault = XmlNsForm.QUALIFIED
+)
+
 package main.java.pain;
+
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

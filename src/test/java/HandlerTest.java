@@ -14,6 +14,7 @@ import static main.java.HandlerConstant.authType;
 import static main.java.HandlerConstant.paymentType;
 import static main.java.HandlerConstant.tagName_Auth;
 import static main.java.HandlerConstant.tagName_PaymentInit;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -36,6 +37,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @RunWith(JUnit4.class)
 public class HandlerTest {
@@ -347,13 +349,14 @@ public class HandlerTest {
   }
 
   @Test
-  public  void marshalToISOMXL_resultSameAsSample () throws IOException, HandlerException {
+  public  void marshalToISOMXL_resultSameAsSample ()
+      throws IOException, HandlerException, SAXException {
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
     final String payloadCreated = marshalToISOMXL();
 
-    assertEquals(payloadSample, payloadCreated);
+    assertXMLEqual(payloadSample, payloadCreated);
   }
 
 }

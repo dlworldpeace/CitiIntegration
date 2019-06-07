@@ -1047,6 +1047,7 @@ public class Handler {
           (new ObjectFactory()).createDocument(document);
       OutputStream out = new ByteArrayOutputStream();
       DOMResult domResult = new DOMResult();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       marshaller.marshal(documentElement, domResult);
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
       transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");

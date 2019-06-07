@@ -1049,6 +1049,7 @@ public class Handler {
       DOMResult domResult = new DOMResult();
       marshaller.marshal(documentElement, domResult);
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
       transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");

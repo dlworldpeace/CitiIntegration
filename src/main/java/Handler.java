@@ -1229,6 +1229,7 @@ public class Handler {
     String base64Payload = generateBase64PayloadFromISOXML(ISOXML);
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
     Map<String, String> headerList = new HashMap<>();
+    headerList.put("Content-Type", "application/xml");
     headerList.put(paymentTypeHeader, outgoingPaymentType);
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
@@ -1238,7 +1239,7 @@ public class Handler {
     if (statusCode == HttpStatus.OK) {
       return (byte[]) response.get("BODY");
     } else { // error msg received instead of expected statement
-      String errorMsg = new String((byte[]) response.get("BODY"));
+      String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
       throw new HandlerException(errorMsg);
     }
@@ -1401,7 +1402,7 @@ public class Handler {
     } catch (HttpStatusCodeException e) {
       response.put("HEADER", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
-      response.put("BODY", e.getResponseBodyAsByteArray());
+      response.put("BODY", e.getStatusText()); //.getResponseBodyAsByteArray());
     }
     return response;
   }
@@ -1540,6 +1541,7 @@ public class Handler {
 
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
     Map<String, String> headerList = new HashMap<>();
+    headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
          payload_SignedEncrypted,
@@ -1553,7 +1555,7 @@ public class Handler {
           decryptAndVerifyXMLFromCiti((String) body.get("ENCRYPTED_KEY"));
       return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
     } else { // error msg received instead of expected statement
-      String errorMsg = new String((byte[]) response.get("BODY"));
+      String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
       throw new HandlerException(errorMsg);
     }

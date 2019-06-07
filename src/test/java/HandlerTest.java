@@ -293,26 +293,27 @@ public class HandlerTest {
 //    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
 //            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-//    String resInitPay = new String(handler.initPayment(ISOXMLInitPay));
+//    String resInitPay_Encrypted = new String(handler.initPayment(ISOXMLInitPay));
+//    String resInitPay = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
 //    System.out.println(resInitPay);
 
-//    final String strStatRet = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/StatementRetrieval/"
-//            + "XML Request/StatementRetrievalRequest_Plain.txt")));
-//    String resStatRet = new String(handler.retrieveStatement(strStatRet));
-//    System.out.println(resStatRet);
+    final String strStatRet = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/"
+            + "XML Request/StatementRetrievalRequest_Plain.txt")));
+    String resStatRet = new String(handler.retrieveStatement(strStatRet));
+    System.out.println(resStatRet);
 
 //    InputStream is = handler.requestForStatement(strStatRet);
 //    String resStatRet_Encrypted = IOUtils.toString(is, "UTF-8");
 //    String resStatRet = handler.decryptAndVerifyXMLFromCiti(resStatRet_Encrypted);
 //    System.out.println(resStatRet);
 
-    final String strBalance = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/BalanceInquiry/"
-            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    String resBalance_Encypted = handler.checkBalance(strBalance);
-    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
-    System.out.println(resBalance);
+//    final String strBalance = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/BalanceInquiry/"
+//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+//    String resBalance_Encypted = handler.checkBalance(strBalance);
+//    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+//    System.out.println(resBalance);
   }
 
   @Test

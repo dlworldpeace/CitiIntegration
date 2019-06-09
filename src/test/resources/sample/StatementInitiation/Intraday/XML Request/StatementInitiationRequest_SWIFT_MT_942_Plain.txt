@@ -1,0 +1,6 @@
+<statementInitiationRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/statement/v1">
+	<accountNumber>17806</accountNumber>
+    <formatName>SWIFT_MT942</formatName>
+    <fromDate>2016-04-25</fromDate>
+    <toDate>2016-04-25</toDate>
+</statementInitiationRequest>

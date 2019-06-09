@@ -1,0 +1,1 @@
+<statementInitiationResponse xmlns="http://com.citi.citiconnect/services/types/inquiries/statement/v1" xmlns:Soapenv="http://schemas.xmlsoap.org/soap/envelope/"><statementId>45081356</statementId></statementInitiationResponse>

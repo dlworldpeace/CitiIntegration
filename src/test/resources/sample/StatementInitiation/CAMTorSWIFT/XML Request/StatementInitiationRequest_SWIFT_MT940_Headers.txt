@@ -1,0 +1,8 @@
+POST https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/v1/statement/initiation?client_id=1234a5b6-cde7-8f90-12gh-345ij6789012 HTTP/1.1
+Accept-Encoding: gzip,deflate
+Content-Type: application/xml
+Authorization: Bearer 30lt+C5HLyqcbqlc6Kf3p92+0W3EPXGzyKB/UkowWO3jYCPnxxcOSns92LekKGyr/GO6/Rs+oPLBYTYgxGpnaMpuisBXOXHrq7ceVGazWo33zYznk639ib8JA9WIdiKTh9cYwkHqW9iBaTuGpb/ZgFWdjwcti9ieRmw5d48E2S900X6eF4py2/4uWEXuraJCknNUhn4Tgbf+pbMSz8JK4CaxKL/T0Ut7tf21Njg6Zdjqd2D6tIXpYomfypiSqM/tUUEO32YDaY16DIY744tp+zDGBSbyVGLJ0RkICod4Y+00IdWxpJUSoPajWwokkMD9lsHoXDp+bugvB0YbkXkUZ1KcmibuohIML6NYWNs+VPmeYH+uNBPIwnGXCe/CGF0CgfhR7ZbqW2dtByhEsuHYIGBEPjKPB5tq/cAdjaAGWahhsOhSHM1nltT6flGtPro+
+Content-Length: 6682
+Host: tts.sandbox.apib2b.citi.com
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.1 (java 1.5)

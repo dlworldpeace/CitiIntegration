@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<statementInitiationRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/statement/v1"> 
+  <accountNumber>40074901</accountNumber> 
+    <formatName>CAMT_053_001_02</formatName> 
+    <fromDate>2018-10-04</fromDate> 
+    <toDate>2018-10-04</toDate> 
+<strLibrayName>STR API 920</strLibrayName>
+</statementInitiationRequest>

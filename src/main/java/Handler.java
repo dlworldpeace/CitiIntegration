@@ -678,7 +678,7 @@ public class Handler {
    * Parsing response to show error or valid message logic.
    *
    * @param responseDoc document to be parsed.
-   * @param type "" for authType or "BASE64" for paymentType.
+   * @param type "" for type_Auth or "BASE64" for type_PayInit.
    * @param tagName differentiate between response handling logic: use
    *        "//access_token/text()" for Authentication & "//Response/text()"
    *        for Payment Initiation.

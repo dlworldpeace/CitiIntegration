@@ -17,10 +17,10 @@ public class HandlerConstant {
 
   /* Inputs to the Parsing Response Logic */
 
-  public static final String authType = "";
-  public static final String paymentType = "BASE64";
+  public static final String type_Auth = "";
+  public static final String type_PayInit = "BASE64";
   public static final String tagName_Auth = "//access_token/text()";
-  public static final String tagName_PaymentInit = "//Response/text()";
+  public static final String tagName_PayInit = "//Response/text()";
 
   /* Inputs to APIs Calling Logic */
 

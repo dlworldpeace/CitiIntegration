@@ -10,10 +10,10 @@ import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
-import static main.java.HandlerConstant.authType;
-import static main.java.HandlerConstant.paymentType;
+import static main.java.HandlerConstant.type_Auth;
+import static main.java.HandlerConstant.type_PayInit;
 import static main.java.HandlerConstant.tagName_Auth;
-import static main.java.HandlerConstant.tagName_PaymentInit;
+import static main.java.HandlerConstant.tagName_PayInit;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -216,7 +216,7 @@ public class HandlerTest {
   public void parseAuthOrPayInitResponse_AuthResponse_parseSuccess ()
       throws HandlerException, XPathExpressionException, IOException {
 
-    final String response = new String(Files.readAllBytes(Paths.get(
+    final String authResponse = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/"
             + "DirectDebitPaymentandUSFasterPayment/"
             + "XML Response/AuthorizationResponse_Signed.txt")));
@@ -226,8 +226,25 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), authType, tagName_Auth);
+        convertXMLStrToDoc(authResponse), type_Auth, tagName_Auth);
     assertEquals(oAuthToken, oAuthTokenParsed);
+  }
+
+  @Test
+  public void parseAuthOrPayInitResponse_PayInitResponse_parseSuccess ()
+      throws HandlerException, XPathExpressionException, IOException {
+
+    final String payInitResponse = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/DirectDebitPayment/"
+            + "XML Response/DirectDebitResponse_Plain.xml")));
+    final String sampleISOXML = new String(Files.readAllBytes(
+        Paths.get("src/test/resources/sample/PaymentInitiation/"
+            + "DirectDebitPayment/XML Response/"
+            + "DirectDebitResponse_ISOXMLPlain.xml")));
+
+    String payInitResponseParsed = parseAuthOrPayInitResponse(
+        convertXMLStrToDoc(payInitResponse), type_PayInit, tagName_PayInit);
+    assertEquals(sampleISOXML, payInitResponseParsed);
   }
 
   @Test
@@ -244,14 +261,14 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), paymentType, tagName_Auth);
+        convertXMLStrToDoc(response), type_PayInit, tagName_Auth);
     assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
 
     exception.expect(HandlerException.class);
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), authType, tagName_PaymentInit);
+        convertXMLStrToDoc(response), type_Auth, tagName_PayInit);
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), paymentType, tagName_PaymentInit);
+        convertXMLStrToDoc(response), type_PayInit, tagName_PayInit);
   }
 
   @Test
@@ -261,7 +278,7 @@ public class HandlerTest {
     exception.expect(HandlerException.class);
     exception.expectMessage("No content extracted from response");
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(SOME_XML), paymentType, tagName_Auth);
+        convertXMLStrToDoc(SOME_XML), type_PayInit, tagName_Auth);
   }
 
   @Test
@@ -287,7 +304,7 @@ public class HandlerTest {
     String response = handler.authenticate(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(decryptedVerifiedResponse), authType, tagName_Auth);
+        convertXMLStrToDoc(decryptedVerifiedResponse), type_Auth, tagName_Auth);
     handler.setOAuthToken(oAuthToken);
 
 //    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(

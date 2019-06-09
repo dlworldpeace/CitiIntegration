@@ -11,6 +11,7 @@ import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
 import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_PWD;
+import static main.java.HandlerConstant.STATEMENT_INIT_URL_UAT;
 import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
@@ -1049,7 +1050,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public byte[] initPayment (String ISOXML) throws XMLSecurityException,
+  public byte[] initiatePayment(String ISOXML) throws XMLSecurityException,
       HandlerException {
     String base64Payload = generateBase64PayloadFromISOXML(ISOXML);
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
@@ -1059,6 +1060,38 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
         payload_SignedEncrypted, PAY_INIT_URL_UAT + "client_id=" + getClientId());
+    HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+    if (statusCode == HttpStatus.OK) {
+      return (byte[]) response.get("BODY");
+    } else { // error msg received instead of expected statement
+      String errorMsg = (String) response.get("BODY");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
+      throw new HandlerException(errorMsg);
+    }
+  }
+
+  /**
+   * Payment initiation logic via Outgoing Payment method, which takes the
+   * necessary data required in ISOXML V3 (pain.001.001.03)
+   *
+   * @param payLoad data in ISOXML V3 format.
+   * @return a response that denotes whether the payment has passed the basic
+   *         validations. The Partner has the ability to view transaction or
+   *         payment status at any later point using the Payment Status Inquiry
+   *         API.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public byte[] initiateStatement (String payLoad) throws XMLSecurityException,
+      HandlerException {
+    String payload_SignedEncrypted = signAndEncryptXMLForCiti(payLoad);
+    Map<String, String> headerList = new HashMap<>();
+    headerList.put("Content-Type", "application/xml");
+    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+    HashMap<String, Object> response = handleHttp(headerList,
+        payload_SignedEncrypted, STATEMENT_INIT_URL_UAT + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

@@ -1,17 +1,17 @@
 package main.java;
 
-import static main.java.HandlerConstant.balanceInquiryUrl_UAT;
-import static main.java.HandlerConstant.citiSSLCertFilePath;
-import static main.java.HandlerConstant.citiSSLCertPwd;
-import static main.java.HandlerConstant.clientSignKeyAlias;
-import static main.java.HandlerConstant.keyStoreFilePath;
-import static main.java.HandlerConstant.keyStorePwd;
-import static main.java.HandlerConstant.outgoingPaymentType;
-import static main.java.HandlerConstant.payInitURL_UAT;
-import static main.java.HandlerConstant.paymentTypeHeader;
-import static main.java.HandlerConstant.deskeraSSLCertFilePath;
-import static main.java.HandlerConstant.deskeraSSLCertPwd;
-import static main.java.HandlerConstant.statementRetUrl_UAT;
+import static main.java.HandlerConstant.BALANCE_INQUIRY_URL_UAT;
+import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
+import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
+import static main.java.HandlerConstant.KEYSTORE_ALIAS;
+import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
+import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
+import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
+import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
+import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
+import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
+import static main.java.HandlerConstant.DESKERA_SSL_CERT_PWD;
+import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -199,8 +199,8 @@ public class Handler {
   public void loadKeystore () throws HandlerException {
     try {
       ks = KeyStore.getInstance("PKCS12");
-      FileInputStream fis = new FileInputStream(keyStoreFilePath);
-      ks.load(fis, keyStorePwd.toCharArray());
+      FileInputStream fis = new FileInputStream(KEYSTORE_FILEPATH);
+      ks.load(fis, KEYSTORE_PASSWORD.toCharArray());
       fis.close();
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException
         | IOException e) {
@@ -218,7 +218,7 @@ public class Handler {
   public X509Certificate getClientSigningCert () throws HandlerException {
     try {
       X509Certificate signCert = (X509Certificate) ks
-          .getCertificate(clientSignKeyAlias);
+          .getCertificate(KEYSTORE_ALIAS);
       signCert.checkValidity();
       return signCert;
     } catch (CertificateNotYetValidException | CertificateExpiredException |
@@ -236,7 +236,7 @@ public class Handler {
    */
   public PrivateKey getClientPrivateKey () throws HandlerException {
     try {
-      return (PrivateKey) ks.getKey(clientSignKeyAlias, keyStorePwd.toCharArray());
+      return (PrivateKey) ks.getKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD.toCharArray());
     } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -630,15 +630,15 @@ public class Handler {
       HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-          deskeraSSLCertPwd.toCharArray());
+      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
+          DESKERA_SSL_CERT_PWD.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+      kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
 
       KeyStore trustStore = KeyStore.getInstance("JKS");
-      trustStore.load(new FileInputStream(citiSSLCertFilePath),
-          citiSSLCertPwd.toCharArray());
+      trustStore.load(new FileInputStream(CITI_SSL_CERT_FILE_PATH),
+          CITI_SSL_CERT_PWD.toCharArray());
       TrustManagerFactory tmf = TrustManagerFactory
           .getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(trustStore);
@@ -657,7 +657,7 @@ public class Handler {
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.oAuthURL_UAT);
+      WebResource webResource = client.resource(HandlerConstant.O_AUTH_URL_UAT);
       WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION, "Basic "
           + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
@@ -678,7 +678,7 @@ public class Handler {
    * Parsing response to show error or valid message logic.
    *
    * @param responseDoc document to be parsed.
-   * @param type "" for type_Auth or "BASE64" for type_PayInit.
+   * @param type "" for TYPE_AUTH or "BASE64" for TYPE_PAY_INIT.
    * @param tagName differentiate between response handling logic: use
    *        "//access_token/text()" for Authentication & "//Response/text()"
    *        for Payment Initiation.
@@ -971,7 +971,7 @@ public class Handler {
       Element root = doc.getDocumentElement();
       String nameSpace = root.getNamespaceURI();
 
-      if (nameSpace == null || !nameSpace.equals(outgoingPaymentType)) {
+      if (nameSpace == null || !nameSpace.equals(OUTGOING_PAYMENT_TYPE)) {
         String message = "Fatal: Non-ISO format string received";
         Logger.getLogger(Handler.class.getName())
             .log(Level.SEVERE, null, message);
@@ -1055,10 +1055,10 @@ public class Handler {
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
-    headerList.put(paymentTypeHeader, outgoingPaymentType);
+    headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
-        payload_SignedEncrypted, payInitURL_UAT + "client_id=" + getClientId());
+        payload_SignedEncrypted, PAY_INIT_URL_UAT + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
@@ -1208,7 +1208,7 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
          payload_SignedEncrypted,
-        statementRetUrl_UAT + "client_id=" + getClientId());
+        STATEMENT_RET_URL_UAT + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
@@ -1239,8 +1239,8 @@ public class Handler {
 //   */
 //  public void loadKeystoreWithAllCerts () throws HandlerException {
 //    try {
-//      FileInputStream fis = new FileInputStream(keyStoreFilePath);
-//      ks.load(fis, keyStorePwd.toCharArray());
+//      FileInputStream fis = new FileInputStream(KEYSTORE_FILEPATH);
+//      ks.load(fis, KEYSTORE_PASSWORD.toCharArray());
 //      fis.close();
 //    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
 //      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1300,7 +1300,7 @@ public class Handler {
 //  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
 //    try {
 //      return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
-//              keyStorePwd.toCharArray());
+//              KEYSTORE_PASSWORD.toCharArray());
 //    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
 //      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
 //      throw new HandlerException(e.getMessage());
@@ -1401,11 +1401,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-          deskeraSSLCertPwd.toCharArray());
+      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
+          DESKERA_SSL_CERT_PWD.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+      kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
       SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
       sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
       HttpsURLConnection
@@ -1416,16 +1416,16 @@ public class Handler {
 
             public HttpURLConnection getHttpURLConnection(URL url)
                 throws IOException {
-              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+              if (proxy == null && !HandlerConstant.PROXY_URL.isEmpty()) {
                 proxy = new Proxy(Proxy.Type.HTTP,
-                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+                    new InetSocketAddress(HandlerConstant.PROXY_URL, 8080));
               } else {
                 proxy = Proxy.NO_PROXY;
               }
               return (HttpURLConnection) url.openConnection(proxy);
             }
           }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.payInitURL_UAT)
+      WebResource webResource = client.resource(HandlerConstant.PAY_INIT_URL_UAT)
           .queryParam("client_id", getClientId());
       Builder builder = webResource.type(MediaType.APPLICATION_XML);
       builder.header(HttpHeaders.AUTHORIZATION,
@@ -1459,11 +1459,11 @@ public class Handler {
 
 //    try {
 //      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-//              deskeraSSLCertPwd.toCharArray());
+//      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
+//              DESKERA_SSL_CERT_PWD.toCharArray());
 //      KeyManagerFactory kmf = KeyManagerFactory
 //          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+//      kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
 //      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 //      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
 //      HttpsURLConnection
@@ -1474,16 +1474,16 @@ public class Handler {
 
           public HttpURLConnection getHttpURLConnection(URL url)
               throws IOException {
-            if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+            if (proxy == null && !HandlerConstant.PROXY_URL.isEmpty()) {
               proxy = new Proxy(Proxy.Type.HTTP,
-                  new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+                  new InetSocketAddress(HandlerConstant.PROXY_URL, 8080));
             } else {
               proxy = Proxy.NO_PROXY;
             }
             return (HttpURLConnection) url.openConnection(proxy);
           }
         }), new DefaultClientConfig());
-    WebResource webResource = client.resource(balanceInquiryUrl_UAT)
+    WebResource webResource = client.resource(BALANCE_INQUIRY_URL_UAT)
         .queryParam("client_id", getClientId());
     Builder builder = webResource.accept(MediaType.APPLICATION_XML);
     builder.header("Content-Type", "application/xml");
@@ -1526,11 +1526,11 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
 //    try {
 //      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-//              deskeraSSLCertPwd.toCharArray());
+//      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
+//              DESKERA_SSL_CERT_PWD.toCharArray());
 //      KeyManagerFactory kmf = KeyManagerFactory
 //          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+//      kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
 //      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 //      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
 //      HttpsURLConnection
@@ -1541,16 +1541,16 @@ public class Handler {
 
           public HttpURLConnection getHttpURLConnection(URL url)
               throws IOException {
-            if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+            if (proxy == null && !HandlerConstant.PROXY_URL.isEmpty()) {
               proxy = new Proxy(Proxy.Type.HTTP,
-                  new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+                  new InetSocketAddress(HandlerConstant.PROXY_URL, 8080));
             } else {
               proxy = Proxy.NO_PROXY;
             }
             return (HttpURLConnection) url.openConnection(proxy);
           }
         }), new DefaultClientConfig());
-    WebResource webResource = client.resource(statementRetUrl_UAT)
+    WebResource webResource = client.resource(STATEMENT_RET_URL_UAT)
         .queryParam("client_id", getClientId());
     Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
         .accept(MediaType.APPLICATION_XML);

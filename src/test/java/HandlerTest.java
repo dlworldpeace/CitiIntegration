@@ -310,19 +310,21 @@ public class HandlerTest {
 //    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
 //            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-//    String resInitPay_Encrypted = new String(handler.initPayment(ISOXMLInitPay));
+//    String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
 //    String resInitPay = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
 //    System.out.println(resInitPay);
 
-    final String strStatRet = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementRetrieval/"
-            + "XML Request/StatementRetrievalRequest_Plain.txt")));
-    String resStatRet = new String(handler.retrieveStatement(strStatRet));
-    System.out.println(resStatRet);
+    final String strInitStat = new String(Files.readAllBytes(Paths.get(
+    "src/test/resources/sample/StatementInitiation/Intraday/XML Request/"
+        + "StatementInitiationRequest_SWIFT_MT_942_Plain.txt")));
+    String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
+    String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
+    System.out.println(resInitStat);
 
-//    InputStream is = handler.requestForStatement(strStatRet);
-//    String resStatRet_Encrypted = IOUtils.toString(is, "UTF-8");
-//    String resStatRet = handler.decryptAndVerifyXMLFromCiti(resStatRet_Encrypted);
+//    final String strStatRet = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/StatementRetrieval/"
+//            + "XML Request/StatementRetrievalRequest_Plain.txt")));
+//    String resStatRet = new String(handler.retrieveStatement(strStatRet));
 //    System.out.println(resStatRet);
 
 //    final String strBalance = new String(Files.readAllBytes(Paths.get(

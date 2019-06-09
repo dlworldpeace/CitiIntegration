@@ -157,25 +157,7 @@ public class Handler {
     this.oAuthToken = oAuthToken;
   }
 
-  /* Encryption Logic */
-
-  /**
-   * Load Keystore file that has all certs.
-   *
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public void loadKeystore () throws HandlerException {
-    try {
-      ks = KeyStore.getInstance("PKCS12");
-      FileInputStream fis = new FileInputStream(keyStoreFilePath);
-      ks.load(fis, keyStorePwd.toCharArray());
-      fis.close();
-    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException
-        | IOException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
+  /* Keys */
 
   /**
    * get client id to be used in request header.
@@ -210,21 +192,18 @@ public class Handler {
   }
 
   /**
-   * Getting the XML payload as Document object.
+   * Load Keystore file that has all certs.
    *
-   * @param xmlPayload original payload in xml format.
-   * @return converted document object.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static Document convertXMLStrToDoc(String xmlPayload)
-      throws HandlerException {
-
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
+  public void loadKeystore () throws HandlerException {
     try {
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      return builder.parse(new InputSource(new StringReader(xmlPayload)));
-    } catch (ParserConfigurationException | IOException | SAXException e) {
+      ks = KeyStore.getInstance("PKCS12");
+      FileInputStream fis = new FileInputStream(keyStoreFilePath);
+      ks.load(fis, keyStorePwd.toCharArray());
+      fis.close();
+    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException
+        | IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -265,6 +244,87 @@ public class Handler {
   }
 
   /**
+   * Getting public citi encryption public key.
+   *
+   * @return citi public key.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static PublicKey getCitiPublicKey () throws HandlerException {
+    try {
+      CertificateFactory fact = CertificateFactory.getInstance("X.509");
+      FileInputStream is = new FileInputStream (
+          "src/main/resources/key/citi/citi_encryption_uat.pem");
+      X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
+      return cer.getPublicKey();
+    } catch (IOException | CertificateException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+
+  /**
+   * Getting public citi verification key.
+   *
+   * @return public citi verification key.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static X509Certificate getCitiSigningCert () throws HandlerException {
+    try {
+      CertificateFactory fact = CertificateFactory.getInstance("X.509");
+      FileInputStream is = new FileInputStream (
+          "src/main/resources/key/citi/citi_signature_uat.pem");
+      return (X509Certificate) fact.generateCertificate(is);
+    } catch (CertificateException | FileNotFoundException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /* Encryption and Decryption Logics */
+
+  /**
+   * Getting the XML payload as Document object.
+   *
+   * @param xmlPayload original payload in xml format.
+   * @return converted document object.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static Document convertXMLStrToDoc(String xmlPayload)
+      throws HandlerException {
+
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    try {
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      return builder.parse(new InputSource(new StringReader(xmlPayload)));
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * Convert the Document object to String value.
+   *
+   * @return xml string value of the document WITHOUT the xml header.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public static String convertDocToXMLStr(Document xmlDoc) throws HandlerException {
+    try {
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer transformer = tf.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      StringWriter writer = new StringWriter();
+      transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
+      return writer.getBuffer().toString();
+    } catch (TransformerException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
    * Signing the XML payload document.
    *
    * @param xmlDoc xml document to be signed.
@@ -293,25 +353,6 @@ public class Handler {
     x509data.add(new XMLX509Certificate(xmlDoc, signCert));
     info.add(x509data);
     sig.sign(privateSignKey);
-  }
-
-  /**
-   * Getting public citi encryption public key.
-   *
-   * @return citi public key.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public static PublicKey getCitiPublicKey () throws HandlerException {
-    try {
-      CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_encryption_uat.pem");
-      X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
-      return cer.getPublicKey();
-    } catch (IOException | CertificateException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
   }
 
   /**
@@ -360,26 +401,6 @@ public class Handler {
   }
 
   /**
-   * Convert the Document object to String value.
-   *
-   * @return xml string value of the document WITHOUT the xml header.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public static String convertDocToXMLStr(Document xmlDoc) throws HandlerException {
-    try {
-      TransformerFactory tf = TransformerFactory.newInstance();
-      Transformer transformer = tf.newTransformer();
-      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-      StringWriter writer = new StringWriter();
-      transformer.transform(new DOMSource(xmlDoc), new StreamResult(writer));
-      return writer.getBuffer().toString();
-    } catch (TransformerException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
-
-  /**
    * Sign xml payload using our private key and citi cert, followed by encrypting
    * it using citi public key.
    *
@@ -400,84 +421,6 @@ public class Handler {
         payloadDoc, citiPublicKey);
     return convertDocToXMLStr(encryptedSignedXMLPayloadDoc);
   }
-
-  /* Decryption Logic */
-//  // TODO: check if we need this.
-//
-//  /**
-//   * Load Keystore file that has all certs.
-//   *
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public void loadKeystoreWithAllCerts () throws HandlerException {
-//    try {
-//      FileInputStream fis = new FileInputStream(keyStoreFilePath);
-//      ks.load(fis, keyStorePwd.toCharArray());
-//      fis.close();
-//    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
-//  // TODO: check if we need this.
-//  /**
-//   * Getting the XML Payload as Document object.
-//   *
-//   * @return converted document.
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public Document getXMLResponsePayloadAsDoc (String responseXMLPayload) throws HandlerException {
-//    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//    factory.setNamespaceAware(true);
-//    try {
-//      DocumentBuilder builder = factory.newDocumentBuilder();
-//      return builder.parse(new InputSource(new StringReader(responseXMLPayload)));
-//    } catch (ParserConfigurationException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    } catch (SAXException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    } catch (IOException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
-//  // TODO: check if we need this.
-//  /**
-//   * Getting public client decryption key.
-//   *
-//   * @return public client decryption key.
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public X509Certificate getClientPublicDecrytionKey () throws HandlerException {
-//    try {
-//      X509Certificate decryptCert = (X509Certificate) ks
-//          .getCertificate(HandlerConstant.clientDecryptKeyAlias);
-//      decryptCert.checkValidity();
-//      return decryptCert;
-//    } catch (CertificateExpiredException | CertificateNotYetValidException |
-//        KeyStoreException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
-//  // TODO: check if we need this.
-//  /**
-//   * Getting private client decryption key.
-//   *
-//   * @return private client decryption key.
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
-//    try {
-//      return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
-//              keyStorePwd.toCharArray());
-//    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
 
   /**
    * Decrypt the encrypted & signed xml response payload document.
@@ -547,24 +490,6 @@ public class Handler {
       throw new HandlerException("No encrypted data or encrypted key to proceed "
           + "with decrypting the response XML");
 
-  }
-
-  /**
-   * Getting public citi verification key.
-   *
-   * @return public citi verification key.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public static X509Certificate getCitiSigningCert () throws HandlerException {
-    try {
-      CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_signature_uat.pem");
-      return (X509Certificate) fact.generateCertificate(is);
-    } catch (CertificateException | FileNotFoundException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
   }
 
   /**
@@ -653,52 +578,101 @@ public class Handler {
     return convertDocToXMLStr(SignedXMLResponseDoc);
   }
 
-  // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function. But, there is no decryption key here.
-//  /**
-//   * Decrypt statement file.
-//   *
-//   * @param encryptedStatementFile byteArray of encrypted statement file.
-//   * @return decrypted statement file as byteArray.
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public static byte[] decryptStatementFile (byte[] encryptedStatementFile)
-//      throws HandlerException {
-//
-//    String decryptionKey = "";
-//    NodeList nodes = evalFromString(
-//        "//statementRetrievalResponse//attachmentDecryptionKey",
-//        decryptedStatementRetrievalResponse);
-//    int len = (nodes != null) ? nodes.getLength() : 0;
-//    if (len == 1) {
-//      decryptionKey = nodes.item(0).getTextContent();
-//    }
-//    int ivLen = 8;
-//    byte[] keyiv = new byte[ivLen];
-//    System.arraycopy(encryptedStatementFile, 0, keyiv, 0, ivLen);
-//    int dataLen = encryptedStatementFile.length - ivLen;
-//    byte[] data = new byte[dataLen];
-//    System.arraycopy(encryptedStatementFile, ivLen, data, 0, dataLen);
-//
-//    try {
-//      DESedeKeySpec spec = new DESedeKeySpec(
-//          Base64.decodeBase64(decryptionKey));
-//      SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
-//      Key deskey = keyfactory.generateSecret(spec);
-//      Cipher cipher = Cipher
-//          .getInstance("TripleDES/CBC/NoPadding");//PKCS5Padding NoPadding
-//      IvParameterSpec ips = new IvParameterSpec(keyiv);
-//      cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
-//      byte[] bout = cipher.doFinal(data);
-//      return Base64.decodeBase64(bout);
-//    } catch (NoSuchAlgorithmException | InvalidKeyException |
-//        NoSuchPaddingException | InvalidAlgorithmParameterException |
-//        InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
+  /* API Calling Logics */
 
-  /* Parsing Response Logic */
+  /**
+   * Abstraction of HTTP client webservice logic.
+   *
+   * @param uri URL of the server for sending the http request to.
+   * @param signedEncryptedXMLPayload signed and encrypted XML payload
+   * @return a HashMap of the response segmented with keys of HEADER, STATUS and
+   *         BODY.
+   * @throws RestClientException if an unexpected exception occurs while sending
+   *                             the http request in exchange for http response.
+   */
+  public HashMap<String, Object> handleHttp(Map<String, String> headerList,
+      String signedEncryptedXMLPayload, String uri) throws RestClientException {
+
+    HashMap<String, Object> response = new HashMap<>();
+    try {
+      RestTemplate restTemplate = new RestTemplate();
+      org.springframework.http.HttpHeaders headers =
+          new org.springframework.http.HttpHeaders();
+      headers.setAccept(Arrays.asList(APPLICATION_XML, APPLICATION_OCTET_STREAM));
+      for (Map.Entry<String, String> entry : headerList.entrySet()) {
+        headers.set(entry.getKey(), entry.getValue());
+      }
+      HttpEntity<String> entity =
+          new HttpEntity<>(signedEncryptedXMLPayload, headers);
+      ResponseEntity<?> responseEntity = restTemplate
+          .exchange(uri, HttpMethod.POST, entity, byte[].class);
+      response.put("HEADER", responseEntity.getHeaders());
+      response.put("STATUS", responseEntity.getStatusCode());
+      response.put("BODY", responseEntity.getBody());
+    } catch (HttpStatusCodeException e) {
+      response.put("HEADER", e.getResponseHeaders());
+      response.put("STATUS", e.getStatusCode());
+      response.put("BODY", e.getStatusText()); //.getResponseBodyAsByteArray());
+    }
+    return response;
+  }
+
+  /**
+   * Authentication Calling Logic: establish handshake through keys.
+   *
+   * @param oAuthPayload request body in xml.
+   * @return response received from the successful handshake with Citi API.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public String authenticate (String oAuthPayload) throws XMLSecurityException,
+      HandlerException {
+    try {
+      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+          deskeraSSLCertPwd.toCharArray());
+      KeyManagerFactory kmf = KeyManagerFactory
+          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+
+      KeyStore trustStore = KeyStore.getInstance("JKS");
+      trustStore.load(new FileInputStream(citiSSLCertFilePath),
+          citiSSLCertPwd.toCharArray());
+      TrustManagerFactory tmf = TrustManagerFactory
+          .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmf.init(trustStore);
+
+      SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // The SSL standard
+      sslContext.init(
+          kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+      HttpsURLConnection
+          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+      Client client = new Client(new URLConnectionClientHandler(
+          new HttpURLConnectionFactory() {
+            Proxy proxy = Proxy.NO_PROXY;
+
+            public HttpURLConnection getHttpURLConnection(URL url)
+                throws IOException {
+              return (HttpURLConnection) url.openConnection(proxy);
+            }
+          }), new DefaultClientConfig());
+      WebResource webResource = client.resource(HandlerConstant.oAuthURL_UAT);
+      WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
+      builder.header(HttpHeaders.AUTHORIZATION, "Basic "
+          + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
+                  .getBytes()).replaceAll("([\\r\\n])", ""));
+      String oAuthPayload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
+      ClientResponse clientResponse = builder.post(ClientResponse.class,
+              oAuthPayload_SignedEncrypted);
+      return clientResponse.getEntity(String.class);
+    } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
+        KeyManagementException | KeyStoreException | IOException |
+        CertificateException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
 
   /**
    * Parsing response to show error or valid message logic.
@@ -775,103 +749,6 @@ public class Handler {
       } else {
         throw new HandlerException("No content extracted from response"); // TODO: Check if this logic is correct
       }
-    }
-  }
-
-  // TODO: check if this can be removed because it is of duplicate with the other parseMIMEResponse
-//  /**
-//   * Parsing MTOM Response (Parser for Statement Retrieval Response).
-//   *
-//   * @param response MTOM response.
-//   * @return response in byteArray.
-//   * @throws HandlerException custom exception for Handler class.
-//   */
-//  public static byte[] parseMTOMResponse (String response)
-//      throws HandlerException {
-//    try {
-//      MimeMultipart mp = new MimeMultipart(
-//          new ByteArrayDataSource(response, MediaType.TEXT_XML));
-//      for (int i = 0; i < mp.getCount(); i++) {
-//        BodyPart bodyPart = mp.getBodyPart(i);
-//        String contentType = bodyPart.getContentType();
-//        Logger.getLogger(Handler.class.getName()).info("ContentType==>" + contentType);
-//        if (bodyPart.isMimeType("text/xml")) {// if text/xml
-//          responseStatRetXMLStr = (String) bodyPart.getContent();
-//        } else {
-//          ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
-//              .getContent();
-//          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-//          int nRead;
-//          byte[] data = new byte[1024];
-//          while ((nRead = bais.read(data, 0, data.length)) != -1) {
-//            buffer.write(data, 0, nRead);
-//          }
-//          buffer.flush();
-//          return buffer.toByteArray();
-//        }
-//      }
-//    } catch (MessagingException | IOException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-//  }
-
-  /* API Calling Logics */
-
-  /**
-   * Authentication Calling Logic: establish handshake through keys.
-   *
-   * @param oAuthPayload request body in xml.
-   * @return response received from the successful handshake with Citi API.
-   * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public String authenticate (String oAuthPayload) throws XMLSecurityException,
-      HandlerException {
-    try {
-      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-          deskeraSSLCertPwd.toCharArray());
-      KeyManagerFactory kmf = KeyManagerFactory
-          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
-
-      KeyStore trustStore = KeyStore.getInstance("JKS");
-      trustStore.load(new FileInputStream(citiSSLCertFilePath),
-          citiSSLCertPwd.toCharArray());
-      TrustManagerFactory tmf = TrustManagerFactory
-          .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      tmf.init(trustStore);
-
-      SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // The SSL standard
-      sslContext.init(
-          kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
-      HttpsURLConnection
-          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-      Client client = new Client(new URLConnectionClientHandler(
-          new HttpURLConnectionFactory() {
-            Proxy proxy = Proxy.NO_PROXY;
-
-            public HttpURLConnection getHttpURLConnection(URL url)
-                throws IOException {
-              return (HttpURLConnection) url.openConnection(proxy);
-            }
-          }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.oAuthURL_UAT);
-      WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION, "Basic "
-          + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
-                  .getBytes()).replaceAll("([\\r\\n])", ""));
-      String oAuthPayload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
-      ClientResponse clientResponse = builder.post(ClientResponse.class,
-              oAuthPayload_SignedEncrypted);
-      return clientResponse.getEntity(String.class);
-    } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
-        KeyManagementException | KeyStoreException | IOException |
-        CertificateException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
     }
   }
 
@@ -995,10 +872,13 @@ public class Handler {
       cdtTrfTxInf.setUltmtDbtr(ultmtDbtr);
               /* End of UltmtDbtr */
               /* Start of CdtrAgt */
-      BranchAndFinancialInstitutionIdentification4 cdtrAgt2 = new BranchAndFinancialInstitutionIdentification4();
-      FinancialInstitutionIdentification7 finInstnId2 = new FinancialInstitutionIdentification7();
+      BranchAndFinancialInstitutionIdentification4 cdtrAgt2 =
+          new BranchAndFinancialInstitutionIdentification4();
+      FinancialInstitutionIdentification7 finInstnId2 =
+          new FinancialInstitutionIdentification7();
       finInstnId2.setBIC("CITIGB2L");
-      ClearingSystemMemberIdentification2 clrSysMmbId = new ClearingSystemMemberIdentification2();
+      ClearingSystemMemberIdentification2 clrSysMmbId =
+          new ClearingSystemMemberIdentification2();
       clrSysMmbId.setMmbId("185008");
       finInstnId2.setClrSysMmbId(clrSysMmbId);
       finInstnId2.setNm("CITIBANK(ISO)");
@@ -1157,61 +1037,6 @@ public class Handler {
   }
 
   /**
-   * Payment initiation logic.
-   *
-   * @return response that contains the wanted statement ID(s).
-   * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public String initialisePayment (String payInitPayload)
-      throws XMLSecurityException, HandlerException {
-    try {
-      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-          deskeraSSLCertPwd.toCharArray());
-      KeyManagerFactory kmf = KeyManagerFactory
-          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
-      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
-      HttpsURLConnection
-          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-      Client client = new Client(new URLConnectionClientHandler(
-          new HttpURLConnectionFactory() {
-            Proxy proxy = null;
-
-            public HttpURLConnection getHttpURLConnection(URL url)
-                throws IOException {
-              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
-                proxy = new Proxy(Proxy.Type.HTTP,
-                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
-              } else {
-                proxy = Proxy.NO_PROXY;
-              }
-              return (HttpURLConnection) url.openConnection(proxy);
-            }
-          }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.payInitURL_UAT)
-          .queryParam("client_id", getClientId());
-      Builder builder = webResource.type(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION,
-          "Bearer " + oAuthToken);
-      builder.header("payloadType",
-          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
-      String payInitPayload_SignedEncrypted =
-          signAndEncryptXMLForCiti(payInitPayload);
-      ClientResponse clientResponse = builder
-          .post(ClientResponse.class, payInitPayload_SignedEncrypted);
-      return clientResponse.getEntity(String.class);
-    } catch (IOException | CertificateException | UnrecoverableKeyException |
-        NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
-
-  /**
    * Payment initiation logic via Outgoing Payment method, which takes the
    * necessary data required in ISOXML V3 (pain.001.001.03)
    *
@@ -1243,168 +1068,6 @@ public class Handler {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
       throw new HandlerException(errorMsg);
     }
-  }
-
-  /**
-   * Balance inquiry logic.
-   *
-   * @param balanceInquiryPayload request body in xml.
-   * @return response xml that contains the balance value, which follow ISO20022
-   *         v2 (camt.052.001.02) standards.
-   * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public String checkBalance (String balanceInquiryPayload)
-      throws XMLSecurityException, HandlerException {
-
-//    try {
-//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-//              deskeraSSLCertPwd.toCharArray());
-//      KeyManagerFactory kmf = KeyManagerFactory
-//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
-//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
-//      HttpsURLConnection
-//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-      Client client = new Client(new URLConnectionClientHandler(
-          new HttpURLConnectionFactory() {
-            Proxy proxy = null;
-
-            public HttpURLConnection getHttpURLConnection(URL url)
-                throws IOException {
-              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
-                proxy = new Proxy(Proxy.Type.HTTP,
-                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
-              } else {
-                proxy = Proxy.NO_PROXY;
-              }
-              return (HttpURLConnection) url.openConnection(proxy);
-            }
-          }), new DefaultClientConfig());
-      WebResource webResource = client.resource(balanceInquiryUrl_UAT)
-          .queryParam("client_id", getClientId());
-      Builder builder = webResource.accept(MediaType.APPLICATION_XML);
-      builder.header("Content-Type", "application/xml");
-      builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
-      String balanceInquiryPayload_SignedEncrypted = signAndEncryptXMLForCiti(
-          balanceInquiryPayload);
-      ClientResponse clientResponse = builder.post(ClientResponse.class,
-              balanceInquiryPayload_SignedEncrypted);
-      return clientResponse.getEntity(String.class);
-//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-  }
-
-  /**
-   * Statement retrieval logic using statement ID as part of request body.
-   *
-   * @param requestStatementPayload request body in xml.
-   * @return a MIME response which has 2 parts. First part is of XML encrypted
-   *         which has to be decrypted and VerifySigned to get a plain XML
-   *         response. The plain response has an AttachmentDecryptionKey and is
-   *         used to decrypt the Binary Statement (2nd part of MIME) which is the
-   *         expected Statement file.
-   *
-   *         The second part contains the Statement File attached in MTOM format
-   *         which follows SWIFT MT940, or ISO XML camt.053.001.02 or SWIFT MT942
-   *         or ISO XML camt.052.001.02 standards. If the file size exceeds 4 MB,
-   *         then there will be an error message in response will be sent back
-   *         to the partner.
-   *
-   *         If the request is rejected due to validation errors or data issues,
-   *         the response follows a custom XML format.
-   * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload.
-   * @throws HandlerException custom exception for Handler class.
-   */
-  public InputStream requestForStatement (String requestStatementPayload)
-      throws XMLSecurityException, HandlerException {
-//    try {
-//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
-//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
-//              deskeraSSLCertPwd.toCharArray());
-//      KeyManagerFactory kmf = KeyManagerFactory
-//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
-//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
-//      HttpsURLConnection
-//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-      Client client = new Client(new URLConnectionClientHandler(
-          new HttpURLConnectionFactory() {
-            Proxy proxy = null;
-
-            public HttpURLConnection getHttpURLConnection(URL url)
-                throws IOException {
-              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
-                proxy = new Proxy(Proxy.Type.HTTP,
-                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
-              } else {
-                proxy = Proxy.NO_PROXY;
-              }
-              return (HttpURLConnection) url.openConnection(proxy);
-            }
-          }), new DefaultClientConfig());
-      WebResource webResource = client.resource(statementRetUrl_UAT)
-          .queryParam("client_id", getClientId());
-      Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
-          .accept(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
-      String statementRetrievalPayload_SignedEncrypted = signAndEncryptXMLForCiti(
-          requestStatementPayload);
-      ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
-          .post(ClientResponse.class, statementRetrievalPayload_SignedEncrypted);
-      return clientResponse.getEntityInputStream();
-//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
-//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
-//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-//      throw new HandlerException(e.getMessage());
-//    }
-  }
-
-  /* Statement Retrieval Response Consumption Logic */
-
-  /**
-   * Abstraction of HTTP client webservice logic.
-   *
-   * @param uri URL of the server for sending the http request to.
-   * @param signedEncryptedXMLPayload signed and encrypted XML payload
-   * @return a HashMap of the response segmented with keys of HEADER, STATUS and
-   *         BODY.
-   * @throws RestClientException if an unexpected exception occurs while sending
-   *                             the http request in exchange for http response.
-   */
-  public HashMap<String, Object> handleHttp(Map<String, String> headerList,
-      String signedEncryptedXMLPayload, String uri) throws RestClientException {
-
-    HashMap<String, Object> response = new HashMap<>();
-    try {
-      RestTemplate restTemplate = new RestTemplate();
-      org.springframework.http.HttpHeaders headers =
-          new org.springframework.http.HttpHeaders();
-      headers.setAccept(Arrays.asList(APPLICATION_XML, APPLICATION_OCTET_STREAM));
-      for (Map.Entry<String, String> entry : headerList.entrySet()) {
-        headers.set(entry.getKey(), entry.getValue());
-      }
-      HttpEntity<String> entity =
-          new HttpEntity<>(signedEncryptedXMLPayload, headers);
-      ResponseEntity<?> responseEntity = restTemplate
-          .exchange(uri, HttpMethod.POST, entity, byte[].class);
-      response.put("HEADER", responseEntity.getHeaders());
-      response.put("STATUS", responseEntity.getStatusCode());
-      response.put("BODY", responseEntity.getBody());
-    } catch (HttpStatusCodeException e) {
-      response.put("HEADER", e.getResponseHeaders());
-      response.put("STATUS", e.getStatusCode());
-      response.put("BODY", e.getStatusText()); //.getResponseBodyAsByteArray());
-    }
-    return response;
   }
 
   /**
@@ -1565,5 +1228,343 @@ public class Handler {
 //  public static String convertXSDToXML (String XSD) {
 //
 //  }
+
+  /* Decryption Logic */
+//  // TODO: check if we need this.
+//
+//  /**
+//   * Load Keystore file that has all certs.
+//   *
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public void loadKeystoreWithAllCerts () throws HandlerException {
+//    try {
+//      FileInputStream fis = new FileInputStream(keyStoreFilePath);
+//      ks.load(fis, keyStorePwd.toCharArray());
+//      fis.close();
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+//  // TODO: check if we need this.
+//  /**
+//   * Getting the XML Payload as Document object.
+//   *
+//   * @return converted document.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public Document getXMLResponsePayloadAsDoc (String responseXMLPayload) throws HandlerException {
+//    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//    factory.setNamespaceAware(true);
+//    try {
+//      DocumentBuilder builder = factory.newDocumentBuilder();
+//      return builder.parse(new InputSource(new StringReader(responseXMLPayload)));
+//    } catch (ParserConfigurationException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    } catch (SAXException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    } catch (IOException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+//  // TODO: check if we need this.
+//  /**
+//   * Getting public client decryption key.
+//   *
+//   * @return public client decryption key.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public X509Certificate getClientPublicDecrytionKey () throws HandlerException {
+//    try {
+//      X509Certificate decryptCert = (X509Certificate) ks
+//          .getCertificate(HandlerConstant.clientDecryptKeyAlias);
+//      decryptCert.checkValidity();
+//      return decryptCert;
+//    } catch (CertificateExpiredException | CertificateNotYetValidException |
+//        KeyStoreException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+//  // TODO: check if we need this.
+//  /**
+//   * Getting private client decryption key.
+//   *
+//   * @return private client decryption key.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public PrivateKey getClientPrivateDecryptionKey () throws HandlerException {
+//    try {
+//      return (PrivateKey) ks.getKey(HandlerConstant.clientDecryptKeyAlias,
+//              keyStorePwd.toCharArray());
+//    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+
+  // TODO: check if this can be removed because it is of duplicate with the des3DecodeCBC function. But, there is no decryption key here.
+//  /**
+//   * Decrypt statement file.
+//   *
+//   * @param encryptedStatementFile byteArray of encrypted statement file.
+//   * @return decrypted statement file as byteArray.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public static byte[] decryptStatementFile (byte[] encryptedStatementFile)
+//      throws HandlerException {
+//
+//    String decryptionKey = "";
+//    NodeList nodes = evalFromString(
+//        "//statementRetrievalResponse//attachmentDecryptionKey",
+//        decryptedStatementRetrievalResponse);
+//    int len = (nodes != null) ? nodes.getLength() : 0;
+//    if (len == 1) {
+//      decryptionKey = nodes.item(0).getTextContent();
+//    }
+//    int ivLen = 8;
+//    byte[] keyiv = new byte[ivLen];
+//    System.arraycopy(encryptedStatementFile, 0, keyiv, 0, ivLen);
+//    int dataLen = encryptedStatementFile.length - ivLen;
+//    byte[] data = new byte[dataLen];
+//    System.arraycopy(encryptedStatementFile, ivLen, data, 0, dataLen);
+//
+//    try {
+//      DESedeKeySpec spec = new DESedeKeySpec(
+//          Base64.decodeBase64(decryptionKey));
+//      SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("DESede");
+//      Key deskey = keyfactory.generateSecret(spec);
+//      Cipher cipher = Cipher
+//          .getInstance("TripleDES/CBC/NoPadding");//PKCS5Padding NoPadding
+//      IvParameterSpec ips = new IvParameterSpec(keyiv);
+//      cipher.init(Cipher.DECRYPT_MODE, deskey, ips);
+//      byte[] bout = cipher.doFinal(data);
+//      return Base64.decodeBase64(bout);
+//    } catch (NoSuchAlgorithmException | InvalidKeyException |
+//        NoSuchPaddingException | InvalidAlgorithmParameterException |
+//        InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+
+  // TODO: check if this can be removed because it is of duplicate with the other parseMIMEResponse
+//  /**
+//   * Parsing MTOM Response (Parser for Statement Retrieval Response).
+//   *
+//   * @param response MTOM response.
+//   * @return response in byteArray.
+//   * @throws HandlerException custom exception for Handler class.
+//   */
+//  public static byte[] parseMTOMResponse (String response)
+//      throws HandlerException {
+//    try {
+//      MimeMultipart mp = new MimeMultipart(
+//          new ByteArrayDataSource(response, MediaType.TEXT_XML));
+//      for (int i = 0; i < mp.getCount(); i++) {
+//        BodyPart bodyPart = mp.getBodyPart(i);
+//        String contentType = bodyPart.getContentType();
+//        Logger.getLogger(Handler.class.getName()).info("ContentType==>" + contentType);
+//        if (bodyPart.isMimeType("text/xml")) {// if text/xml
+//          responseStatRetXMLStr = (String) bodyPart.getContent();
+//        } else {
+//          ByteArrayInputStream bais = (ByteArrayInputStream) bodyPart
+//              .getContent();
+//          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+//          int nRead;
+//          byte[] data = new byte[1024];
+//          while ((nRead = bais.read(data, 0, data.length)) != -1) {
+//            buffer.write(data, 0, nRead);
+//          }
+//          buffer.flush();
+//          return buffer.toByteArray();
+//        }
+//      }
+//    } catch (MessagingException | IOException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+//  }
+  /**
+   * Payment initiation logic.
+   *
+   * @return response that contains the wanted statement ID(s).
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public String initialisePayment (String payInitPayload)
+      throws XMLSecurityException, HandlerException {
+    try {
+      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+          deskeraSSLCertPwd.toCharArray());
+      KeyManagerFactory kmf = KeyManagerFactory
+          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+      HttpsURLConnection
+          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+      Client client = new Client(new URLConnectionClientHandler(
+          new HttpURLConnectionFactory() {
+            Proxy proxy = null;
+
+            public HttpURLConnection getHttpURLConnection(URL url)
+                throws IOException {
+              if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+                proxy = new Proxy(Proxy.Type.HTTP,
+                    new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+              } else {
+                proxy = Proxy.NO_PROXY;
+              }
+              return (HttpURLConnection) url.openConnection(proxy);
+            }
+          }), new DefaultClientConfig());
+      WebResource webResource = client.resource(HandlerConstant.payInitURL_UAT)
+          .queryParam("client_id", getClientId());
+      Builder builder = webResource.type(MediaType.APPLICATION_XML);
+      builder.header(HttpHeaders.AUTHORIZATION,
+          "Bearer " + oAuthToken);
+      builder.header("payloadType",
+          "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
+      String payInitPayload_SignedEncrypted =
+          signAndEncryptXMLForCiti(payInitPayload);
+      ClientResponse clientResponse = builder
+          .post(ClientResponse.class, payInitPayload_SignedEncrypted);
+      return clientResponse.getEntity(String.class);
+    } catch (IOException | CertificateException | UnrecoverableKeyException |
+        NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * Balance inquiry logic.
+   *
+   * @param balanceInquiryPayload request body in xml.
+   * @return response xml that contains the balance value, which follow ISO20022
+   *         v2 (camt.052.001.02) standards.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public String checkBalance (String balanceInquiryPayload)
+      throws XMLSecurityException, HandlerException {
+
+//    try {
+//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+//              deskeraSSLCertPwd.toCharArray());
+//      KeyManagerFactory kmf = KeyManagerFactory
+//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+//      HttpsURLConnection
+//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+    Client client = new Client(new URLConnectionClientHandler(
+        new HttpURLConnectionFactory() {
+          Proxy proxy = null;
+
+          public HttpURLConnection getHttpURLConnection(URL url)
+              throws IOException {
+            if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+              proxy = new Proxy(Proxy.Type.HTTP,
+                  new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+            } else {
+              proxy = Proxy.NO_PROXY;
+            }
+            return (HttpURLConnection) url.openConnection(proxy);
+          }
+        }), new DefaultClientConfig());
+    WebResource webResource = client.resource(balanceInquiryUrl_UAT)
+        .queryParam("client_id", getClientId());
+    Builder builder = webResource.accept(MediaType.APPLICATION_XML);
+    builder.header("Content-Type", "application/xml");
+    builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
+    String balanceInquiryPayload_SignedEncrypted = signAndEncryptXMLForCiti(
+        balanceInquiryPayload);
+    ClientResponse clientResponse = builder.post(ClientResponse.class,
+        balanceInquiryPayload_SignedEncrypted);
+    return clientResponse.getEntity(String.class);
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
+//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+  }
+
+  /**
+   * Statement retrieval logic using statement ID as part of request body.
+   *
+   * @param requestStatementPayload request body in xml.
+   * @return a MIME response which has 2 parts. First part is of XML encrypted
+   *         which has to be decrypted and VerifySigned to get a plain XML
+   *         response. The plain response has an AttachmentDecryptionKey and is
+   *         used to decrypt the Binary Statement (2nd part of MIME) which is the
+   *         expected Statement file.
+   *
+   *         The second part contains the Statement File attached in MTOM format
+   *         which follows SWIFT MT940, or ISO XML camt.053.001.02 or SWIFT MT942
+   *         or ISO XML camt.052.001.02 standards. If the file size exceeds 4 MB,
+   *         then there will be an error message in response will be sent back
+   *         to the partner.
+   *
+   *         If the request is rejected due to validation errors or data issues,
+   *         the response follows a custom XML format.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public InputStream requestForStatement (String requestStatementPayload)
+      throws XMLSecurityException, HandlerException {
+//    try {
+//      KeyStore clientStore = KeyStore.getInstance("PKCS12");
+//      clientStore.load(new FileInputStream(deskeraSSLCertFilePath),
+//              deskeraSSLCertPwd.toCharArray());
+//      KeyManagerFactory kmf = KeyManagerFactory
+//          .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+//      kmf.init(clientStore, deskeraSSLCertPwd.toCharArray());
+//      SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+//      sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+//      HttpsURLConnection
+//          .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+    Client client = new Client(new URLConnectionClientHandler(
+        new HttpURLConnectionFactory() {
+          Proxy proxy = null;
+
+          public HttpURLConnection getHttpURLConnection(URL url)
+              throws IOException {
+            if (proxy == null && !HandlerConstant.proxyURL.isEmpty()) {
+              proxy = new Proxy(Proxy.Type.HTTP,
+                  new InetSocketAddress(HandlerConstant.proxyURL, 8080));
+            } else {
+              proxy = Proxy.NO_PROXY;
+            }
+            return (HttpURLConnection) url.openConnection(proxy);
+          }
+        }), new DefaultClientConfig());
+    WebResource webResource = client.resource(statementRetUrl_UAT)
+        .queryParam("client_id", getClientId());
+    Builder builder = webResource.accept(MediaType.APPLICATION_OCTET_STREAM)
+        .accept(MediaType.APPLICATION_XML);
+    builder.header(HttpHeaders.AUTHORIZATION,"Bearer " + oAuthToken);
+    String statementRetrievalPayload_SignedEncrypted = signAndEncryptXMLForCiti(
+        requestStatementPayload);
+    ClientResponse clientResponse = builder.type(MediaType.APPLICATION_XML)
+        .post(ClientResponse.class, statementRetrievalPayload_SignedEncrypted);
+    return clientResponse.getEntityInputStream();
+//    } catch (IOException | CertificateException | NoSuchAlgorithmException |
+//        UnrecoverableKeyException | KeyStoreException | KeyManagementException e) {
+//      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+//      throw new HandlerException(e.getMessage());
+//    }
+  }
 
 }

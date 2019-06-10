@@ -291,7 +291,7 @@ public class Handler {
    * @return converted document object.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static Document convertXMLStrToDoc(String xmlPayload)
+  public static Document convertXMLStrToDoc (String xmlPayload)
       throws HandlerException {
 
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -311,7 +311,7 @@ public class Handler {
    * @return xml string value of the document WITHOUT the xml header.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String convertDocToXMLStr(Document xmlDoc) throws HandlerException {
+  public static String convertDocToXMLStr (Document xmlDoc) throws HandlerException {
     try {
       TransformerFactory tf = TransformerFactory.newInstance();
       Transformer transformer = tf.newTransformer();
@@ -411,7 +411,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String signAndEncryptXMLForCiti(String payloadXML)
+  public String signAndEncryptXMLForCiti (String payloadXML)
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertXMLStrToDoc(payloadXML);
     PrivateKey clientPrivateKey = getClientPrivateKey();
@@ -567,7 +567,7 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String decryptAndVerifyXMLFromCiti(String encryptedSignedXMLResponse)
+  public String decryptAndVerifyXMLFromCiti (String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey = getClientPrivateKey();
     Document encryptedSignedXMLResponseDoc =
@@ -591,7 +591,7 @@ public class Handler {
    * @throws RestClientException if an unexpected exception occurs while sending
    *                             the http request in exchange for http response.
    */
-  public HashMap<String, Object> handleHttp(Map<String, String> headerList,
+  public HashMap<String, Object> handleHttp (Map<String, String> headerList,
       String signedEncryptedXMLPayload, String uri) throws RestClientException {
 
     HashMap<String, Object> response = new HashMap<>();
@@ -686,7 +686,7 @@ public class Handler {
    * @return response message.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String parseAuthOrPayInitResponse(Document responseDoc, String type,
+  public static String parseAuthOrPayInitResponse (Document responseDoc, String type,
       String tagName) throws HandlerException, XPathExpressionException {
 
     XPath xpath = XPathFactory.newInstance().newXPath();
@@ -761,7 +761,7 @@ public class Handler {
    *                          if any unexpected event happened when creating
    *                          the XML payload String.
    */
-  public static String marshalToISOMXL() throws HandlerException {
+  public static String marshalToISOMXL () throws HandlerException {
     try {
       DatatypeFactory dataType = DatatypeFactory.newInstance();
 
@@ -1050,7 +1050,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public byte[] initiatePayment(String ISOXML) throws XMLSecurityException,
+  public byte[] initiatePayment (String ISOXML) throws XMLSecurityException,
       HandlerException {
     String base64Payload = generateBase64PayloadFromISOXML(ISOXML);
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
@@ -1128,7 +1128,7 @@ public class Handler {
    *         statement file from the second part of {@code response}.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static HashMap<String, Object> parseMIMEResponse(byte[] XMLResponse)
+  private static HashMap<String, Object> parseMIMEResponse (byte[] XMLResponse)
       throws HandlerException{
     try {
       String responseStatRetXMLStr = "";
@@ -1188,7 +1188,7 @@ public class Handler {
    * @return decrypted statement file.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static byte[] des3DecodeCBC(String decryptionKey, byte[] input)
+  private static byte[] des3DecodeCBC (String decryptionKey, byte[] input)
       throws HandlerException {
     try {
       // attachment byte array from MIME response

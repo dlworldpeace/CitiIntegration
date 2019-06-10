@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<statementRetrievalRequest xmlns="http://com.citi.citiconnect/services/types/attachments/v1">
+	<statementId>17422422</statementId>
+</statementRetrievalRequest>

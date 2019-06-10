@@ -12,7 +12,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -30,3 +29,4 @@ hs_err_pid*
 deskera_client_id.txt
 deskera_secret_key.txt
 BalanceInquiryRequest_Plain_Real.txt
+StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt

@@ -286,10 +286,11 @@ public class HandlerTest {
       throws IOException, XMLSecurityException, HandlerException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/OutgoingPayment/"
-            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
+        "src/test/resources/sample/Authentication/"
+            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
+            + "AuthorizationRequest_V3_Plain.txt")));
 
-    handler.authenticate(str);
+    handler.requestOAuth(str);
   }
 
   @Test
@@ -301,7 +302,7 @@ public class HandlerTest {
         "src/test/resources/sample/Authentication/"
             + "DirectDebitPaymentandUSFasterPayment/XML Request/"
             + "AuthorizationRequest_V3_Plain.txt")));
-    String response = handler.authenticate(strAuth);
+    String response = handler.requestOAuth(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
@@ -314,25 +315,28 @@ public class HandlerTest {
 //    String resInitPay = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
 //    System.out.println(resInitPay);
 
-    final String strInitStat = new String(Files.readAllBytes(Paths.get(
-    "src/test/resources/sample/StatementInitiation/Intraday/XML Request/"
-        + "StatementInitiationRequest_SWIFT_MT_942_Plain.txt")));
-    String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
-    String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
-    System.out.println(resInitStat);
+//    final String strInitStat = new String(Files.readAllBytes(Paths.get(
+//    "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
+//        + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
+//    String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
+//    String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
+//    final String statementId = parseAuthOrPayInitResponse(
+//        convertXMLStrToDoc(resInitStat),"" ,"//statementId/text()");
+//    System.out.println(statementId);
 
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementRetrieval/"
-//            + "XML Request/StatementRetrievalRequest_Plain.txt")));
+//            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
+//        .replace("placeholder", statementId);
 //    String resStatRet = new String(handler.retrieveStatement(strStatRet));
 //    System.out.println(resStatRet);
 
-//    final String strBalance = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/BalanceInquiry/"
-//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-//    String resBalance_Encypted = handler.checkBalance(strBalance);
-//    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
-//    System.out.println(resBalance);
+    final String strBalance = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/"
+            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+    String resBalance_Encypted = handler.checkBalance(strBalance);
+    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+    System.out.println(resBalance);
   }
 
   @Test

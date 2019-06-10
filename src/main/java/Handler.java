@@ -1257,11 +1257,6 @@ public class Handler {
     }
   }
 
-  // TODO: add this converter
-//  public static String convertXSDToXML (String XSD) {
-//
-//  }
-
   /* Decryption Logic */
 //  // TODO: check if we need this.
 //

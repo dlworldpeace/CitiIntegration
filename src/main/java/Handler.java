@@ -7,6 +7,7 @@ import static main.java.HandlerConstant.KEYSTORE_ALIAS;
 import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
 import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
 import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
+import static main.java.HandlerConstant.O_AUTH_URL_UAT;
 import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
 import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
@@ -627,7 +628,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String authenticate (String oAuthPayload) throws XMLSecurityException,
+  public String requestOAuth (String oAuthPayload) throws XMLSecurityException,
       HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
@@ -644,32 +645,33 @@ public class Handler {
           .getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(trustStore);
 
-      SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // The SSL standard
+      SSLContext sslContext = SSLContext
+          .getInstance("TLSv1.2"); // The SSL standard
       sslContext.init(
           kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
       HttpsURLConnection
           .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-      Client client = new Client(new URLConnectionClientHandler(
-          new HttpURLConnectionFactory() {
-            Proxy proxy = Proxy.NO_PROXY;
 
-            public HttpURLConnection getHttpURLConnection(URL url)
-                throws IOException {
-              return (HttpURLConnection) url.openConnection(proxy);
-            }
-          }), new DefaultClientConfig());
-      WebResource webResource = client.resource(HandlerConstant.O_AUTH_URL_UAT);
-      WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
-      builder.header(HttpHeaders.AUTHORIZATION, "Basic "
+      String payload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(HttpHeaders.AUTHORIZATION, "Basic "
           + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
-                  .getBytes()).replaceAll("([\\r\\n])", ""));
-      String oAuthPayload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
-      ClientResponse clientResponse = builder.post(ClientResponse.class,
-              oAuthPayload_SignedEncrypted);
-      return clientResponse.getEntity(String.class);
-    } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
-        KeyManagementException | KeyStoreException | IOException |
-        CertificateException e) {
+          .getBytes()).replaceAll("([\\r\\n])", ""));
+      HashMap<String, Object> response = handleHttp(headerList,
+          payload_SignedEncrypted, O_AUTH_URL_UAT);
+      HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+      if (statusCode == HttpStatus.OK) {
+        return new String((byte[]) response.get("BODY"));
+      } else { // error msg received instead of expected statement
+        String errorMsg = (String) response.get("BODY");
+        Logger.getLogger(Handler.class.getName())
+            .log(Level.SEVERE, null, errorMsg);
+        throw new HandlerException(errorMsg);
+      }
+    } catch (IOException | CertificateException | UnrecoverableKeyException |
+        NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -1594,5 +1596,62 @@ public class Handler {
 //      throw new HandlerException(e.getMessage());
 //    }
   }
+
+      /**
+       * Authentication Calling Logic: establish handshake through keys.
+       *
+       * @param oAuthPayload request body in xml.
+       * @return response received from the successful handshake with Citi API.
+       * @throws XMLSecurityException if an unexpected exception occurs while signing
+       *                              the auth payload or encrypting the payload.
+       * @throws HandlerException custom exception for Handler class.
+       */
+      public String authenticate (String oAuthPayload) throws XMLSecurityException,
+          HandlerException {
+        try {
+          KeyStore clientStore = KeyStore.getInstance("PKCS12");
+          clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
+              DESKERA_SSL_CERT_PWD.toCharArray());
+          KeyManagerFactory kmf = KeyManagerFactory
+              .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+          kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
+
+          KeyStore trustStore = KeyStore.getInstance("JKS");
+          trustStore.load(new FileInputStream(CITI_SSL_CERT_FILE_PATH),
+              CITI_SSL_CERT_PWD.toCharArray());
+          TrustManagerFactory tmf = TrustManagerFactory
+              .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+          tmf.init(trustStore);
+
+          SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); // The SSL standard
+          sslContext.init(
+              kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+          HttpsURLConnection
+              .setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+          Client client = new Client(new URLConnectionClientHandler(
+              new HttpURLConnectionFactory() {
+                Proxy proxy = Proxy.NO_PROXY;
+
+                public HttpURLConnection getHttpURLConnection(URL url)
+                    throws IOException {
+                  return (HttpURLConnection) url.openConnection(proxy);
+                }
+              }), new DefaultClientConfig());
+          WebResource webResource = client.resource(O_AUTH_URL_UAT);
+          WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
+          builder.header(HttpHeaders.AUTHORIZATION, "Basic "
+              + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
+              .getBytes()).replaceAll("([\\r\\n])", ""));
+          String oAuthPayload_SignedEncrypted = signAndEncryptXMLForCiti(oAuthPayload);
+          ClientResponse clientResponse = builder.post(ClientResponse.class,
+              oAuthPayload_SignedEncrypted);
+          return clientResponse.getEntity(String.class);
+        } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
+            KeyManagementException | KeyStoreException | IOException |
+            CertificateException e) {
+          Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+          throw new HandlerException(e.getMessage());
+        }
+      }
 
 }

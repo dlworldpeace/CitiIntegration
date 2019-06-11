@@ -1127,7 +1127,7 @@ public class Handler {
    *         statement file from the second part of {@code response}.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static HashMap<String, Object> parseMIMEResponse (byte[] XMLResponse)
+  public static HashMap<String, Object> parseMIMEResponse (byte[] XMLResponse)
       throws HandlerException{
     try {
       String responseStatRetXMLStr = "";
@@ -1187,7 +1187,7 @@ public class Handler {
    * @return decrypted statement file.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static byte[] des3DecodeCBC (String decryptionKey, byte[] input)
+  public static byte[] des3DecodeCBC (String decryptionKey, byte[] input)
       throws HandlerException {
     try {
       // attachment byte array from MIME response

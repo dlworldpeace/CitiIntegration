@@ -2,12 +2,14 @@ package test.java;
 
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
+import static main.java.Handler.des3DecodeCBC;
 import static main.java.Handler.marshalToISOMXL;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
+import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
 import static main.java.HandlerConstant.TYPE_AUTH;
@@ -25,6 +27,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.Handler;
 import main.java.HandlerException;
@@ -331,12 +334,12 @@ public class HandlerTest {
 //    String resStatRet = new String(handler.retrieveStatement(strStatRet));
 //    System.out.println(resStatRet);
 
-    final String strBalance = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/BalanceInquiry/"
-            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    String resBalance_Encypted = handler.checkBalance(strBalance);
-    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
-    System.out.println(resBalance);
+//    final String strBalance = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/BalanceInquiry/"
+//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+//    String resBalance_Encypted = handler.checkBalance(strBalance);
+//    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+//    System.out.println(resBalance);
   }
 
   @Test
@@ -373,7 +376,7 @@ public class HandlerTest {
   }
 
   @Test
-  public  void marshalToISOMXL_resultSameAsSample ()
+  public void marshalToISOMXL_resultSameAsSample ()
       throws IOException, HandlerException, SAXException {
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
@@ -383,4 +386,26 @@ public class HandlerTest {
     assertXMLEqual(payloadSample, payloadCreated);
   }
 
+  @Test
+  public void parseMIMEResponse_sampleResponse_parseSuccess ()
+      throws HandlerException, IOException {
+
+    final String MIMEResponseSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "StatementRetrievalResponseMIME_Complete.txt")));
+    final String XMLSectionSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "StatementRetrievalResponseMIME_XMLSection.txt")));
+    final String encryptedStatSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "StatementRetrievalResponseMIME_EncStatSection.txt")));
+
+    HashMap<String, Object> body =
+        parseMIMEResponse(MIMEResponseSample.getBytes());
+    String XMLSectionParsed = (String) body.get("ENCRYPTED_KEY");
+    String encryptedStatParsed = new String((byte[]) body.get("ENCRYPTED_FILE"));
+
+    assertEquals(XMLSectionSample, XMLSectionParsed);
+    assertEquals(encryptedStatSample, encryptedStatParsed);
+  }
 }

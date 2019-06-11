@@ -63,7 +63,7 @@ public class HandlerConstant {
           + "statement/initiation?";
   public static final String STATEMENT_RET_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
-          + "v1/statement/retrieval?";
+          + "v1/mock/statement/retrieval?";
   public static final String STATEMENT_RET_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
           + "statement/retrieval?";

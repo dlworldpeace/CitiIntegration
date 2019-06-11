@@ -482,7 +482,7 @@ public class Handler {
       try {
         Document decryptedDoc = cipher
             .doFinal(encryptedSignedDoc, (Element) dataEL);
-        decryptedDoc.normalize(); // TODO: check if it rightly belongs here
+        decryptedDoc.normalize();
         return decryptedDoc;
       } catch (Exception e) {
         Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -505,7 +505,6 @@ public class Handler {
    *                              verifying the signature.
    * @throws HandlerException custom exception for Handler class.
    */
-  // TODO: Check for the exception throwing
   public static void verifyDecryptedXML (Document decryptedDoc,
       X509Certificate signVerifyCert) throws CertificateEncodingException,
       XMLSecurityException, HandlerException {
@@ -750,7 +749,7 @@ public class Handler {
           return response;
         }
       } else {
-        throw new HandlerException("No content extracted from response"); // TODO: Check if this logic is correct
+        throw new HandlerException("No content extracted from response");
       }
     }
   }
@@ -964,7 +963,6 @@ public class Handler {
       throw new HandlerException(message);
     }
 
-    // TODO: Check if we can validate ISO v3 through this logic
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setNamespaceAware(true);
@@ -1199,8 +1197,7 @@ public class Handler {
       byte[] data = new byte[dataLen];
       System.arraycopy(input, ivLen, data, 0, dataLen);
 
-      DESedeKeySpec spec = new DESedeKeySpec(
-          Base64.decodeBase64(decryptionKey));
+      DESedeKeySpec spec = new DESedeKeySpec(Base64.decodeBase64(decryptionKey));
       SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
       Key desKey = keyFactory.generateSecret(spec);
 
@@ -1231,8 +1228,8 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public byte[] retrieveStatement (String payload)
-      throws XMLSecurityException, CertificateEncodingException, HandlerException {
+  public byte[] retrieveStatement (String payload) throws XMLSecurityException,
+      CertificateEncodingException, HandlerException {
 
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
     Map<String, String> headerList = new HashMap<>();
@@ -1256,7 +1253,6 @@ public class Handler {
     }
   }
 
-  /* Decryption Logic */
 //  // TODO: check if we need these.
 //
 //  /**

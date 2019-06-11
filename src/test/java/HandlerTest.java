@@ -408,4 +408,17 @@ public class HandlerTest {
     assertEquals(XMLSectionSample, XMLSectionParsed);
     assertEquals(encryptedStatSample, encryptedStatParsed);
   }
+
+  @Test
+  public void des3DecodeCBC_sampleResponse_decryptSuccess ()
+      throws HandlerException, IOException {
+
+    final byte[] encryptedStatSample = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "statement.encrypted"));
+
+    String decryptedStat = new String(des3DecodeCBC(
+        "5sBk5UDQgBx7gJUh3m0owRRyQALojfSA", encryptedStatSample));
+  }
+
 }

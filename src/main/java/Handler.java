@@ -1217,6 +1217,40 @@ public class Handler {
   }
 
   /**
+   * parsing logic to extract only the attachment decryption key value from the
+   * first section of the statement retrieval response after the latter is
+   * decrypted and verified by the client.
+   *
+   * @param XML the dcrypted first section of statement retrieval response.
+   * @return the attached decryption key used to decrypt the statement file.
+   * @throws HandlerException if an unexpected event occurs when taking out the
+   *                          attachmentDecryptionKey value from the {@code XML}
+   *                          string.
+   */
+  public static String extractAttachmentDecryptionKey (String XML)
+      throws HandlerException {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new InputSource(new StringReader(XML)));
+      Element rootElement = document.getDocumentElement();
+      NodeList decryptionKeyElement = rootElement.getElementsByTagName("ns2:attachmentDecryptionKey");
+      if (decryptionKeyElement != null && decryptionKeyElement.getLength() > 0) {
+        NodeList subList = decryptionKeyElement.item(0).getChildNodes();
+
+        if (subList != null && subList.getLength() > 0) {
+          return subList.item(0).getNodeValue();
+        }
+      }
+
+      throw new HandlerException("Fail to extract attachment decryption key from XML");
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
    * Get the intended statement file using its statement ID.
    *
    * @param payload the xml payload that contains statement ID.
@@ -1243,8 +1277,9 @@ public class Handler {
     if (statusCode == HttpStatus.OK) {
       HashMap<String, Object> body =
           parseMIMEResponse((byte[]) response.get("BODY"));
-      String decryptionKey =
+      String firstHalf =
           decryptAndVerifyXMLFromCiti((String) body.get("ENCRYPTED_KEY"));
+      String decryptionKey = extractAttachmentDecryptionKey(firstHalf);
       return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
     } else { // error msg received instead of expected statement
       String errorMsg = (String) response.get("BODY");

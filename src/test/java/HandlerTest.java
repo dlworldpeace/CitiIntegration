@@ -63,8 +63,10 @@ public class HandlerTest {
    */
   @Before
   public void setUp() throws HandlerException {
-    handler = new Handler();
-    handler.loadKeystore();
+    if(handler == null) {
+      handler = new Handler();
+      handler.loadKeystore();
+    }
   }
 
 //  /**

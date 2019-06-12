@@ -1286,6 +1286,8 @@ public class Handler {
    * Get the intended statement file using its statement ID.
    *
    * @param payload the xml payload that contains statement ID.
+   * @param url the address that we are sending the statement retrieval request
+   *            to.
    * @return the expected statement file decrypted.
    * @throws XMLSecurityException if an unexpected exception occurs while
    *                              decrypting the xml section of the body.

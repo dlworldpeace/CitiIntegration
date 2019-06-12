@@ -38,12 +38,12 @@ public class XMLJsonConvertor<T> {
     this.classPath = classPath;
   }
 
-  public T readXMLToElement (String XMLStr) throws JAXBException {
+  public JAXBElement<T> readXMLToElement (String XMLStr) throws JAXBException {
 
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
     StringReader reader = new StringReader(XMLStr);
-    return (T) unmarshaller.unmarshal(reader);
+    return (JAXBElement<T>) unmarshaller.unmarshal(reader);
   }
 
   public String writeElementToXML (JAXBElement<?> documentElement) throws JAXBException,
@@ -64,7 +64,7 @@ public class XMLJsonConvertor<T> {
     return out.toString();
   }
 
-  public String writeElementToJson (T rootElement) throws JAXBException {
+  public String writeElementToJson (JAXBElement<?> rootElement) throws JAXBException {
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
 //    Map<String, Object> properties = new HashMap<>(2);
 //    properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");

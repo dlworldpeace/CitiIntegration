@@ -2,6 +2,7 @@ package test.java;
 
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
+import static main.java.Handler.createPayInitDocumentInstance;
 import static main.java.Handler.des3DecodeCBC;
 import static main.java.Handler.extractAttachmentDecryptionKey;
 import static main.java.Handler.extractStatementId;
@@ -15,6 +16,7 @@ import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.readCAMT53ToJson;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
+import static main.java.HandlerConstant.PAIN_CLASS_PATH;
 import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static main.java.HandlerConstant.TYPE_AUTH;
 import static main.java.HandlerConstant.TYPE_PAY_INIT;
@@ -32,9 +34,13 @@ import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.Handler;
 import main.java.HandlerException;
+import main.java.XMLJsonConvertor;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.junit.Before;
@@ -526,6 +532,26 @@ public class HandlerTest {
       throws HandlerException {
 
     extractAttachmentDecryptionKey(SOME_XML);
+  }
+
+  @Test
+  public void readXMLToElement_JAXBElementGeneratedCorrectly ()
+      throws IOException, DatatypeConfigurationException, JAXBException {
+
+    main.java.pain.Document document = createPayInitDocumentInstance();
+    JAXBElement<main.java.pain.Document> documentElement =
+        (new main.java.pain.ObjectFactory()).createDocument(document);
+
+    final String payloadSample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+    XMLJsonConvertor<main.java.pain.Document> convertor =
+        new XMLJsonConvertor<>(PAIN_CLASS_PATH);
+    JAXBElement<main.java.pain.Document> documentMarshaled =
+        convertor.readXMLToElement(payloadSample);
+
+    // TODO use assertEquals to compare all the contents within the two objects
+//    assertEquals(documentElement, documentMarshaled);
   }
 
   @Test

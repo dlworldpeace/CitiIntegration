@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.HandlerConstant.CAMT52_CLASS_PATH;
 import static main.java.HandlerConstant.CAMT53_CLASS_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
@@ -1305,7 +1306,7 @@ public class Handler {
   }
 
   /**
-   * Converter from camt.053.001.02 formated String to its corresponding json
+   * Converter from camt.053.001.02 formatted String to its corresponding json
    * String.
    *
    * @param CAMT53Str XML string in ISO 20022 camt.053.001.02 format.
@@ -1320,6 +1321,29 @@ public class Handler {
           converter = new BankFormatConverter<>(CAMT53_CLASS_PATH);
       JAXBElement<main.java.camt53.Document> documentElement =
           converter.readXMLToElement(CAMT53Str);
+      return converter.writeElementToJson(documentElement);
+    } catch (JAXBException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * Converter from camt.052.001.02 formatted String to its corresponding json
+   * String.
+   *
+   * @param CAMT52Str XML string in ISO 20022 camt.052.001.02 format.
+   * @return its corresponding json format string.
+   * @throws HandlerException if an unexpected event occurs during the conversion
+   *                          process from XML String to JAXBElement and then to
+   *                          json String.
+   */
+  public static String readCAMT52ToJson (String CAMT52Str) throws HandlerException {
+    try {
+      BankFormatConverter<main.java.camt52.Document>
+          converter = new BankFormatConverter<>(CAMT52_CLASS_PATH);
+      JAXBElement<main.java.camt52.Document> documentElement =
+          converter.readXMLToElement(CAMT52Str);
       return converter.writeElementToJson(documentElement);
     } catch (JAXBException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);

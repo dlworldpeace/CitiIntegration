@@ -13,6 +13,7 @@ import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
+import static main.java.Handler.readCAMT52ToJson;
 import static main.java.Handler.readCAMT53ToJson;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
@@ -563,6 +564,19 @@ public class HandlerTest {
             + "StatementRetrieval_CAMT_053_001_02_File.txt")));
 
     String res = readCAMT53ToJson(CAMT53Sample);
+
+    System.out.println(res);
+  }
+
+  @Test
+  public void readCAMT52ToJson_sampleCAMT52Sample_readSuccess ()
+      throws HandlerException, IOException {
+
+    final String CAMT52Sample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "StatementRetrieval_CAMT_052_001_02_File.txt")));
+
+    String res = readCAMT52ToJson(CAMT52Sample);
 
     System.out.println(res);
   }

@@ -1312,11 +1312,10 @@ public class Handler {
   public static String readCAMT53ToJson (String CAMT53Str) throws HandlerException {
     try {
       XMLJsonConvertor<main.java.camt53.Document>
-          parser = new XMLJsonConvertor<>(CAMT53_CLASS_PATH);
-      JAXBElement<main.java.camt53.Document> document = parser.readXMLToElement(CAMT53Str);
-//      JAXBElement<main.java.camt53.Document> documentElement =
-//          (new main.java.camt53.ObjectFactory()).createDocument(document);
-      return parser.writeElementToJson(document);
+          convertor = new XMLJsonConvertor<>(CAMT53_CLASS_PATH);
+      JAXBElement<main.java.camt53.Document> documentElement =
+          convertor.readXMLToElement(CAMT53Str);
+      return convertor.writeElementToJson(documentElement);
     } catch (JAXBException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -1324,7 +1323,6 @@ public class Handler {
   }
 
 //  // TODO: check if we need these.
-//
 //  /**
 //   * Load Keystore file that has all certs.
 //   *

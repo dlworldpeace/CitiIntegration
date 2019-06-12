@@ -46,7 +46,7 @@ public class XMLJsonConvertor<T> {
     return (JAXBElement<T>) unmarshaller.unmarshal(reader);
   }
 
-  public String writeElementToXML (JAXBElement<?> documentElement) throws JAXBException,
+  public String writeElementToXML (JAXBElement<T> rootElement) throws JAXBException,
       TransformerException {
 
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
@@ -54,29 +54,28 @@ public class XMLJsonConvertor<T> {
     OutputStream out = new ByteArrayOutputStream();
     DOMResult domResult = new DOMResult();
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    marshaller.marshal(documentElement, domResult);
+    marshaller.marshal(rootElement, domResult);
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
     transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+    transformer.setOutputProperty(
+        "{http://xml.apache.org/xslt}indent-amount", "2");
     transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
     return out.toString();
   }
 
-  public String writeElementToJson (JAXBElement<?> rootElement) throws JAXBException {
+  public String writeElementToJson (JAXBElement<T> rootElement) throws JAXBException {
+    System.setProperty("javax.xml.bind.context.factory",
+        "org.eclipse.persistence.jaxb.JAXBContextFactory");
+
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
-//    Map<String, Object> properties = new HashMap<>(2);
-//    properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
-//    properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-//    jaxbContext = JAXBContext.newInstance(classPath, main.java.camt53.Document.class.getClassLoader(), properties);
     Marshaller marshaller = jaxbContext.createMarshaller();
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
     marshaller.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     StringWriter sw = new StringWriter();
     marshaller.marshal(rootElement, sw);
-
     return sw.toString();
   }
 

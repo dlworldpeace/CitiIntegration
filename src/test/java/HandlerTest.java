@@ -558,12 +558,13 @@ public class HandlerTest {
   public void readCAMT53ToJson_sampleCAMT53Sample_readSuccess ()
       throws HandlerException, IOException {
 
-    final byte[] encryptedStatSample = Files.readAllBytes(Paths.get(
+    final String CAMT53Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
-            + "statement.encrypted"));
+            + "StatementRetrieval_CAMT_053_001_02_File.txt")));
 
-    String decryptedStat = new String(des3DecodeCBC(
-        "5sBk5UDQgBx7gJUh3m0owRRyQALojfSA", encryptedStatSample));
+    String res = readCAMT53ToJson(CAMT53Sample);
+
+    System.out.println(res);
   }
 
 }

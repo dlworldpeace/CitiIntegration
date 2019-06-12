@@ -394,27 +394,54 @@ public class HandlerTest {
   public void parseMIMEResponse_sampleResponse_parseSuccess ()
       throws HandlerException, IOException {
 
-    final String MIMEResponseSample = new String(Files.readAllBytes(Paths.get(
+    final byte[] responseSample = Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
-            + "StatementRetrievalResponseMIME_Complete.txt")));
-    final String XMLSectionSample = new String(Files.readAllBytes(Paths.get(
+            + "response.txt"));
+    final String firstHalfSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
-            + "StatementRetrievalResponseMIME_XMLSection.txt")));
-    final String encryptedStatSample = new String(Files.readAllBytes(Paths.get(
+            + "response_firstHalf.txt")));
+    final byte[] secondHalfSample = Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
-            + "StatementRetrievalResponseMIME_EncStatSection.txt")));
+            + "response_secondHalf.txt"));
 
-    HashMap<String, Object> body =
-        parseMIMEResponse(MIMEResponseSample.getBytes());
-    String XMLSectionParsed = (String) body.get("ENCRYPTED_KEY");
-    String encryptedStatParsed = new String((byte[]) body.get("ENCRYPTED_FILE"));
+    HashMap<String, Object> body = parseMIMEResponse(responseSample);
+    final String firstHalfParsed = (String) body.get("ENCRYPTED_KEY");
+    final byte[] secondHalfParsed = (byte[]) body.get("ENCRYPTED_FILE");
 
-    assertEquals(XMLSectionSample, XMLSectionParsed);
-    assertEquals(encryptedStatSample, encryptedStatParsed);
+    assertEquals(firstHalfSample, firstHalfParsed);
+    assertArrayEquals(secondHalfSample, secondHalfParsed);
   }
 
   @Test
-  public void des3DecodeCBC_sampleResponse_decryptSuccess ()
+  public void des3DecodeCBC_mockStatement_decryptSuccess ()
+      throws HandlerException, IOException {
+
+    final String decryptionKey = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_attachedKey.txt")));
+    final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_secondHalf.txt"));
+    final byte[] sampleStatFile = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_secondHalf_Decrypted.txt"));
+    byte[] decryptedStatFile = des3DecodeCBC(decryptionKey, encryptedStatFile);
+
+    assertArrayEquals(sampleStatFile, decryptedStatFile);
+  }
+
+  @Test
+  public void extractStatementId_negativeExamples () {
+
+  }
+
+  @Test
+  public void extractAttachmentDecryptionKey_negativeExamples () {
+
+  }
+
+  @Test
+  public void readCAMT53ToJson_sampleCAMT53Sample_readSuccess ()
       throws HandlerException, IOException {
 
     final byte[] encryptedStatSample = Files.readAllBytes(Paths.get(

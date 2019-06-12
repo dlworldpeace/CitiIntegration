@@ -20,11 +20,9 @@ import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -73,10 +71,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.HttpHeaders;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -88,7 +84,6 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -923,8 +918,8 @@ public class Handler {
       main.java.pain.Document document = createPayInitDocumentInstance();
       JAXBElement<main.java.pain.Document> documentElement =
           (new ObjectFactory()).createDocument(document);
-      XMLJsonConvertor<main.java.pain.Document> convertor =
-          new XMLJsonConvertor<>(PAIN_CLASS_PATH);
+      BankFormatConverter<main.java.pain.Document> convertor =
+          new BankFormatConverter<>(PAIN_CLASS_PATH);
       return convertor.writeElementToXML(documentElement);
     } catch (JAXBException | DatatypeConfigurationException | TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1311,11 +1306,11 @@ public class Handler {
 
   public static String readCAMT53ToJson (String CAMT53Str) throws HandlerException {
     try {
-      XMLJsonConvertor<main.java.camt53.Document>
-          convertor = new XMLJsonConvertor<>(CAMT53_CLASS_PATH);
+      BankFormatConverter<main.java.camt53.Document>
+          converter = new BankFormatConverter<>(CAMT53_CLASS_PATH);
       JAXBElement<main.java.camt53.Document> documentElement =
-          convertor.readXMLToElement(CAMT53Str);
-      return convertor.writeElementToJson(documentElement);
+          converter.readXMLToElement(CAMT53Str);
+      return converter.writeElementToJson(documentElement);
     } catch (JAXBException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());

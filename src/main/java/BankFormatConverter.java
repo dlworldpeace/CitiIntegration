@@ -30,11 +30,11 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
  * @since 2019-06-12.
  */
 
-public class XMLJsonConvertor<T> {
+public class BankFormatConverter<T> {
 
   private String classPath;
 
-  public XMLJsonConvertor (String classPath) {
+  public BankFormatConverter(String classPath) {
     this.classPath = classPath;
   }
 

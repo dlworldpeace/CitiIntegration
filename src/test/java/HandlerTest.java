@@ -40,7 +40,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.Handler;
 import main.java.HandlerException;
-import main.java.XMLJsonConvertor;
+import main.java.BankFormatConverter;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.junit.Before;
@@ -545,10 +545,10 @@ public class HandlerTest {
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    XMLJsonConvertor<main.java.pain.Document> convertor =
-        new XMLJsonConvertor<>(PAIN_CLASS_PATH);
+    BankFormatConverter<main.java.pain.Document> converter =
+        new BankFormatConverter<>(PAIN_CLASS_PATH);
     JAXBElement<main.java.pain.Document> documentMarshaled =
-        convertor.readXMLToElement(payloadSample);
+        converter.readXMLToElement(payloadSample);
 
     // TODO use assertEquals to compare all the contents within the two objects
 //    assertEquals(documentElement, documentMarshaled);

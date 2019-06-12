@@ -464,8 +464,35 @@ public class HandlerTest {
   }
 
   @Test
-  public void extractStatementId_negativeExamples () {
+  public void extractStatementId_sampleResponse_success ()
+      throws IOException, HandlerException {
+    final String intradayResponse = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementInitiation/Intraday/"
+            + "XML Response/StatementInitiationResponse_SWIFT_MT_942_Plain.txt")));
 
+    final String statementId = extractStatementId(intradayResponse);
+    assertEquals("42389500", statementId);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractStatementId_emptyStr_throwsHandlerException ()
+      throws HandlerException {
+
+    extractStatementId(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractStatementId_whiteSpace_throwsHandlerException ()
+      throws HandlerException {
+
+    extractStatementId(WHITE_SPACE);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractStatementId_invalidResponse_throwsHandlerException ()
+      throws HandlerException {
+
+    extractStatementId(SOME_XML);
   }
 
   @Test

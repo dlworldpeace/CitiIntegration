@@ -5,7 +5,7 @@ import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.des3DecodeCBC;
 import static main.java.Handler.extractAttachmentDecryptionKey;
 import static main.java.Handler.extractStatementId;
-import static main.java.Handler.marshalToISOMXL;
+import static main.java.Handler.createPayInitPayload;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromISOXML;
@@ -381,12 +381,12 @@ public class HandlerTest {
   }
 
   @Test
-  public void marshalToISOMXL_resultSameAsSample ()
+  public void createPayInitPayload_resultSameAsSample ()
       throws IOException, HandlerException, SAXException {
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    final String payloadCreated = marshalToISOMXL();
+    final String payloadCreated = createPayInitPayload();
 
     assertXMLEqual(payloadSample, payloadCreated);
   }

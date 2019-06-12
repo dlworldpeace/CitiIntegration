@@ -1,6 +1,6 @@
 package main.java;
 
-import static main.java.HandlerConstant.BALANCE_INQUIRY_URL_UAT;
+import static main.java.HandlerConstant.CAMT53_CLASS_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
 import static main.java.HandlerConstant.KEYSTORE_ALIAS;
@@ -8,38 +8,26 @@ import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
 import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
 import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
 import static main.java.HandlerConstant.O_AUTH_URL_UAT;
+import static main.java.HandlerConstant.PAIN_CLASS_PATH;
 import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
 import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_PWD;
 import static main.java.HandlerConstant.STATEMENT_INIT_URL_UAT;
-import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -85,7 +73,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -762,7 +749,7 @@ public class Handler {
    *                          if any unexpected event happened when creating
    *                          the XML payload String.
    */
-  public static String marshalToISOMXL () throws HandlerException {
+  public static String createPayInitPayload() throws HandlerException {
     try {
       DatatypeFactory dataType = DatatypeFactory.newInstance();
 
@@ -921,22 +908,11 @@ public class Handler {
       document.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
       /* End of Document */
 
-      /* Marshal to XML String */
-      JAXBContext jaxbContext = JAXBContext.newInstance("main.java.pain");
-      Marshaller marshaller = jaxbContext.createMarshaller();
       JAXBElement<main.java.pain.Document> documentElement =
           (new ObjectFactory()).createDocument(document);
-      OutputStream out = new ByteArrayOutputStream();
-      DOMResult domResult = new DOMResult();
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-      marshaller.marshal(documentElement, domResult);
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
-      transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-      transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
-      return out.toString();
+      XMLJsonConvertor<main.java.pain.Document> convertor =
+          new XMLJsonConvertor<>(PAIN_CLASS_PATH);
+      return convertor.writeElementToXML(documentElement);
 
     } catch (JAXBException | DatatypeConfigurationException | TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1304,8 +1280,7 @@ public class Handler {
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
-         payload_SignedEncrypted,
-        url + "client_id=" + getClientId());
+        payload_SignedEncrypted, url + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

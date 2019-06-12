@@ -4,9 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -44,7 +46,7 @@ public class XMLJsonConvertor<T> {
     return (T) unmarshaller.unmarshal(reader);
   }
 
-  public String writeElementToXML (T rootElement) throws JAXBException,
+  public String writeElementToXML (JAXBElement<?> documentElement) throws JAXBException,
       TransformerException {
 
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
@@ -52,7 +54,7 @@ public class XMLJsonConvertor<T> {
     OutputStream out = new ByteArrayOutputStream();
     DOMResult domResult = new DOMResult();
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    marshaller.marshal(rootElement, domResult);
+    marshaller.marshal(documentElement, domResult);
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
     transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");

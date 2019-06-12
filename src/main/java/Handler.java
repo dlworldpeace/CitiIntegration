@@ -1101,6 +1101,38 @@ public class Handler {
   }
 
   /**
+   * parsing logic to extract only the statement id from the statement initiation
+   * response after the latter is decrypted and verified by the client.
+   *
+   * @param XML the decrypted and verified statement initiation response.
+   * @return the attached decryption key used to decrypt the statement file.
+   * @throws HandlerException if an unexpected event occurs when taking out the
+   *                          statement id from the {@code XML}.
+   */
+  public static String extractStatementId (String XML)
+      throws HandlerException {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new InputSource(new StringReader(XML)));
+      Element rootElement = document.getDocumentElement();
+      NodeList statementIdElement = rootElement.getElementsByTagName("statementId");
+      if (statementIdElement != null && statementIdElement.getLength() > 0) {
+        NodeList subList = statementIdElement.item(0).getChildNodes();
+
+        if (subList != null && subList.getLength() > 0) {
+          return subList.item(0).getNodeValue();
+        }
+      }
+
+      throw new HandlerException("Fail to extract statement id from XML");
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
    * Parse MIME response into 2 parts: 1. encrypted and signed decryption key
    * and 2. encrypted statement file.
    *
@@ -1221,7 +1253,7 @@ public class Handler {
    * first section of the statement retrieval response after the latter is
    * decrypted and verified by the client.
    *
-   * @param XML the dcrypted first section of statement retrieval response.
+   * @param XML the decrypted first section of statement retrieval response.
    * @return the attached decryption key used to decrypt the statement file.
    * @throws HandlerException if an unexpected event occurs when taking out the
    *                          attachmentDecryptionKey value from the {@code XML}

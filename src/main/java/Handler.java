@@ -1294,7 +1294,7 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public byte[] retrieveStatement (String payload) throws XMLSecurityException,
+  public byte[] retrieveStatement (String payload, String url) throws XMLSecurityException,
       CertificateEncodingException, HandlerException {
 
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
@@ -1303,7 +1303,7 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
          payload_SignedEncrypted,
-        STATEMENT_RET_URL_UAT + "client_id=" + getClientId());
+        url + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

@@ -3,6 +3,7 @@ package test.java;
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.des3DecodeCBC;
+import static main.java.Handler.extractStatementId;
 import static main.java.Handler.marshalToISOMXL;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
@@ -12,6 +13,8 @@ import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
+import static main.java.HandlerConstant.STATEMENT_RET_URL_MOCK;
+import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static main.java.HandlerConstant.TYPE_AUTH;
 import static main.java.HandlerConstant.TYPE_PAY_INIT;
 import static main.java.HandlerConstant.TAG_NAME_AUTH;
@@ -329,7 +332,8 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/"
             + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
         .replace("placeholder", statementId);
-    String resStatRet = new String(handler.retrieveStatement(strStatRet));
+    String resStatRet = new String(
+        handler.retrieveStatement(strStatRet, STATEMENT_RET_URL_UAT));
     System.out.println(resStatRet);
 
 //    final String strBalance = new String(Files.readAllBytes(Paths.get(

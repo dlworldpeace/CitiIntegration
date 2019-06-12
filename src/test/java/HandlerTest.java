@@ -425,9 +425,42 @@ public class HandlerTest {
     final byte[] sampleStatFile = Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf_Decrypted.txt"));
-    byte[] decryptedStatFile = des3DecodeCBC(decryptionKey, encryptedStatFile);
 
+    byte[] decryptedStatFile = des3DecodeCBC(decryptionKey, encryptedStatFile);
     assertArrayEquals(sampleStatFile, decryptedStatFile);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void des3DecodeCBC_emptyKey_throwsHandlerException ()
+      throws HandlerException, IOException {
+
+    final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_secondHalf.txt"));
+
+    des3DecodeCBC(EMPTY_STRING, encryptedStatFile);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void des3DecodeCBC_whiteSpaceKey_throwsHandlerException ()
+      throws HandlerException, IOException {
+
+    final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_secondHalf.txt"));
+
+    des3DecodeCBC(WHITE_SPACE, encryptedStatFile);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void des3DecodeCBC_invalidKey_throwsHandlerException ()
+      throws HandlerException, IOException {
+
+    final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_secondHalf.txt"));
+
+    des3DecodeCBC(SOME_XML, encryptedStatFile);
   }
 
   @Test

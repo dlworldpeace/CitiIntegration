@@ -4,9 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -38,6 +35,14 @@ public class BankFormatConverter<T> {
     this.classPath = classPath;
   }
 
+  /**
+   * Convert {@code XMLStr} in standard ISO format such as camt.053.001.02 to
+   * a JAXBElement of rootElement fixed as Document type.
+   *
+   * @param XMLStr XML String in standard ISO format.
+   * @return a JAXBElement of a standard ISO format.
+   * @throws JAXBException if an unpexted event happens during the conversion.
+   */
   public JAXBElement<T> readXMLToElement (String XMLStr) throws JAXBException {
 
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
@@ -46,6 +51,16 @@ public class BankFormatConverter<T> {
     return (JAXBElement<T>) unmarshaller.unmarshal(reader);
   }
 
+  /**
+   * Convert a JAXBElement of {@code rootElement} rooted at Document type to a
+   * XML String of its corresponding standard ISO format such as camt.053.001.02.
+   *
+   * @param rootElement JAXBElement rooted at Document Element.
+   * @return corresponding XML String.
+   * @throws JAXBException if an unpexted event happens during the conversion.
+   * @throws TransformerException if an unpexted event happens when adding some
+   *                              property to the string styles.
+   */
   public String writeElementToXML (JAXBElement<T> rootElement) throws JAXBException,
       TransformerException {
 
@@ -65,6 +80,14 @@ public class BankFormatConverter<T> {
     return out.toString();
   }
 
+  /**
+   * Convert a JAXBElement of {@code rootElement} rooted at Document type to a
+   * JSON String of its corresponding standard ISO format such as camt.053.001.02.
+   *
+   * @param rootElement JAXBElement rooted at Document Element.
+   * @return corresponding JSON String.
+   * @throws JAXBException if an unpexted event happens during the conversion.
+   */
   public String writeElementToJson (JAXBElement<T> rootElement) throws JAXBException {
     System.setProperty("javax.xml.bind.context.factory",
         "org.eclipse.persistence.jaxb.JAXBContextFactory");

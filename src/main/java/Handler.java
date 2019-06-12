@@ -1304,6 +1304,16 @@ public class Handler {
     }
   }
 
+  /**
+   * Converter from camt.053.001.02 formated String to its corresponding json
+   * String.
+   *
+   * @param CAMT53Str XML string in ISO 20022 camt.053.001.02 format.
+   * @return its corresponding json format string.
+   * @throws HandlerException if an unexpected event occurs during the conversion
+   *                          process from XML String to JAXBElement and then to
+   *                          json String.
+   */
   public static String readCAMT53ToJson (String CAMT53Str) throws HandlerException {
     try {
       BankFormatConverter<main.java.camt53.Document>

@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<BkToCstmrStmt>
+<GrpHdr>
+<MsgId>45444861</MsgId>
+<CreDtTm>2019-01-28T07:17:57-05:00</CreDtTm>
+<MsgRcpt>
+<Nm>CITICONNECT_API_TEST</Nm>
+</MsgRcpt>
+<AddtlInf>/EODY/</AddtlInf>
+</GrpHdr>
+<Stmt>
+<Id>0190240381522961</Id>
+<ElctrncSeqNb>24</ElctrncSeqNb>
+<CreDtTm>2019-01-28T07:17:57-05:00</CreDtTm>
+<FrToDt>
+<FrDtTm>2019-01-24T00:00:00</FrDtTm>
+<ToDtTm>2019-01-24T23:59:59</ToDtTm>
+</FrToDt>
+<RptgSrc>
+<Cd>ACCT</Cd>
+</RptgSrc>
+<Acct>
+<Id>
+<Othr>
+<Id>38152296</Id>
+<SchmeNm>
+<Prtry>CITI</Prtry>
+</SchmeNm>
+</Othr>
+</Id>
+<Tp>
+<Prtry>VIRTUAL</Prtry>
+</Tp>
+<Ccy>USD</Ccy>
+<Nm>ACCDESC0038152296</Nm>
+<Ownr>
+<Nm>DELOITTE LLP-US</Nm>
+</Ownr>
+<Svcr>
+<FinInstnId>
+<ClrSysMmbId>
+<MmbId>031100209</MmbId>
+</ClrSysMmbId>
+<Nm>DELAWARE CITIBANK</Nm>
+</FinInstnId>
+<BrnchId>
+<Id>920</Id>
+<Nm>DELAWARE CITIBANK</Nm>
+</BrnchId>
+</Svcr>
+</Acct>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>OPBD</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">220.00</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-24</Dt>
+</Dt>
+</Bal>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>CLBD</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">187.95</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-24</Dt>
+</Dt>
+</Bal>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>OPAV</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">220.00</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-24</Dt>
+</Dt>
+</Bal>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>CLAV</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">187.95</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-24</Dt>
+</Dt>
+</Bal>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>PRCD</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">220.00</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-23</Dt>
+</Dt>
+</Bal>
+<Bal>
+<Tp>
+<CdOrPrtry>
+<Cd>FWAV</Cd>
+</CdOrPrtry>
+</Tp>
+<Amt Ccy="USD">187.95</Amt>
+<CdtDbtInd>CRDT</CdtDbtInd>
+<Dt>
+<Dt>2019-01-25</Dt>
+</Dt>
+</Bal>
+<TxsSummry>
+<TtlNtries>
+<NbOfNtries>9</NbOfNtries>
+<Sum>32.05</Sum>
+<TtlNetNtryAmt>32.05</TtlNetNtryAmt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+</TtlNtries>
+<TtlCdtNtries>
+<NbOfNtries>0</NbOfNtries>
+<Sum>0.00</Sum>
+</TtlCdtNtries>
+<TtlDbtNtries>
+<NbOfNtries>9</NbOfNtries>
+<Sum>32.05</Sum>
+</TtlDbtNtries>
+</TxsSummry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">10.00</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1OG2130HSY1E0R</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1OG2130HSY1E0R</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">10.00</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220477 SNDREF_GV0832320191212 @BNFAGT@ @BNFNAME@ @MID_JA1OG2130HSY1E0R</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220477 SNDREF_GV0832320191212 @BNFAGT@ @BNFNAME@ @MID_JA1OG2130HSY1E0R/BTN/JA1OG2130HSY1E0R</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">10.00</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1OG20110GY060L</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1OG20110GY060L</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">10.00</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220475 SNDREF_GV0832320191211 @BNFAGT@ @BNFNAME@ @MID_JA1OG20110GY060L</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220475 SNDREF_GV0832320191211 @BNFAGT@ @BNFNAME@ @MID_JA1OG20110GY060L/BTN/JA1OG20110GY060L</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">10.00</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1OC0606DFY0G2C</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1OC0606DFY0G2C</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">10.00</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220456 SNDREF_GV0832320191202 @BNFAGT@ @BNFNAME@ @MID_JA1OC0606DFY0G2C</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220456 SNDREF_GV0832320191202 @BNFAGT@ @BNFNAME@ @MID_JA1OC0606DFY0G2C/BTN/JA1OC0606DFY0G2C</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">1.00</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O934037CY1F16</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O934037CY1F16</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">1.00</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220386 SNDREF_SK2019012464 @BNFAGT@ @BNFNAME@ @MID_JA1O934037CY1F16</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220386 SNDREF_SK2019012464 @BNFAGT@ @BNFNAME@ @MID_JA1O934037CY1F16/BTN/JA1O934037CY1F16</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">1.00</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O90155EUY0B1J</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O90155EUY0B1J</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">1.00</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220382 SNDREF_SK2019012461 @BNFAGT@ @BNFNAME@ @MID_JA1O90155EUY0B1J</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220382 SNDREF_SK2019012461 @BNFAGT@ @BNFNAME@ @MID_JA1O90155EUY0B1J/BTN/JA1O90155EUY0B1J</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">0.01</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O83428QSY122O</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O83428QSY122O</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">0.01</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_95E3933B7A0447BCA79D0892D299A3B7 SNDREF_TRN240119INBB1 @BNFAGT@ @BNFNAME@ @MID_JA1O83428QSY122O</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_95E3933B7A0447BCA79D0892D299A3B7 SNDREF_TRN240119INBB1 @BNFAGT@ @BNFNAME@ @MID_JA1O83428QSY122O/BTN/JA1O83428QSY122O</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">0.01</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O727032LY1D1S</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O727032LY1D1S</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">0.01</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_M20190124021000089T1BAAA00000220355 SNDREF_AJ1234MJ123455FE97TTS @BNFAGT@ @BNFNAME@ @MID_JA1O727032LY1D1S</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_M20190124021000089T1BAAA00000220355 SNDREF_AJ1234MJ123455FE97TTS @BNFAGT@ @BNFNAME@ @MID_JA1O727032LY1D1S/BTN/JA1O727032LY1D1S</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">0.02</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O537305LY0W2A</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O537305LY0W2A</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">0.02</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_33AA3D301BEF4180A04CF1F1B3914878 SNDREF_TRN01232019INRF3 @BNFAGT@ @BNFNAME@ @MID_JA1O537305LY0W2A</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_33AA3D301BEF4180A04CF1F1B3914878 SNDREF_TRN01232019INRF3 @BNFAGT@ @BNFNAME@ @MID_JA1O537305LY0W2A/BTN/JA1O537305LY0W2A</AddtlNtryInf>
+</Ntry>
+<Ntry>
+<NtryRef>NONREF</NtryRef>
+<Amt Ccy="USD">0.01</Amt>
+<CdtDbtInd>DBIT</CdtDbtInd>
+<Sts>BOOK</Sts>
+<BookgDt>
+<Dt>2019-01-24</Dt>
+</BookgDt>
+<ValDt>
+<Dt>2019-01-24</Dt>
+</ValDt>
+<AcctSvcrRef>JA1O5365216Y0T2N</AcctSvcrRef>
+<BkTxCd>
+<Domn>
+<Cd>PMNT</Cd>
+<Fmly>
+<Cd>RDDT</Cd>
+<SubFmlyCd>PMDD</SubFmlyCd>
+</Fmly>
+</Domn>
+<Prtry>
+<Cd>570+INSTANT PAY DEBIT</Cd>
+<Issr>CITI</Issr>
+</Prtry>
+</BkTxCd>
+<NtryDtls>
+<TxDtls>
+<Refs>
+<AcctSvcrRef>JA1O5365216Y0T2N</AcctSvcrRef>
+<EndToEndId>NONREF</EndToEndId>
+</Refs>
+<AmtDtls>
+<TxAmt>
+<Amt Ccy="USD">0.01</Amt>
+</TxAmt>
+</AmtDtls>
+<RmtInf>
+<Ustrd>REF_D0EB43C5ED1D403792D21A618729363D SNDREF_TRN01232019INRF2 @BNFAGT@ @BNFNAME@ @MID_JA1O5365216Y0T2N</Ustrd>
+</RmtInf>
+</TxDtls>
+</NtryDtls>
+<AddtlNtryInf>/PT/FT/PY/REF_D0EB43C5ED1D403792D21A618729363D SNDREF_TRN01232019INRF2 @BNFAGT@ @BNFNAME@ @MID_JA1O5365216Y0T2N/BTN/JA1O5365216Y0T2N</AddtlNtryInf>
+</Ntry>
+</Stmt>
+</BkToCstmrStmt>
+</Document>

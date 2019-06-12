@@ -496,8 +496,35 @@ public class HandlerTest {
   }
 
   @Test
-  public void extractAttachmentDecryptionKey_negativeExamples () {
+  public void extractAttachmentDecryptionKey_sampleResponse_success ()
+      throws IOException, HandlerException {
+    final String xmlResponse = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementRetrieval/XML Response/"
+            + "response_firstHalf_Decrypted.txt")));
 
+    final String attachedKey = extractAttachmentDecryptionKey(xmlResponse);
+    assertEquals("YC+SA+64lx4OLsNmv66O7AvMABQvA0L0", attachedKey);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractAttachmentDecryptionKey_emptyStr_throwsHandlerException ()
+      throws HandlerException {
+
+    extractAttachmentDecryptionKey(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractAttachmentDecryptionKey_whiteSpace_throwsHandlerException ()
+      throws HandlerException {
+
+    extractAttachmentDecryptionKey(WHITE_SPACE);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void extractAttachmentDecryptionKey_invalidResponse_throwsHandlerException ()
+      throws HandlerException {
+
+    extractAttachmentDecryptionKey(SOME_XML);
   }
 
   @Test

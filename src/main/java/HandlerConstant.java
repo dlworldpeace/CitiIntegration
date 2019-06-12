@@ -35,6 +35,12 @@ public class HandlerConstant {
   public static final String OUTGOING_PAYMENT_TYPE =
       "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03";
 
+  /* Inputs to Response Parsing Logic */
+
+  public static final String PAIN_CLASS_PATH = "main.java.pain";
+  public static final String CAMT52_CLASS_PATH = "main.java.camt52";
+  public static final String CAMT53_CLASS_PATH = "main.java.camt53";
+
   /* URLs for both UAT and PROD */
 
   public static final String O_AUTH_URL_UAT =

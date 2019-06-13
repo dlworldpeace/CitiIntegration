@@ -13,8 +13,8 @@ import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
-import static main.java.Handler.readCAMT52ToJson;
-import static main.java.Handler.readCAMT53ToJson;
+import static main.java.Handler.readCAMT052ToJson;
+import static main.java.Handler.readCAMT053ToJson;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
 import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
@@ -556,27 +556,27 @@ public class HandlerTest {
   }
 
   @Test
-  public void readCAMT53ToJson_sampleCAMT53Sample_readSuccess ()
+  public void readCAMT053ToJson_sampleCAMT053Sample_readSuccess ()
       throws HandlerException, IOException {
 
-    final String CAMT53Sample = new String(Files.readAllBytes(Paths.get(
+    final String CAMT053Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "StatementRetrieval_CAMT_053_001_02_File.txt")));
 
-    String res = readCAMT53ToJson(CAMT53Sample);
+    String res = readCAMT053ToJson(CAMT053Sample);
 
     System.out.println(res);
   }
 
   @Test
-  public void readCAMT52ToJson_sampleCAMT52Sample_readSuccess ()
+  public void readCAMT052ToJson_sampleCAMT052Sample_readSuccess ()
       throws HandlerException, IOException {
 
-    final String CAMT52Sample = new String(Files.readAllBytes(Paths.get(
+    final String CAMT052Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "StatementRetrieval_CAMT_052_001_02_File.txt")));
 
-    String res = readCAMT52ToJson(CAMT52Sample);
+    String res = readCAMT052ToJson(CAMT052Sample);
 
     System.out.println(res);
   }

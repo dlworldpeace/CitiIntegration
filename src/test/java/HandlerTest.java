@@ -573,10 +573,10 @@ public class HandlerTest {
   @Test
   public void readCAMT052ToJson_sampleCAMT052Sample_readSuccess ()
       throws HandlerException, IOException {
-
+    
     final String CAMT052Sample = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementRetrieval/XML Response/"
-            + "StatementRetrieval_CAMT_052_001_02_File.txt")));
+        "src/test/resources/sample/BalanceInquiry/XML Response/"
+            + "BalanceInquiryResponse_Plain.txt")));
 
     String res = readCAMT052ToJson(CAMT052Sample);
 

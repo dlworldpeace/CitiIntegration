@@ -17,7 +17,7 @@ import static main.java.Handler.readCAMT52ToJson;
 import static main.java.Handler.readCAMT53ToJson;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
-import static main.java.HandlerConstant.PAIN_CLASS_PATH;
+import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
 import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
 import static main.java.HandlerConstant.TYPE_AUTH;
 import static main.java.HandlerConstant.TYPE_PAY_INIT;
@@ -539,16 +539,16 @@ public class HandlerTest {
   public void readXMLToElement_JAXBElementGeneratedCorrectly ()
       throws IOException, DatatypeConfigurationException, JAXBException {
 
-    main.java.pain.Document document = createPayInitDocumentInstance();
-    JAXBElement<main.java.pain.Document> documentElement =
-        (new main.java.pain.ObjectFactory()).createDocument(document);
+    deskera.fintech.pain001.Document document = createPayInitDocumentInstance();
+    JAXBElement<deskera.fintech.pain001.Document> documentElement =
+        (new deskera.fintech.pain001.ObjectFactory()).createDocument(document);
 
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    BankFormatConverter<main.java.pain.Document> converter =
-        new BankFormatConverter<>(PAIN_CLASS_PATH);
-    JAXBElement<main.java.pain.Document> documentMarshaled =
+    BankFormatConverter<deskera.fintech.pain001.Document> converter =
+        new BankFormatConverter<>(PAIN001_CLASS_PATH);
+    JAXBElement<deskera.fintech.pain001.Document> documentMarshaled =
         converter.readXMLToElement(payloadSample);
 
     // TODO use assertEquals to compare all the contents within the two objects

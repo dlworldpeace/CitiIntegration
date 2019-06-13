@@ -1,15 +1,15 @@
 package main.java;
 
-import static main.java.HandlerConstant.CAMT52_CLASS_PATH;
-import static main.java.HandlerConstant.CAMT53_CLASS_PATH;
+import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
+import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
 import static main.java.HandlerConstant.KEYSTORE_ALIAS;
 import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
 import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
 import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
-import static main.java.HandlerConstant.O_AUTH_URL_UAT;
-import static main.java.HandlerConstant.PAIN_CLASS_PATH;
+import static main.java.HandlerConstant.OAUTH_URL_UAT;
+import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
 import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
 import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
@@ -91,7 +91,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import main.java.pain.*;
+import deskera.fintech.pain001.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.encryption.EncryptedData;
@@ -641,7 +641,7 @@ public class Handler {
           + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
           .getBytes()).replaceAll("([\\r\\n])", ""));
       HashMap<String, Object> response = handleHttp(headerList,
-          payload_SignedEncrypted, O_AUTH_URL_UAT);
+          payload_SignedEncrypted, OAUTH_URL_UAT);
       HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
       if (statusCode == HttpStatus.OK) {
@@ -744,12 +744,13 @@ public class Handler {
    * @throws DatatypeConfigurationException if an unexpected event happens when
    *                                        creating datatype instances.
    */
-  public static main.java.pain.Document createPayInitDocumentInstance()
+  public static deskera.fintech.pain001.Document createPayInitDocumentInstance()
       throws DatatypeConfigurationException {
     DatatypeFactory dataType = DatatypeFactory.newInstance();
 
     /* Start of Document */
-    main.java.pain.Document document = new main.java.pain.Document();
+    deskera.fintech.pain001.Document document =
+        new deskera.fintech.pain001.Document();
     /* Start of cstmrCdtTrfInitn */
     CustomerCreditTransferInitiationV03 cstmrCdtTrfInitn =
         new CustomerCreditTransferInitiationV03();
@@ -916,11 +917,11 @@ public class Handler {
    */
   public static String createPayInitPayload() throws HandlerException {
     try {
-      main.java.pain.Document document = createPayInitDocumentInstance();
-      JAXBElement<main.java.pain.Document> documentElement =
+      deskera.fintech.pain001.Document document = createPayInitDocumentInstance();
+      JAXBElement<deskera.fintech.pain001.Document> documentElement =
           (new ObjectFactory()).createDocument(document);
-      BankFormatConverter<main.java.pain.Document> convertor =
-          new BankFormatConverter<>(PAIN_CLASS_PATH);
+      BankFormatConverter<deskera.fintech.pain001.Document> convertor =
+          new BankFormatConverter<>(PAIN001_CLASS_PATH);
       return convertor.writeElementToXML(documentElement);
     } catch (JAXBException | DatatypeConfigurationException | TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1317,9 +1318,9 @@ public class Handler {
    */
   public static String readCAMT53ToJson (String CAMT53Str) throws HandlerException {
     try {
-      BankFormatConverter<main.java.camt53.Document>
-          converter = new BankFormatConverter<>(CAMT53_CLASS_PATH);
-      JAXBElement<main.java.camt53.Document> documentElement =
+      BankFormatConverter<deskera.fintech.camt053.Document>
+          converter = new BankFormatConverter<>(CAMT053_CLASS_PATH);
+      JAXBElement<deskera.fintech.camt053.Document> documentElement =
           converter.readXMLToElement(CAMT53Str);
       return converter.writeElementToJson(documentElement);
     } catch (JAXBException e) {
@@ -1340,9 +1341,9 @@ public class Handler {
    */
   public static String readCAMT52ToJson (String CAMT52Str) throws HandlerException {
     try {
-      BankFormatConverter<main.java.camt52.Document>
-          converter = new BankFormatConverter<>(CAMT52_CLASS_PATH);
-      JAXBElement<main.java.camt52.Document> documentElement =
+      BankFormatConverter<deskera.fintech.camt052.Document>
+          converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
+      JAXBElement<deskera.fintech.camt052.Document> documentElement =
           converter.readXMLToElement(CAMT52Str);
       return converter.writeElementToJson(documentElement);
     } catch (JAXBException e) {
@@ -1719,7 +1720,7 @@ public class Handler {
 //              return (HttpURLConnection) url.openConnection(proxy);
 //            }
 //          }), new DefaultClientConfig());
-//      WebResource webResource = client.resource(O_AUTH_URL_UAT);
+//      WebResource webResource = client.resource(OAUTH_URL_UAT);
 //      WebResource.Builder builder = webResource.type(MediaType.APPLICATION_XML);
 //      builder.header(HttpHeaders.AUTHORIZATION, "Basic "
 //          + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())

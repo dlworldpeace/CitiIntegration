@@ -37,16 +37,21 @@ public class HandlerConstant {
 
   /* Inputs to Response Parsing Logic */
 
-  public static final String PAIN_CLASS_PATH = "main.java.pain";
-  public static final String CAMT52_CLASS_PATH = "main.java.camt52";
-  public static final String CAMT53_CLASS_PATH = "main.java.camt53";
+  public static final String PAIN001_CLASS_PATH = "deskera.fintech.pain001";
+  public static final String PAIN002_CLASS_PATH = "deskera.fintech.pain002";
+  public static final String CAMT052_CLASS_PATH = "deskera.fintech.camt052";
+  public static final String CAMT053_CLASS_PATH = "deskera.fintech.camt053";
+  public static final String OAUTH_CLASS_PATH = "deskera.fintech.oauth";
+  public static final String PAY_INIT_CLASS_PATH = "deskera.fintech.payinit";
+  public static final String STAT_INIT_CLASS_PATH = "deskera.fintech.statinit";
+  public static final String STAT_RET_CLASS_PATH = "deskera.fintech.statret";
 
   /* URLs for both UAT and PROD */
 
-  public static final String O_AUTH_URL_UAT =
+  public static final String OAUTH_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/authenticationservices/"
           + "v1/oauth/token";
-  public static final String O_AUTH_URL_PROD =
+  public static final String OAUTH_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/authenticationservices/v1/"
           + "oauth/token";
   public static final String PAY_INIT_URL_UAT =

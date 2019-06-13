@@ -2,18 +2,12 @@ package main.java;
 
 public class HandlerConstant {
 
-  /* Inputs to the Encryption Logic */
+  /* Inputs to the Encryption and Decryption Logic */
 
   public static final String KEYSTORE_FILEPATH =
       "src/main/resources/key/deskera/deskera.p12";
   public static final String KEYSTORE_PASSWORD = "clientpass";
   public static final String KEYSTORE_ALIAS = "1";
-  public static final String citiEncryptKeyAlias = "CitiEncryptPublicKey";
-
-  /* Inputs to the Decryption Logic */
-
-  public static final String clientDecryptKeyAlias = "1";
-  public static final String citiVerifyKeyAlias = "CitiSignaturePublicKey";
 
   /* Inputs to the Parsing Response Logic */
 

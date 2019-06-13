@@ -211,5 +211,6 @@
     </orderEntry>
     <orderEntry type="library" name="org.eclipse.persistence.core-2.5.0-RC2" level="project" />
     <orderEntry type="library" name="org.eclipse.persistence.asm-2.5.0-RC1" level="project" />
+    <orderEntry type="library" name="deskera-fintech-1.0" level="project" />
   </component>
 </module>

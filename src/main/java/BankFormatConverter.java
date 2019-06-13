@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -41,14 +43,20 @@ public class BankFormatConverter<T> {
    *
    * @param XMLStr XML String in standard ISO format.
    * @return a JAXBElement of a standard ISO format.
-   * @throws JAXBException if an unpexted event happens during the conversion.
+   * @throws BankFormatConverterException if an unpexted event happens during
+   *                                      the conversion.
    */
-  public JAXBElement<T> readXMLToElement (String XMLStr) throws JAXBException {
-
-    JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
-    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    StringReader reader = new StringReader(XMLStr);
-    return (JAXBElement<T>) unmarshaller.unmarshal(reader);
+  public JAXBElement<T> readXMLToElement (String XMLStr)
+      throws BankFormatConverterException {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      StringReader reader = new StringReader(XMLStr);
+      return (JAXBElement<T>) unmarshaller.unmarshal(reader);
+    } catch (JAXBException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new BankFormatConverterException(e.getMessage());
+    }
   }
 
   /**
@@ -57,13 +65,13 @@ public class BankFormatConverter<T> {
    *
    * @param rootElement JAXBElement rooted at Document Element.
    * @return corresponding XML String.
-   * @throws JAXBException if an unpexted event happens during the conversion.
-   * @throws TransformerException if an unpexted event happens when adding some
-   *                              property to the string styles.
+   * @throws BankFormatConverterException if an unpexted event happens during the
+   *                                      conversion or adding some property to
+   *                                      the string styles.
    */
-  public String writeElementToXML (JAXBElement<T> rootElement) throws JAXBException,
-      TransformerException {
-
+  public String writeElementToXML (JAXBElement<T> rootElement)
+      throws BankFormatConverterException {
+    try {
     JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
     Marshaller marshaller = jaxbContext.createMarshaller();
     OutputStream out = new ByteArrayOutputStream();
@@ -78,6 +86,10 @@ public class BankFormatConverter<T> {
         "{http://xml.apache.org/xslt}indent-amount", "2");
     transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
     return out.toString();
+    } catch (JAXBException | TransformerException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new BankFormatConverterException(e.getMessage());
+    }
   }
 
   /**
@@ -86,20 +98,26 @@ public class BankFormatConverter<T> {
    *
    * @param rootElement JAXBElement rooted at Document Element.
    * @return corresponding JSON String.
-   * @throws JAXBException if an unpexted event happens during the conversion.
+   * @throws BankFormatConverterException if an unpexted event happens during
+   *                                      the conversion.
    */
-  public String writeElementToJson (JAXBElement<T> rootElement) throws JAXBException {
+  public String writeElementToJson (JAXBElement<T> rootElement)
+      throws BankFormatConverterException {
     System.setProperty("javax.xml.bind.context.factory",
         "org.eclipse.persistence.jaxb.JAXBContextFactory");
-
-    JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
-    Marshaller marshaller = jaxbContext.createMarshaller();
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
-    marshaller.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-    StringWriter sw = new StringWriter();
-    marshaller.marshal(rootElement, sw);
-    return sw.toString();
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
+      Marshaller marshaller = jaxbContext.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+      marshaller.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
+     StringWriter sw = new StringWriter();
+     marshaller.marshal(rootElement, sw);
+     return sw.toString();
+    } catch (JAXBException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new BankFormatConverterException(e.getMessage());
+    }
   }
 
 }

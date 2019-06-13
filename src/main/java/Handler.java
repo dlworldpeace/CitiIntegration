@@ -923,7 +923,7 @@ public class Handler {
       BankFormatConverter<deskera.fintech.pain001.Document> convertor =
           new BankFormatConverter<>(PAIN001_CLASS_PATH);
       return convertor.writeElementToXML(documentElement);
-    } catch (JAXBException | DatatypeConfigurationException | TransformerException e) {
+    } catch (BankFormatConverterException | DatatypeConfigurationException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -1323,7 +1323,7 @@ public class Handler {
       JAXBElement<deskera.fintech.camt053.Document> documentElement =
           converter.readXMLToElement(CAMT053Str);
       return converter.writeElementToJson(documentElement);
-    } catch (JAXBException e) {
+    } catch (BankFormatConverterException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -1346,7 +1346,7 @@ public class Handler {
       JAXBElement<deskera.fintech.camt052.Document> documentElement =
           converter.readXMLToElement(CAMT052Str);
       return converter.writeElementToJson(documentElement);
-    } catch (JAXBException e) {
+    } catch (BankFormatConverterException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }

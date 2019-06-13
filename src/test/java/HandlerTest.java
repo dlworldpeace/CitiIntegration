@@ -39,6 +39,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import main.java.BankFormatConverterException;
 import main.java.Handler;
 import main.java.HandlerException;
 import main.java.BankFormatConverter;
@@ -537,7 +538,8 @@ public class HandlerTest {
 
   @Test
   public void readXMLToElement_JAXBElementGeneratedCorrectly ()
-      throws IOException, DatatypeConfigurationException, JAXBException {
+      throws DatatypeConfigurationException, BankFormatConverterException,
+      IOException{
 
     deskera.fintech.pain001.Document document = createPayInitDocumentInstance();
     JAXBElement<deskera.fintech.pain001.Document> documentElement =

@@ -327,7 +327,7 @@ public class HandlerTest {
     final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    final String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
+    final String resInitPay_Encrypted = handler.initiatePayment(ISOXMLInitPay);
     final String resInitPay_Plain = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
     final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
@@ -336,7 +336,7 @@ public class HandlerTest {
     final String strBalance = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/"
             + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    final String resBalance_Encypted = new String(handler.checkBalance(strBalance));
+    final String resBalance_Encypted = handler.checkBalance(strBalance);
     final String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
     final String json = readCAMT052ToJson(resBalance);
 //    System.out.println(json);
@@ -344,7 +344,7 @@ public class HandlerTest {
     final String strInitStat = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
             + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
-    final String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
+    final String resInitStat_Encrypted = handler.initiateStatement(strInitStat);
     final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
     final String statementId = extractStatementId(resInitStat);
 //      System.out.println(statementId);
@@ -353,8 +353,8 @@ public class HandlerTest {
 //        "src/test/resources/sample/StatementRetrieval/"
 //            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
 //        .replace("placeholder", statementId);
-//    final String resStatRet = new String(
-//        handler.retrieveStatement(strStatRet, STATEMENT_RET_URL_UAT));
+//    final String resStatRet = handler.retrieveStatement(
+//        strStatRet, STATEMENT_RET_URL_UAT);
 //    System.out.println(resStatRet);
   }
 

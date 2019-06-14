@@ -1036,7 +1036,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public byte[] initiatePayment (String ISOXML) throws XMLSecurityException,
+  public String initiatePayment (String ISOXML) throws XMLSecurityException,
       HandlerException {
     String base64Payload = generateBase64PayloadFromISOXML(ISOXML);
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(base64Payload);
@@ -1049,7 +1049,7 @@ public class Handler {
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
-      return (byte[]) response.get("BODY");
+      return new String((byte[]) response.get("BODY"));
     } else { // error msg received instead of expected statement
       String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
@@ -1061,12 +1061,12 @@ public class Handler {
    * Balance inquiry logic.
    *
    * @param payload Payload that contains account number or branch number
-   * @return a response in camt.052.001.02
+   * @return a response in camt.052.001.02.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public byte[] checkBalance (String payload) throws XMLSecurityException,
+  public String checkBalance (String payload) throws XMLSecurityException,
       HandlerException {
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
     Map<String, String> headerList = new HashMap<>();
@@ -1078,7 +1078,7 @@ public class Handler {
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
-      return (byte[]) response.get("BODY");
+      return new String((byte[]) response.get("BODY"));
     } else { // error msg received instead of expected statement
       String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
@@ -1096,7 +1096,7 @@ public class Handler {
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
    */
-  public byte[] initiateStatement (String payLoad) throws XMLSecurityException,
+  public String initiateStatement (String payLoad) throws XMLSecurityException,
       HandlerException {
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payLoad);
     Map<String, String> headerList = new HashMap<>();
@@ -1107,7 +1107,7 @@ public class Handler {
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {
-      return (byte[]) response.get("BODY");
+      return new String((byte[]) response.get("BODY"));
     } else { // error msg received instead of expected statement
       String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
@@ -1311,7 +1311,7 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public byte[] retrieveStatement (String payload, String url) throws XMLSecurityException,
+  public String retrieveStatement (String payload, String url) throws XMLSecurityException,
       CertificateEncodingException, HandlerException {
 
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
@@ -1328,7 +1328,8 @@ public class Handler {
       String firstHalf =
           decryptAndVerifyXMLFromCiti((String) body.get("ENCRYPTED_KEY"));
       String decryptionKey = extractAttachmentDecryptionKey(firstHalf);
-      return des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE"));
+      return new String(
+          des3DecodeCBC(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE")));
     } else { // error msg received instead of expected statement
       String errorMsg = (String) response.get("BODY");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);

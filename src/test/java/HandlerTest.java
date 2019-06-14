@@ -324,13 +324,13 @@ public class HandlerTest {
         convertXMLStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
     handler.setOAuthToken(oAuthToken);
 
-//    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
-//            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-//    final String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
-//    final String resInitPay_Plain = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
-//    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
-//        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+    final String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
+    final String resInitPay_Plain = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
+    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
+        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
 //    System.out.println(resInitPay_ISOXML);
 
     final String strBalance = new String(Files.readAllBytes(Paths.get(
@@ -338,24 +338,24 @@ public class HandlerTest {
             + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
     final String resBalance_Encypted = new String(handler.checkBalance(strBalance));
     final String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
-    System.out.println(resBalance);
+    final String json = readCAMT052ToJson(resBalance);
+//    System.out.println(json);
 
-//    final String strInitStat = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
-//            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
-//    final String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
-//    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
-//    final String statementId = extractStatementId(resInitStat);
-//
+    final String strInitStat = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
+            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
+    final String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
+    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
+    final String statementId = extractStatementId(resInitStat);
+//      System.out.println(statementId);
+
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementRetrieval/"
 //            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
 //        .replace("placeholder", statementId);
-//    String resStatRet = new String(
+//    final String resStatRet = new String(
 //        handler.retrieveStatement(strStatRet, STATEMENT_RET_URL_UAT));
 //    System.out.println(resStatRet);
-
-
   }
 
   @Test

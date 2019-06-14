@@ -76,7 +76,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -599,7 +598,7 @@ public class Handler {
     } catch (HttpStatusCodeException e) {
       response.put("HEADER", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
-      response.put("BODY", e.toString());// e.getStatusText()); //.getResponseBodyAsByteArray());
+      response.put("BODY", e.toString());// e.getStatusText());
     }
     return response;
   }

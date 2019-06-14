@@ -324,20 +324,30 @@ public class HandlerTest {
         convertXMLStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
     handler.setOAuthToken(oAuthToken);
 
-    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
+    final String strInitPay = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    final String resInitPay_Encrypted = handler.initiatePayment(ISOXMLInitPay);
-    final String resInitPay_Plain = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
+    final String resInitPay_Encrypted = handler.initiatePayment(strInitPay);
+    final String resInitPay_Plain =
+        handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
     final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
-//    System.out.println(resInitPay_ISOXML);
+    System.out.println(resInitPay_ISOXML);
 
-    final String strBalance = new String(Files.readAllBytes(Paths.get(
+    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
+            + "XML Request/paymentInq_Request_EndToEndId.txt")));
+    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
+    final String resCheckPay_Plain =
+        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
+    System.out.println(resCheckPay_Plain);
+
+    final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/"
             + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    final String resBalance_Encypted = handler.checkBalance(strBalance);
-    final String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+    final String resBalance_Encypted = handler.checkBalance(strCheckBalance);
+    final String resBalance =
+        handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
     final String json = readCAMT052ToJson(resBalance);
 //    System.out.println(json);
 

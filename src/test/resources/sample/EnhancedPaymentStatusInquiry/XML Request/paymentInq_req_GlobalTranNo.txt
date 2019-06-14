@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paymentInquiryRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/payment/v1">
+  <GlobalTranNo>ed86b7dbb2f1443a99758a7e19c39069</GlobalTranNo>
+</paymentInquiryRequest>

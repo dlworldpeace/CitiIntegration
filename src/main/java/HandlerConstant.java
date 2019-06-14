@@ -28,6 +28,8 @@ public class HandlerConstant {
   public static final String PAYMENT_TYPE_HEADER = "payloadType";
   public static final String OUTGOING_PAYMENT_TYPE =
       "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03";
+  public static final String PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID =
+      "ed86b7dbb2f1443a99758a7e19c39069";
 
   /* Inputs to Response Parsing Logic */
 
@@ -54,6 +56,12 @@ public class HandlerConstant {
   public static final String PAY_INIT_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
           + "initiation?";
+  public static final String PAY_ENHANCED_STATUS_URL_UAT =
+      "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/"
+          + "payment/enhancedinquiry/";
+  public static final String PAY_ENHANCED_STATUS_URL_PROD =
+      "https://tts.apib2b.citi.com/citiconnect/prodpaymentservices/v1/payment/"
+          + "enhancedinquiry/";
   public static final String BALANCE_INQUIRY_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices"
           + "/v1/balance/inquiry?";

@@ -11,6 +11,8 @@ import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
 import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
 import static main.java.HandlerConstant.OAUTH_URL_UAT;
 import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
+import static main.java.HandlerConstant.PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID;
+import static main.java.HandlerConstant.PAY_ENHANCED_STATUS_URL_UAT;
 import static main.java.HandlerConstant.PAY_INIT_URL_UAT;
 import static main.java.HandlerConstant.PAYMENT_TYPE_HEADER;
 import static main.java.HandlerConstant.DESKERA_SSL_CERT_FILE_PATH;
@@ -597,7 +599,7 @@ public class Handler {
     } catch (HttpStatusCodeException e) {
       response.put("HEADER", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
-      response.put("BODY", e.getStatusText()); //.getResponseBodyAsByteArray());
+      response.put("BODY", e.toString());// e.getStatusText()); //.getResponseBodyAsByteArray());
     }
     return response;
   }
@@ -1025,13 +1027,14 @@ public class Handler {
 
   /**
    * Payment initiation logic via Outgoing Payment method, which takes the
-   * necessary data required in ISOXML V3 (pain.001.001.03)
+   * necessary data required in ISOXML V3 (pain.001.001.03).
    *
    * @param ISOXML data in ISOXML V3 format.
    * @return a response that denotes whether the payment has passed the basic
    *         validations. The Partner has the ability to view transaction or
    *         payment status at any later point using the Payment Status Inquiry
-   *         API.
+   *         API. The response also contains an APITrackingID (Message ID) as
+   *         its URI.
    * @throws XMLSecurityException if an unexpected exception occurs while signing
    *                              the auth payload or encrypting the payload.
    * @throws HandlerException custom exception for Handler class.
@@ -1046,6 +1049,38 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
         payload_SignedEncrypted, PAY_INIT_URL_UAT + "client_id=" + getClientId());
+    HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+    if (statusCode == HttpStatus.OK) {
+      return new String((byte[]) response.get("BODY"));
+    } else { // error msg received instead of expected statement
+      String errorMsg = (String) response.get("BODY");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
+      throw new HandlerException(errorMsg);
+    }
+  }
+
+  /**
+   * Payment status inquiry logic using the unique APITrackingID (Message ID)
+   * received from payment initiation made. This is done via the Enhanced Payment
+   * Status Inquiry API.
+   *
+   * @param payload data that follows a custom schema formatting and contains the
+   *               unique APITrackingID.
+   * @return a response that follows the ISOXML (pain.002.001.03) standards.
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public String checkPaymentStatus (String payload) throws XMLSecurityException,
+      HandlerException {
+    String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
+    Map<String, String> headerList = new HashMap<>();
+    headerList.put("Content-Type", "application/xml");
+    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+    HashMap<String, Object> response = handleHttp(
+        headerList, payload_SignedEncrypted, PAY_ENHANCED_STATUS_URL_UAT +
+            PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID + "?client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

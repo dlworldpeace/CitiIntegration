@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.HandlerConstant.BALANCE_INQUIRY_URL_UAT;
 import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
@@ -1045,6 +1046,35 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
     HashMap<String, Object> response = handleHttp(headerList,
         payload_SignedEncrypted, PAY_INIT_URL_UAT + "client_id=" + getClientId());
+    HttpStatus statusCode = (HttpStatus) response.get("STATUS");
+
+    if (statusCode == HttpStatus.OK) {
+      return (byte[]) response.get("BODY");
+    } else { // error msg received instead of expected statement
+      String errorMsg = (String) response.get("BODY");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
+      throw new HandlerException(errorMsg);
+    }
+  }
+
+  /**
+   * Balance inquiry logic.
+   *
+   * @param payload Payload that contains account number or branch number
+   * @return a response in camt.052.001.02
+   * @throws XMLSecurityException if an unexpected exception occurs while signing
+   *                              the auth payload or encrypting the payload.
+   * @throws HandlerException custom exception for Handler class.
+   */
+  public byte[] checkBalance (String payload) throws XMLSecurityException,
+      HandlerException {
+    String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
+    Map<String, String> headerList = new HashMap<>();
+    headerList.put("Content-Type", "application/xml");
+    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
+    HashMap<String, Object> response = handleHttp(
+        headerList, payload_SignedEncrypted,
+        BALANCE_INQUIRY_URL_UAT + "client_id=" + getClientId());
     HttpStatus statusCode = (HttpStatus) response.get("STATUS");
 
     if (statusCode == HttpStatus.OK) {

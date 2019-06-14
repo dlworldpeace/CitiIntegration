@@ -36,7 +36,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.BankFormatConverterException;
@@ -328,31 +327,35 @@ public class HandlerTest {
 //    final String ISOXMLInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
 //            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-//    String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
-//    String resInitPay = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
-//    System.out.println(resInitPay);
+//    final String resInitPay_Encrypted = new String(handler.initiatePayment(ISOXMLInitPay));
+//    final String resInitPay_Plain = handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
+//    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
+//        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+//    System.out.println(resInitPay_ISOXML);
 
-    final String strInitStat = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
-            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
-    final String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
-    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
-    final String statementId = extractStatementId(resInitStat);
+    final String strBalance = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/"
+            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+    final String resBalance_Encypted = new String(handler.checkBalance(strBalance));
+    final String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+    System.out.println(resBalance);
 
-    final String strStatRet = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementRetrieval/"
-            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
-        .replace("placeholder", statementId);
-    String resStatRet = new String(
-        handler.retrieveStatement(strStatRet, STATEMENT_RET_URL_UAT));
-    System.out.println(resStatRet);
+//    final String strInitStat = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
+//            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
+//    final String resInitStat_Encrypted = new String(handler.initiateStatement(strInitStat));
+//    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
+//    final String statementId = extractStatementId(resInitStat);
+//
+//    final String strStatRet = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/StatementRetrieval/"
+//            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
+//        .replace("placeholder", statementId);
+//    String resStatRet = new String(
+//        handler.retrieveStatement(strStatRet, STATEMENT_RET_URL_UAT));
+//    System.out.println(resStatRet);
 
-//    final String strBalance = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/BalanceInquiry/"
-//            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-//    String resBalance_Encypted = handler.checkBalance(strBalance);
-//    String resBalance = handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
-//    System.out.println(resBalance);
+
   }
 
   @Test
@@ -570,10 +573,28 @@ public class HandlerTest {
     System.out.println(res);
   }
 
+  @Test (expected = HandlerException.class)
+  public void readCAMT053ToJson_emptyStr_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT053ToJson(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void readCAMT053ToJson_whiteSpace_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT053ToJson(WHITE_SPACE);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void readCAMT053ToJson_invalidXML_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT053ToJson(SOME_XML);
+  }
+
   @Test
   public void readCAMT052ToJson_sampleCAMT052Sample_readSuccess ()
       throws HandlerException, IOException {
-    
+
     final String CAMT052Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
@@ -581,6 +602,24 @@ public class HandlerTest {
     String res = readCAMT052ToJson(CAMT052Sample);
 
     System.out.println(res);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void readCAMT052ToJson_emptyStr_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT052ToJson(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void readCAMT052ToJson_whiteSpace_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT052ToJson(WHITE_SPACE);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void readCAMT052ToJson_invalidXML_throwsHandlerException ()
+      throws HandlerException {
+    readCAMT052ToJson(SOME_XML);
   }
 
 }

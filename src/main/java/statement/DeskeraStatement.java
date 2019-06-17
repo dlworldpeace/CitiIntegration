@@ -271,7 +271,7 @@ public class DeskeraStatement {
      *
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link BranchAndFinancialInstitutionIdentification4 }
      *
      */
     public BranchAndFinancialInstitutionIdentification4 getAcctSvcr() {
@@ -283,7 +283,7 @@ public class DeskeraStatement {
      *
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link BranchAndFinancialInstitutionIdentification4 }
      *
      */
     public void setAcctSvcr(BranchAndFinancialInstitutionIdentification4 value) {

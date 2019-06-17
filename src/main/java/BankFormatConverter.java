@@ -123,11 +123,12 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Convert type {@link deskera.fintech.camt053.Document } to simpler type
-   * {@link main.java.statement.DeskeraStatement } for client to read.
+   * Convert type {@link deskera.fintech.camt053.Document} from End-of-the-day
+   * statement file to simpler type {@link main.java.statement.DeskeraStatement}
+   * for client to read.
    *
-   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt053.Document }{@code >}
-   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement }{@code >}
+   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt053.Document}{@code >}
+   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement}{@code >}
    */
   public static JAXBElement<DeskeraStatement> convertCAMT053ToDeskeraStatement
       (JAXBElement<deskera.fintech.camt053.Document> documentElement) {
@@ -168,5 +169,53 @@ public class BankFormatConverter<T> {
 
     return (new main.java.statement.ObjectFactory()).createStatement(deskeraStmt);
   }
+
+//  /**
+//   * Convert type {@link deskera.fintech.camt052.Document} from Intraday statement
+//   * file to simpler type {@link main.java.statement.DeskeraStatement} for client
+//   * to read.
+//   *
+//   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt052.Document}{@code >}
+//   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement}{@code >}
+//   */
+//  public static JAXBElement<DeskeraStatement> convertCAMT052ToDeskeraStatement
+//  (JAXBElement<deskera.fintech.camt052.Document> documentElement) {
+//
+//    DeskeraStatement deskeraStmt = new DeskeraStatement();
+//    deskera.fintech.camt052.Document document = documentElement.getValue();
+//
+//    /* Start of Document */
+//    /* Start of BkToCstmrStmt */
+//    deskera.fintech.camt052.BankToCustomerAccountReportV02 bkToCstmrAcctRpt =
+//        document.getBkToCstmrAcctRpt();
+//    /* Start of GrpHdr */
+//    deskera.fintech.camt052.GroupHeader42 grpHdr = bkToCstmrAcctRpt.getGrpHdr();
+//    deskeraStmt.setMsgId(grpHdr.getMsgId());
+//    /* End of GrpHdr */
+//    /* Start of Stmt */
+//    List<deskera.fintech.camt052.AccountReport11> rptList =
+//        bkToCstmrAcctRpt.getRpt();
+//    deskera.fintech.camt052.AccountReport11 rpt = rptList.get(0);
+//    deskeraStmt.setStmtId(rpt.getId());
+//    deskeraStmt.setCreDtTm(rpt.getCreDtTm());
+//    deskeraStmt.setFrToDt(rpt.getFrToDt());
+//    deskera.fintech.camt052.CashAccount20 acct = rpt.getAcct();
+//    deskeraStmt.setAcctId(acct.getId().getOthr().getId());
+//    deskeraStmt.setAcctNm(acct.getNm());
+//    deskeraStmt.setAcctOwnrNm(acct.getOwnr().getNm());
+//    deskeraStmt.setAcctSvcr(acct.getSvcr());
+//    if (!rpt.getBal().isEmpty())
+//      deskeraStmt.setBal(rpt.getBal());
+//    if (!rpt.getIntrst().isEmpty())
+//      deskeraStmt.setIntrst(rpt.getIntrst());
+//    deskeraStmt.setTxsSummry(rpt.getTxsSummry());
+//    if (!rpt.getNtry().isEmpty())
+//      deskeraStmt.setNtry(rpt.getNtry());
+//    /* End of Stmt */
+//    /* End of BkToCstmrStmt */
+//    /* End of Document */
+//
+//    return (new main.java.statement.ObjectFactory()).createStatement(deskeraStmt);
+//  }
 
 }

@@ -122,6 +122,13 @@ public class BankFormatConverter<T> {
     }
   }
 
+  /**
+   * Convert type {@link deskera.fintech.camt053.Document } to simpler type
+   * {@link main.java.statement.DeskeraStatement } for client to read.
+   *
+   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt053.Document }{@code >}
+   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement }{@code >}
+   */
   public static JAXBElement<DeskeraStatement> convertCAMT053ToDeskeraStatement
       (JAXBElement<deskera.fintech.camt053.Document> documentElement) {
 

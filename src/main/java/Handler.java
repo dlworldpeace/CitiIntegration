@@ -1,8 +1,6 @@
 package main.java;
 
 import static main.java.HandlerConstant.BALANCE_INQUIRY_URL_UAT;
-import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
-import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
 import static main.java.HandlerConstant.KEYSTORE_ALIAS;

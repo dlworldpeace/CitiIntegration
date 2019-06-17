@@ -26,6 +26,8 @@ hs_err_pid*
 *.p12
 *.pem
 *.jks
+*.key
+*.crt
 deskera_client_id.txt
 deskera_secret_key.txt
 BalanceInquiryRequest_Plain_Real.txt

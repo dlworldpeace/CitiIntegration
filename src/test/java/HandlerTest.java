@@ -1,6 +1,8 @@
 package test.java;
 
 import static main.java.BankFormatConverter.convertCAMT053ToDeskeraStatement;
+import static main.java.BankFormatConverter.readCAMT052ToJson;
+import static main.java.BankFormatConverter.readCAMT053ToJson;
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.createPayInitDocumentInstance;
@@ -14,8 +16,6 @@ import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
-import static main.java.Handler.readCAMT052ToJson;
-import static main.java.Handler.readCAMT053ToJson;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
@@ -568,7 +568,7 @@ public class HandlerTest {
 
   @Test
   public void readCAMT053ToJson_sampleCAMT053Sample_readSuccess ()
-      throws HandlerException, IOException {
+      throws BankFormatConverterException, IOException {
 
     final String CAMT053Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
@@ -579,27 +579,27 @@ public class HandlerTest {
     System.out.println(res);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT053ToJson_emptyStr_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT053ToJson(EMPTY_STRING);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT053ToJson_whiteSpace_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT053ToJson(WHITE_SPACE);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT053ToJson_invalidXML_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT053ToJson(SOME_XML);
   }
 
   @Test
   public void readCAMT052ToJson_sampleCAMT052Sample_readSuccess ()
-      throws HandlerException, IOException {
+      throws BankFormatConverterException, IOException {
 
     final String CAMT052Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Response/"
@@ -610,21 +610,21 @@ public class HandlerTest {
     System.out.println(res);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT052ToJson_emptyStr_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT052ToJson(EMPTY_STRING);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT052ToJson_whiteSpace_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT052ToJson(WHITE_SPACE);
   }
 
-  @Test (expected = HandlerException.class)
+  @Test (expected = BankFormatConverterException.class)
   public void readCAMT052ToJson_invalidXML_throwsHandlerException ()
-      throws HandlerException {
+      throws BankFormatConverterException {
     readCAMT052ToJson(SOME_XML);
   }
 

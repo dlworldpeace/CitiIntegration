@@ -1370,53 +1370,7 @@ public class Handler {
       throw new HandlerException(errorMsg);
     }
   }
-
-  /**
-   * Converter from camt.053.001.02 formatted String to its corresponding json
-   * String.
-   *
-   * @param CAMT053Str XML string in ISO 20022 camt.053.001.02 format.
-   * @return its corresponding json format string.
-   * @throws HandlerException if an unexpected event occurs during the conversion
-   *                          process from XML String to JAXBElement and then to
-   *                          json String.
-   */
-  public static String readCAMT053ToJson(String CAMT053Str) throws HandlerException {
-    try {
-      BankFormatConverter<deskera.fintech.camt053.Document>
-          converter = new BankFormatConverter<>(CAMT053_CLASS_PATH);
-      JAXBElement<deskera.fintech.camt053.Document> documentElement =
-          converter.readXMLToElement(CAMT053Str);
-      return converter.writeElementToJson(documentElement);
-    } catch (BankFormatConverterException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
-
-  /**
-   * Converter from camt.052.001.02 formatted String to its corresponding json
-   * String.
-   *
-   * @param CAMT052Str XML string in ISO 20022 camt.052.001.02 format.
-   * @return its corresponding json format string.
-   * @throws HandlerException if an unexpected event occurs during the conversion
-   *                          process from XML String to JAXBElement and then to
-   *                          json String.
-   */
-  public static String readCAMT052ToJson(String CAMT052Str) throws HandlerException {
-    try {
-      BankFormatConverter<deskera.fintech.camt052.Document>
-          converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
-      JAXBElement<deskera.fintech.camt052.Document> documentElement =
-          converter.readXMLToElement(CAMT052Str);
-      return converter.writeElementToJson(documentElement);
-    } catch (BankFormatConverterException e) {
-      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
-      throw new HandlerException(e.getMessage());
-    }
-  }
-
+  
 //  // TODO: check if we need these.
 //  /**
 //   * Load Keystore file that has all certs.

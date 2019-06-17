@@ -1,5 +1,8 @@
 package main.java;
 
+import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
+import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -120,6 +123,44 @@ public class BankFormatConverter<T> {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new BankFormatConverterException(e.getMessage());
     }
+  }
+
+  /**
+   * Converter from camt.053.001.02 formatted String to its corresponding json
+   * String.
+   *
+   * @param CAMT053Str XML string in ISO 20022 camt.053.001.02 format.
+   * @return its corresponding json format string.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from XML String
+   *                                      to JAXBElement and then to json String.
+   */
+  public static String readCAMT053ToJson(String CAMT053Str)
+      throws BankFormatConverterException {
+    BankFormatConverter<deskera.fintech.camt053.Document>
+        converter = new BankFormatConverter<>(CAMT053_CLASS_PATH);
+    JAXBElement<deskera.fintech.camt053.Document> documentElement =
+        converter.readXMLToElement(CAMT053Str);
+    return converter.writeElementToJson(documentElement);
+  }
+
+  /**
+   * Converter from camt.052.001.02 formatted String to its corresponding json
+   * String.
+   *
+   * @param CAMT052Str XML string in ISO 20022 camt.052.001.02 format.
+   * @return its corresponding json format string.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from XML String
+   *                                      to JAXBElement and then to json String.
+   */
+  public static String readCAMT052ToJson(String CAMT052Str)
+      throws BankFormatConverterException {
+    BankFormatConverter<deskera.fintech.camt052.Document>
+        converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
+    JAXBElement<deskera.fintech.camt052.Document> documentElement =
+        converter.readXMLToElement(CAMT052Str);
+    return converter.writeElementToJson(documentElement);
   }
 
   /**

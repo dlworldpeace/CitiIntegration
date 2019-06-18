@@ -6,11 +6,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -46,6 +43,8 @@ public class KeyStoreHandler {
    * @param certificate Path to .crt file from input
    * @param key Path to .key file from input
    * @param keystore Path to the new .p12 keystore generated for output
+   * @param alias alias of the generated certificate and private key set in the
+   *              keystore
    * @param password char array of password to protect the keystore generated
    * @throws KeyStoreHandlerException if an unexpected event occurs when loading
    *                                  input files from or writing new file into
@@ -53,7 +52,7 @@ public class KeyStoreHandler {
    *                                  occurs during keys operations
    */
   public static void createKeystoreFromCertAndKey(String certificate, String key,
-      String keystore, char[] password) throws KeyStoreHandlerException {
+      String keystore, String alias, char[] password) throws KeyStoreHandlerException {
     try {
       byte[] pkcs8 = decode(Files.readAllBytes(Paths.get(key)));
       KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -65,7 +64,7 @@ public class KeyStoreHandler {
       }
       KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
       pkcs12.load(null, null);
-      pkcs12.setKeyEntry("identity", pvt, password, new Certificate[]{pub});
+      pkcs12.setKeyEntry(alias, pvt, password, new Certificate[]{pub});
       try (OutputStream s = Files
           .newOutputStream(Paths.get(keystore), StandardOpenOption.CREATE_NEW)) {
         pkcs12.store(s, password);

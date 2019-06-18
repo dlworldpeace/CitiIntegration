@@ -1,6 +1,6 @@
 package test.java;
 
-import static main.java.KeyStoreGenerator.createIdentityStore;
+import static main.java.KeyStoreGenerator.createKeystoreFromCertAndKey;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -14,10 +14,10 @@ import org.junit.runners.JUnit4;
 public class KeyStoreGeneratorTest extends TestCase {
 
   @Test
-  public void createIdentityStore_deskeraCrtAndPrivKey_success()
+  public void createKeystoreFromCertAndKey_deskeraCrtAndPrivKey_success ()
       throws IOException, GeneralSecurityException {
 
-    createIdentityStore(
+    createKeystoreFromCertAndKey(
         Paths.get("src/main/resources/key/deskera/deskera_sign_encryption_pubkey.crt"),
         Paths.get("src/main/resources/key/deskera/deskera_customer_private.key"),
         Paths.get("src/test/resources/key/new.p12"),

@@ -32,7 +32,20 @@ public class KeyStoreGenerator {
 
   private static final byte[] HEADER = "-----".getBytes(StandardCharsets.US_ASCII);
 
-  public static void createIdentityStore(Path certificate, Path key, Path keystore,
+  /**
+   * Create a .p12 keystore file in the file system from a compatibble pair of
+   * public cert and a private key
+   *
+   * @param certificate {@link Path} to .crt file from input
+   * @param key {@link Path} to .key file from input
+   * @param keystore {@link Path} to the new .p12 keystore generated for output
+   * @param password char array of password to protect the keystore generated
+   * @throws IOException if an unexpected event occurs when loading input files
+   *                     from or writing new file into the file system
+   * @throws GeneralSecurityException if an unexpected event occurs during keys
+   *                                  operations
+   */
+  public static void createKeystoreFromCertAndKey(Path certificate, Path key, Path keystore,
       char[] password) throws IOException, GeneralSecurityException {
     byte[] pkcs8 = decode(Files.readAllBytes(key));
     KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -50,8 +63,15 @@ public class KeyStoreGenerator {
     }
   }
 
+  /**
+   * Decode a base64 encoded private key
+   *
+   * @param raw byte array of raw key data
+   * @return decoded information of the encoded key string
+   */
   private static byte[] decode(byte[] raw) {
-    if (!Arrays.equals(Arrays.copyOfRange(raw, 0, HEADER.length), HEADER)) return raw;
+    if (!Arrays.equals(Arrays.copyOfRange(raw, 0, HEADER.length), HEADER))
+      return raw;
     CharBuffer pem = StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(raw));
     String[] lines = Pattern.compile("\\R").split(pem);
     String[] body = Arrays.copyOfRange(lines, 1, lines.length - 1);

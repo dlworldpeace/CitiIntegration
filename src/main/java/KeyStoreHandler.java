@@ -6,8 +6,12 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -18,6 +22,8 @@ import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -40,26 +46,32 @@ public class KeyStoreHandler {
    * @param key {@link Path} to .key file from input
    * @param keystore {@link Path} to the new .p12 keystore generated for output
    * @param password char array of password to protect the keystore generated
-   * @throws IOException if an unexpected event occurs when loading input files
-   *                     from or writing new file into the file system
-   * @throws GeneralSecurityException if an unexpected event occurs during keys
-   *                                  operations
+   * @throws KeyStoreHandlerException if an unexpected event occurs when loading
+   *                                  input files from or writing new file into
+   *                                  the file system, or if an unexpected event
+   *                                  occurs during keys operations
    */
   public static void createKeystoreFromCertAndKey(Path certificate, Path key, Path keystore,
-      char[] password) throws IOException, GeneralSecurityException {
-    byte[] pkcs8 = decode(Files.readAllBytes(key));
-    KeyFactory kf = KeyFactory.getInstance("RSA");
-    PrivateKey pvt = kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
-    CertificateFactory cf = CertificateFactory.getInstance("X.509");
-    Certificate pub;
-    try (InputStream is = Files.newInputStream(certificate)) {
-      pub = cf.generateCertificate(is);
-    }
-    KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
-    pkcs12.load(null, null);
-    pkcs12.setKeyEntry("identity", pvt, password, new Certificate[] { pub });
-    try (OutputStream s = Files.newOutputStream(keystore, StandardOpenOption.CREATE_NEW)) {
-      pkcs12.store(s, password);
+      char[] password) throws KeyStoreHandlerException {
+    try {
+      byte[] pkcs8 = decode(Files.readAllBytes(key));
+      KeyFactory kf = KeyFactory.getInstance("RSA");
+      PrivateKey pvt = kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
+      CertificateFactory cf = CertificateFactory.getInstance("X.509");
+      Certificate pub;
+      try (InputStream is = Files.newInputStream(certificate)) {
+        pub = cf.generateCertificate(is);
+      }
+      KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
+      pkcs12.load(null, null);
+      pkcs12.setKeyEntry("identity", pvt, password, new Certificate[]{pub});
+      try (OutputStream s = Files
+          .newOutputStream(keystore, StandardOpenOption.CREATE_NEW)) {
+        pkcs12.store(s, password);
+      }
+    } catch (IOException | GeneralSecurityException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new KeyStoreHandlerException(e.getMessage());
     }
   }
 
@@ -77,4 +89,43 @@ public class KeyStoreHandler {
     String[] body = Arrays.copyOfRange(lines, 1, lines.length - 1);
     return Base64.getDecoder().decode(String.join("", body));
   }
+
+  /**
+   * Delete a .p12 extension key store file if it exists in the path specified
+   *
+   * @param p12KeyStore {@link Path} to a specific .p12 keystore file
+   * @throws KeyStoreHandlerException if the file path specified does not end
+   *                                  with .p12
+   */
+  public static void deleteP12IfExist (Path p12KeyStore)
+      throws KeyStoreHandlerException {
+    try
+    {
+      PathMatcher matcher = FileSystems.getDefault()
+          .getPathMatcher("glob:*.p12");
+
+      if (!matcher.matches(p12KeyStore))
+        throw new KeyStoreHandlerException("File path specified does not end with .p12");
+      Files.deleteIfExists(p12KeyStore);
+    }
+    catch(NoSuchFileException e)
+    {
+      Logger.getLogger(Handler.class.getName())
+          .log(Level.INFO, "No such file/directory exists");
+    }
+    catch(DirectoryNotEmptyException e)
+    {
+      Logger.getLogger(Handler.class.getName())
+          .log(Level.INFO, "Directory is not empty");
+    }
+    catch(IOException e)
+    {
+      Logger.getLogger(Handler.class.getName())
+          .log(Level.INFO, "Invalid permissions");
+    }
+
+    Logger.getLogger(Handler.class.getName())
+        .log(Level.INFO, "Delete .p12 successful");
+  }
+
 }

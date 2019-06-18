@@ -2,10 +2,9 @@ package test.java;
 
 import static main.java.KeyStoreHandler.createKeystoreFromCertAndKey;
 
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import junit.framework.TestCase;
+import main.java.KeyStoreHandlerException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -15,7 +14,7 @@ public class KeyStoreHandlerTest extends TestCase {
 
   @Test
   public void createKeystoreFromCertAndKey_deskeraCrtAndPrivKey_success ()
-      throws IOException, GeneralSecurityException {
+      throws KeyStoreHandlerException {
 
     createKeystoreFromCertAndKey(
         Paths.get("src/main/resources/key/deskera/deskera_sign_encryption_pubkey.crt"),

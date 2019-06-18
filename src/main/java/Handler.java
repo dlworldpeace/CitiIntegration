@@ -4,7 +4,6 @@ import static main.java.HandlerConstant.BALANCE_INQUIRY_URL_UAT;
 import static main.java.HandlerConstant.CITI_SSL_CERT_FILE_PATH;
 import static main.java.HandlerConstant.CITI_SSL_CERT_PWD;
 import static main.java.HandlerConstant.KEYSTORE_ALIAS;
-import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
 import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
 import static main.java.HandlerConstant.OUTGOING_PAYMENT_TYPE;
 import static main.java.HandlerConstant.OAUTH_URL_UAT;
@@ -179,13 +178,15 @@ public class Handler {
   /**
    * Load Keystore file that has all certs.
    *
+   * @param ksPath String path to the .p12 keystore file in the file system
+   * @param ksPswd String password to access this keystore
    * @throws HandlerException custom exception for Handler class.
    */
-  public void loadKeystore () throws HandlerException {
+  public void loadKeystore (String ksPath, String ksPswd) throws HandlerException {
     try {
       ks = KeyStore.getInstance("PKCS12");
-      FileInputStream fis = new FileInputStream(KEYSTORE_FILEPATH);
-      ks.load(fis, KEYSTORE_PASSWORD.toCharArray());
+      FileInputStream fis = new FileInputStream(ksPath);
+      ks.load(fis, ksPswd.toCharArray());
       fis.close();
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException
         | IOException e) {
@@ -197,13 +198,14 @@ public class Handler {
   /**
    * Getting public client signing cert.
    *
+   * @param ksAlias hash key of the set of cert and key contained in the keystore
    * @return client signing cert.
    * @throws HandlerException custom exception for Handler class.
    */
-  public X509Certificate getClientSigningCert () throws HandlerException {
+  public X509Certificate getClientSigningCert (String ksAlias) throws HandlerException {
     try {
       X509Certificate signCert = (X509Certificate) ks
-          .getCertificate(KEYSTORE_ALIAS);
+          .getCertificate(ksAlias);
       signCert.checkValidity();
       return signCert;
     } catch (CertificateNotYetValidException | CertificateExpiredException |
@@ -216,12 +218,14 @@ public class Handler {
   /**
    * Getting private client signing Key.
    *
+   * @param ksAlias hash key of the set of cert and key contained in the keystore
+   * @param ksPswd String password to access this keystore
    * @return PrivateKey client private key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public PrivateKey getClientPrivateKey () throws HandlerException {
+  public PrivateKey getClientPrivateKey (String ksAlias, String ksPswd) throws HandlerException {
     try {
-      return (PrivateKey) ks.getKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD.toCharArray());
+      return (PrivateKey) ks.getKey(ksAlias, ksPswd.toCharArray());
     } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -398,8 +402,9 @@ public class Handler {
   public String signAndEncryptXMLForCiti (String payloadXML)
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertXMLStrToDoc(payloadXML);
-    PrivateKey clientPrivateKey = getClientPrivateKey();
-    X509Certificate clientSigningCert = getClientSigningCert();
+    PrivateKey clientPrivateKey =
+        getClientPrivateKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+    X509Certificate clientSigningCert = getClientSigningCert(KEYSTORE_ALIAS);
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
     PublicKey citiPublicKey = getCitiPublicKey();
     Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(
@@ -552,7 +557,8 @@ public class Handler {
    */
   public String decryptAndVerifyXMLFromCiti (String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
-    PrivateKey clientPrivateDecryptionKey = getClientPrivateKey();
+    PrivateKey clientPrivateDecryptionKey =
+        getClientPrivateKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
     Document encryptedSignedXMLResponseDoc =
         convertXMLStrToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(

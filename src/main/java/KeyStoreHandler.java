@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * @version 1.0
  * @since 2019-06-17.
  */
-public class KeyStoreGenerator {
+public class KeyStoreHandler {
 
   private static final byte[] HEADER = "-----".getBytes(StandardCharsets.US_ASCII);
 

@@ -1,5 +1,6 @@
 package main.java;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Objects;
@@ -50,14 +51,17 @@ public class RandomStringGenerator {
   /**
    * Create an alphanumeric strings from a secure generator.
    */
-  public RandomStringGenerator(int length) {
-    this(length, new SecureRandom());
+  public RandomStringGenerator(int length) throws NoSuchAlgorithmException {
+    this(length, System.getProperty("os.name").toLowerCase().contains("win") ?
+        SecureRandom.getInstance("Windows-PRNG") : new SecureRandom());
+    // WIN Default constructor would have returned insecure SHA1PRNG algorithm
+    // UNIX Default constructor would have returned secure NativePRNG algorithm
   }
 
   /**
    * Create session identifiers.
    */
-  public RandomStringGenerator() {
+  public RandomStringGenerator() throws NoSuchAlgorithmException {
     this(8);
   }
 

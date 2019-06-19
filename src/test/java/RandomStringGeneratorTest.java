@@ -1,5 +1,6 @@
 package test.java;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import junit.framework.TestCase;
 import main.java.RandomStringGenerator;
@@ -11,18 +12,20 @@ import org.junit.runners.JUnit4;
 public class RandomStringGeneratorTest extends TestCase {
 
   @Test
-  public void nextString_success () {
+  public void nextString_success () throws NoSuchAlgorithmException {
     RandomStringGenerator rsg = new RandomStringGenerator();
     System.out.println(rsg.nextString());
   }
 
   @Test (expected = IllegalArgumentException.class)
-  public void RandomStringGenerator_lengthZero_throwsException () {
+  public void RandomStringGenerator_lengthZero_throwsException ()
+      throws NoSuchAlgorithmException {
     RandomStringGenerator rsg = new RandomStringGenerator(0);
   }
 
   @Test
-  public void RandomStringGenerator_lengthOne_initiateSuccess () {
+  public void RandomStringGenerator_lengthOne_initiateSuccess ()
+      throws NoSuchAlgorithmException {
     RandomStringGenerator rsg = new RandomStringGenerator(1);
   }
 

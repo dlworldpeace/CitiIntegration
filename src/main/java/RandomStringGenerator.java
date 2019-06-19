@@ -9,6 +9,8 @@ public class RandomStringGenerator {
 
   /**
    * Generate a random string.
+   *
+   * return a secure random string of length preset
    */
   public String nextString() {
     for (int idx = 0; idx < buf.length; ++idx)

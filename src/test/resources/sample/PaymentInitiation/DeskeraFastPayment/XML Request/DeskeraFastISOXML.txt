@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>FASTTPM001</MsgId>
+			<CreDtTm>2019-06-19T09:30:00</CreDtTm>
+			<NbOfTxs>1</NbOfTxs>
+			<InitgPty>
+				<Nm>Deskera Singapore</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf> 										
+			<PmtInfId>FASTTPM001</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>URNS</Cd>
+				</SvcLvl>
+			</PmtTpInf>
+			<ReqdExctnDt>2019-06-19</ReqdExctnDt>
+			<Dbtr>
+				<Nm>Deskera Singapore Pte Ltd</Nm>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<Othr>
+						<Id>0865828039</Id>
+					</Othr>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BIC>CITISGSG</BIC>
+					<PstlAdr>
+						<Ctry>SG</Ctry>
+					</PstlAdr>
+				</FinInstnId>
+			</DbtrAgt>
+			<CdtTrfTxInf>
+				<PmtId>
+					<EndToEndId>FASTTPM001</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="SGD">1.00</InstdAmt>
+				</Amt>
+				<CdtrAgt>
+					<FinInstnId>
+						<BIC>DEUTSGSG228</BIC>
+						<Nm>DEUTSCHE BANK AG</Nm>
+						<PstlAdr>
+							<Ctry>SG</Ctry>
+						</PstlAdr>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>Mahamuni Sagar Subhash</Nm>
+					<PstlAdr>
+						<Ctry>SG</Ctry>
+						<AdrLine>One Raffles Place </AdrLine>
+						<AdrLine>Singapore</AdrLine>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<Othr>
+							<Id>0480516840</Id>
+						</Othr>
+					</Id>
+				</CdtrAcct>
+				<Purp>
+					<Prtry>Invoice Payment</Prtry>
+				</Purp>
+				<RmtInf> 								
+					<Ustrd>INV-2019-06-001</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

@@ -319,8 +319,8 @@ public class HandlerTest {
     handler.setOAuthToken(oAuthToken);
 
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
-//            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
+//        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
+//            + "XML Request/DeskeraFastISOXML.txt")));
 //    final String resInitPay_Encrypted = handler.initiatePayment(strInitPay);
 //    final String resInitPay_Plain =
 //        handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
@@ -353,13 +353,13 @@ public class HandlerTest {
 //    final String statementId = extractStatementId(resInitStat);
 ////      System.out.println(statementId);
 
-    final String strStatRet = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementRetrieval/"
-            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
-        .replace("placeholder", "111111114");
-    final String resStatRet = handler.retrieveStatement(
-        strStatRet, STATEMENT_RET_URL_MOCK);
-    System.out.println(resStatRet);
+//    final String strStatRet = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/StatementRetrieval/"
+//            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
+//        .replace("placeholder", "111111114");
+//    final String resStatRet = handler.retrieveStatement(
+//        strStatRet, STATEMENT_RET_URL_MOCK);
+//    System.out.println(resStatRet);
   }
 
   @Test

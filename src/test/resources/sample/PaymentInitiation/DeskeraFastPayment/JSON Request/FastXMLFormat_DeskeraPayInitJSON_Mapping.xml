@@ -8,23 +8,17 @@
 		<paymentinfo> 					<!-- PmtInf -->					
 			<payrefid>FASTTPM001</payrefid> 	<!--PmtInfId -->
 			<paymethod>TRF</paymethod> 			<!-- PmtMtd-->			
-			<paymenttrastype> 			<!-- PmtTpInf -->						
-				<servicecode>URNS</servicecode><!-- =>SvcLvl=>Cd -->
-				
-			</paymenttrastype> <!-- -->
+			<paymenttranstype>URNS</paymenttranstype> <!-- PmtTpInf=>SvcLvl=>Cd -->
 			<paymentdate>2019-06-19</paymentdate> <!--ReqdExctnDt --> 
-			<debtorname>Deskera Singapore Pte Ltd</debtorname>						<!-- Dbtr=>NM-->						
+			<debtorname>Deskera Singapore Pte Ltd</debtorname> <!-- Dbtr=>NM-->
 				
 			<debtoracc>0865828039</debtoracc>  <!-- DbtrAcct=>Id=>Othr=>Id -->
 				
 			<debtorbankdetails><!-- DbtrAgt -->
-				<bankinfo> <!-- FinInstnId -->
-					<bic>CITISGSG</bic>  <!-- BIC -->				
-					<address> 		<!-- PstlAdr -->	
-					<countrycode>SG</countrycode>			<!-- Ctry --> 	
-						
+					<bic>CITISGSG</bic>  <!-- FinInstnId=>BIC -->
+					<address> 		<!-- FinInstnId=>PstlAdr -->
+						<countrycode>SG</countrycode>			<!-- Ctry -->
 					</address>
-				</bankinfo>
 			</debtorbankdetails>
 
 			<creditortxninfo> 		<!-- CdtTrfTxInf	-->
@@ -32,25 +26,24 @@
 				<amountinfo>           <!--	Amt-->
 					<amount>1.00</amount> <!-- <InstdAmt Ccy="SGD">1.00</InstdAmt> -->
 					<currencycode>SGD</currencycode>
-					
 				</amountinfo>
 				<creditbankinfo> 	 <!-- CdtrAgt=>FinInstnId -->								
 					    <!-- -->
 						<bic>DEUTSGSG228</bic> <!-- </BIC> -->
 						<name>DEUTSCHE BANK AG</name> <!--Nm--> 
-						<countrycode>SG</countrycode>> 					<!-- PstlAdr=>Ctry -->
+						<countrycode>SG</countrycode>> 	<!-- PstlAdr=>Ctry -->
 				</creditbankinfo>
-				<creditor> 										<!-- Cdtr -->
+				<creditor> 	<!-- Cdtr -->
 					<name>Mahamuni Sagar Subhash</name> 			<!-- Nm -->
 					<address> <!-- PstlAdr -->
 						<countrycode>SG</countrycode> <!-- Ctry --> 
-						<addline>One Raffles Place </addline> <!-- AdrLine -->
-						<addline>Singapore</addline> <!-- AdrLine -->
+						<adrline>One Raffles Place </adrline> <!-- AdrLine -->
+						<adrline>Singapore</adrline> <!-- AdrLine -->
 					</address>
 				</creditor>
-				<creditoraccount>0480516840</creditoraccount> 									<!-- CdtrAcct=>Id=>Othr=>Id -->
+				<creditoraccount>0480516840</creditoraccount> <!-- CdtrAcct=>Id=>Othr=>Id -->
 					
-				<purpose>Invoice Payment</purpose>										<!-- Purp=>Prtry -->
+				<purpose>Invoice Payment</purpose>	<!-- Purp=>Prtry -->
 				<remittanceinfo>INV-2019-06-001</remittanceinfo> 	<!-- RmtInf=>Ustrd -->							
 			</creditortxninfo>
 		</paymentinfo>

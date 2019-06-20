@@ -3,6 +3,7 @@ package main.java;
 import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.DESKERA_PAIN_CLASS_PATH;
+import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -24,8 +25,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import main.java.statement.DeskeraStatement;
+import main.java.payinit.*;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 /**
  * This API supports all conversions between XML and Json via Format classes
@@ -215,7 +216,8 @@ public class BankFormatConverter<T> {
    * Converter from Json to Deskera's custom payment initiation formatted element
    *
    * @param jsonStr json string in Deskera's custom payment initiation format
-   * @return its corresponding json format string.
+   * @return its corresponding {@link JAXBElement} {@code <}
+   *         {@link main.java.payinit.InitiatePayments} {@code >} class instance
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from Json String
    *                                      to JAXBElement.
@@ -225,6 +227,179 @@ public class BankFormatConverter<T> {
     BankFormatConverter<main.java.payinit.InitiatePayments>
         converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);
     return converter.readJsonToElement(jsonStr);
+  }
+
+  /**
+   * Convert type {@link main.java.payinit.InitiatePayments} from Deskera client
+   * to ISOXML standard payment payload type {@link deskera.fintech.pain001.Document}
+   * for sending to server.
+   *
+   * @param deskeraPaIn instance of {@link JAXBElement }{@code <}{@link main.java.payinit.InitiatePayments}{@code >}
+   * @return element instance of {@link JAXBElement }{@code <}{@link deskera.fintech.pain001.Document}{@code >}
+   */
+  public static JAXBElement<deskera.fintech.pain001.Document> convertDeskeraPaInToPAIN001
+      (JAXBElement<main.java.payinit.InitiatePayments> deskeraPaIn) {
+
+    InitiatePayments initiatePayments = deskeraPaIn.getValue();
+    deskera.fintech.pain001.Document document = new deskera.fintech.pain001.Document();
+    deskera.fintech.pain001.CustomerCreditTransferInitiationV03 cstmrCdtTrfInitn =
+        new deskera.fintech.pain001.CustomerCreditTransferInitiationV03();
+    document.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
+
+    PaymentHeader paymentHeader = initiatePayments.getPaymentHeader();
+    deskera.fintech.pain001.GroupHeader32 grpHdr =
+        new deskera.fintech.pain001.GroupHeader32();
+    cstmrCdtTrfInitn.setGrpHdr(grpHdr);
+    grpHdr.setMsgId(paymentHeader.getPaymentRefId());
+    grpHdr.setCreDtTm(paymentHeader.getDateTime());
+    grpHdr.setNbOfTxs(paymentHeader.getNoOfTxs());
+    deskera.fintech.pain001.PartyIdentification32 initgPty =
+        new deskera.fintech.pain001.PartyIdentification32();
+    grpHdr.setInitgPty(initgPty);
+    initgPty.setNm(paymentHeader.getPartyName());
+
+    PaymentInfo paymentInfo = initiatePayments.getPaymentInfo().get(0);
+    deskera.fintech.pain001.PaymentInstructionInformation3 pmtInf =
+        new deskera.fintech.pain001.PaymentInstructionInformation3();
+    cstmrCdtTrfInitn.getPmtInf().add(pmtInf);
+    pmtInf.setPmtInfId(paymentInfo.getPaymentRefId());
+    pmtInf.setPmtMtd(paymentInfo.getPaymentMethod());
+    deskera.fintech.pain001.PaymentTypeInformation19 pmtTpInf =
+        new deskera.fintech.pain001.PaymentTypeInformation19();
+    pmtInf.setPmtTpInf(pmtTpInf);
+    deskera.fintech.pain001.ServiceLevel8Choice svcLvl =
+        new deskera.fintech.pain001.ServiceLevel8Choice();
+    pmtTpInf.setSvcLvl(svcLvl);
+    PaymentTransType paymentTransType = paymentInfo.getPaymentTransType();
+    svcLvl.setCd(paymentTransType.getServiceLvlCode());
+    deskera.fintech.pain001.LocalInstrument2Choice lclInstrm =
+        new deskera.fintech.pain001.LocalInstrument2Choice();
+    pmtTpInf.setLclInstrm(lclInstrm);
+    lclInstrm.setPrtry(paymentTransType.getLocalInstrmtCode());
+    pmtInf.setReqdExctnDt(paymentInfo.getPaymentDate());
+
+    deskera.fintech.pain001.PartyIdentification32 dbtr =
+        new deskera.fintech.pain001.PartyIdentification32();
+    pmtInf.setDbtr(dbtr);
+    Party debtor = paymentInfo.getDebtor();
+    dbtr.setNm(debtor.getName());
+    deskera.fintech.pain001.PostalAddress6 pstlAdr =
+        new deskera.fintech.pain001.PostalAddress6();
+    dbtr.setPstlAdr(pstlAdr);
+    pstlAdr.setCtry(debtor.getAddress().getCountryCode());
+    if (!debtor.getAddress().getAdrLine().isEmpty())
+      pstlAdr.getAdrLine().addAll(debtor.getAddress().getAdrLine());
+
+    deskera.fintech.pain001.CashAccount16 dbtrAcct =
+        new deskera.fintech.pain001.CashAccount16();
+    pmtInf.setDbtrAcct(dbtrAcct);
+    deskera.fintech.pain001.AccountIdentification4Choice dbtrAcctId =
+        new deskera.fintech.pain001.AccountIdentification4Choice();
+    dbtrAcct.setId(dbtrAcctId);
+    deskera.fintech.pain001.GenericAccountIdentification1 othr =
+        new deskera.fintech.pain001.GenericAccountIdentification1();
+    dbtrAcctId.setOthr(othr);
+    othr.setId(paymentInfo.getDebtorAccount());
+
+    BankInfo debtorBankInfo = paymentInfo.getDebtorBankInfo();
+    deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 dbtrAgt =
+        new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
+    pmtInf.setDbtrAgt(dbtrAgt);
+    deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId =
+        new deskera.fintech.pain001.FinancialInstitutionIdentification7();
+    dbtrAgt.setFinInstnId(finInstnId);
+    finInstnId.setBIC(debtorBankInfo.getBIC());
+    deskera.fintech.pain001.PostalAddress6 pstlAdr2 =
+        new deskera.fintech.pain001.PostalAddress6();
+    finInstnId.setPstlAdr(pstlAdr2);
+    pstlAdr2.setCtry(debtorBankInfo.getAddress().getCountryCode());
+
+    CreditorTxnInfo creditorTxnInfo = paymentInfo.getCreditorTxnInfo().get(0);
+    deskera.fintech.pain001.CreditTransferTransactionInformation10 cdtTrfTxInf =
+        new deskera.fintech.pain001.CreditTransferTransactionInformation10();
+    pmtInf.getCdtTrfTxInf().add(cdtTrfTxInf);
+    deskera.fintech.pain001.PaymentIdentification1 pmtId =
+        new deskera.fintech.pain001.PaymentIdentification1();
+    cdtTrfTxInf.setPmtId(pmtId);
+    pmtId.setEndToEndId(creditorTxnInfo.getTxnId());
+    deskera.fintech.pain001.AmountType3Choice amt =
+        new deskera.fintech.pain001.AmountType3Choice();
+    cdtTrfTxInf.setAmt(amt);
+    deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount instdAmt =
+        new deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount();
+    amt.setInstdAmt(instdAmt);
+    instdAmt.setValue(creditorTxnInfo.getAmount());
+    instdAmt.setCcy(creditorTxnInfo.getAmountCurrency());
+    deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 cdtrAgt =
+        new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
+    cdtTrfTxInf.setCdtrAgt(cdtrAgt);
+    BankInfo creditorBankInfo = creditorTxnInfo.getCreditorBankInfo();
+    deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId2 =
+        new deskera.fintech.pain001.FinancialInstitutionIdentification7();
+    cdtrAgt.setFinInstnId(finInstnId2);
+    finInstnId2.setBIC(creditorBankInfo.getBIC());
+    finInstnId2.setNm(creditorBankInfo.getName());
+    if (creditorBankInfo.getAddress() != null) {
+      deskera.fintech.pain001.PostalAddress6 pstlAdr3 =
+          new deskera.fintech.pain001.PostalAddress6();
+      finInstnId2.setPstlAdr(pstlAdr3);
+      pstlAdr3.setCtry(creditorBankInfo.getAddress().getCountryCode());
+    }
+
+    Party creditor = creditorTxnInfo.getCreditor();
+    deskera.fintech.pain001.PartyIdentification32 cdtr =
+        new deskera.fintech.pain001.PartyIdentification32();
+    cdtTrfTxInf.setCdtr(cdtr);
+    cdtr.setNm(creditor.getName());
+    deskera.fintech.pain001.PostalAddress6 pstlAdr4 =
+        new deskera.fintech.pain001.PostalAddress6();
+    cdtr.setPstlAdr(pstlAdr4);
+    pstlAdr4.setCtry(creditor.getAddress().getCountryCode());
+    if (!creditor.getAddress().getAdrLine().isEmpty())
+      pstlAdr4.getAdrLine().addAll(creditor.getAddress().getAdrLine());
+
+    deskera.fintech.pain001.CashAccount16 cdtrAcct =
+        new deskera.fintech.pain001.CashAccount16();
+    cdtTrfTxInf.setCdtrAcct(cdtrAcct);
+    deskera.fintech.pain001.AccountIdentification4Choice cdtrAcctId =
+        new deskera.fintech.pain001.AccountIdentification4Choice();
+    cdtrAcct.setId(cdtrAcctId);
+    deskera.fintech.pain001.GenericAccountIdentification1 cdtrOthr =
+        new deskera.fintech.pain001.GenericAccountIdentification1();
+    cdtrAcctId.setOthr(cdtrOthr);
+    cdtrOthr.setId(creditorTxnInfo.getCreditorAccount());
+
+    deskera.fintech.pain001.Purpose2Choice purp =
+        new deskera.fintech.pain001.Purpose2Choice();
+    cdtTrfTxInf.setPurp(purp);
+    purp.setPrtry(creditorTxnInfo.getPurpose());
+
+    deskera.fintech.pain001.RemittanceInformation5 rmtInf =
+        new deskera.fintech.pain001.RemittanceInformation5();
+    cdtTrfTxInf.setRmtInf(rmtInf);
+    rmtInf.getUstrd().add(creditorTxnInfo.getRemittanceInfo());
+
+    return (new deskera.fintech.pain001.ObjectFactory()).createDocument(document);
+  }
+
+  /**
+   * Converter from Deskera's custom payment initiation formatted Json String to
+   * its corresponding Xml String in pain.001.001.03 standards.
+   *
+   * @param jsonStr Json string in Deskera's custom payment initiation format.
+   * @return its corresponding xml string in pain.001.001.03 standards.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process.
+   */
+  public static String convertJsonToPAIN001XML (String jsonStr)
+      throws BankFormatConverterException {
+    JAXBElement<main.java.payinit.InitiatePayments> initiatePaymentsElement =
+        readJsonToDeskeraPaInElement(jsonStr);
+    JAXBElement<deskera.fintech.pain001.Document> documentElement =
+        convertDeskeraPaInToPAIN001(initiatePaymentsElement);
+    BankFormatConverter<deskera.fintech.pain001.Document>
+        converter = new BankFormatConverter<>(PAIN001_CLASS_PATH);
+    return converter.writeElementToXML(documentElement);
   }
 
   /**

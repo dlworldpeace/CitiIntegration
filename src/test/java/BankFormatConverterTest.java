@@ -1,6 +1,7 @@
 package test.java;
 
 import static main.java.BankFormatConverter.convertCAMT053ToDeskeraStatement;
+import static main.java.BankFormatConverter.convertJsonToPAIN001XML;
 import static main.java.BankFormatConverter.readCAMT052ToJson;
 import static main.java.BankFormatConverter.readCAMT053ToJson;
 import static main.java.BankFormatConverter.readDeskeraPaInXMLToDeskeraPaInJson;
@@ -9,6 +10,7 @@ import static main.java.Handler.createPayInitDocumentInstance;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.DESKERA_STAT_CLASS_PATH;
 import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import deskera.fintech.pain001.Document;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import main.java.statement.DeskeraStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.xml.sax.SAXException;
 
 @RunWith(JUnit4.class)
 public class BankFormatConverterTest extends TestCase {
@@ -150,5 +153,19 @@ public class BankFormatConverterTest extends TestCase {
         "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
             + "JSON Request/DeskeraFastPayInit_Json.txt")));
     readJsonToDeskeraPaInElement(deskeraPaInSampleJson);
+  }
+
+  @Test
+  public void convertJsonToPAIN001XML_success ()
+      throws BankFormatConverterException, IOException, SAXException {
+
+    final String deskeraPaInSampleJson = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
+            + "JSON Request/DeskeraFastPayInit_Json.txt")));
+    final String PAIN001Sample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
+            + "XML Request/DeskeraFastISOXML.txt")));
+
+    assertXMLEqual(PAIN001Sample, convertJsonToPAIN001XML(deskeraPaInSampleJson));
   }
 }

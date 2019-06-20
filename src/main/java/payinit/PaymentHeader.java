@@ -9,15 +9,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PaymentHeader", propOrder = {
-    "payRefId",
+    "paymentRefId",
     "dateTime",
     "noOfTxs",
     "partyName"
 })
 public class PaymentHeader {
 
-    @XmlElement(name = "PayRefId", required = true)
-    protected String payRefId;
+    @XmlElement(name = "PaymentRefId", required = true)
+    protected String paymentRefId;
     @XmlElement(name = "DateTime", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dateTime;
@@ -27,27 +27,27 @@ public class PaymentHeader {
     protected String partyName;
 
     /**
-     * Gets the value of the payRefId property.
+     * Gets the value of the paymentRefId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPayRefId() {
-        return payRefId;
+    public String getPaymentRefId() {
+        return paymentRefId;
     }
 
     /**
-     * Sets the value of the payRefId property.
+     * Sets the value of the paymentRefId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPayRefId(String value) {
-        this.payRefId = value;
+    public void setPaymentRefId(String value) {
+        this.paymentRefId = value;
     }
 
     /**

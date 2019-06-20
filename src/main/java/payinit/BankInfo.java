@@ -6,39 +6,39 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Creditor", propOrder = {
-    "name",
-    "address"
+@XmlType(name = "BankInfo", propOrder = {
+    "bic",
+    "address",
 })
-public class Creditor {
+public class BankInfo {
 
-    @XmlElement(name = "Name")
-    protected String name;
+    @XmlElement(name = "BIC")
+    protected String bic;
     @XmlElement(name = "Address")
     protected BankAddress address;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the bic property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getBIC() {
+        return bic;
     }
 
     /**
-     * Sets the value of the name property.
-     * 
+     * Sets the value of the bic property.
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setBIC(String value) {
+        this.bic = value;
     }
 
     /**

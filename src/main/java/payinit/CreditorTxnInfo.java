@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CreditorTxnInfo", propOrder = {
-    "trxId",
+    "txnId",
     "amountInfo",
-    "creditBankInfo",
+    "creditorBankInfo",
     "creditor",
     "creditorAccount",
     "purpose",
@@ -17,14 +17,14 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class CreditorTxnInfo {
 
-    @XmlElement(name = "TrxId", required = true)
-    protected String trxId;
+    @XmlElement(name = "TxnId", required = true)
+    protected String txnId;
     @XmlElement(name = "AmountInfo", required = true)
     protected AmountInfo amountInfo;
-    @XmlElement(name = "CreditBankInfo")
-    protected BankDetails creditBankInfo;
+    @XmlElement(name = "CreditorBankInfo")
+    protected BankInfo creditorBankInfo;
     @XmlElement(name = "Creditor")
-    protected Creditor creditor;
+    protected Party creditor;
     @XmlElement(name = "CreditorAccount")
     protected String creditorAccount;
     @XmlElement(name = "Purpose")
@@ -33,27 +33,27 @@ public class CreditorTxnInfo {
     protected String remittanceInfo;
 
     /**
-     * Gets the value of the trxId property.
+     * Gets the value of the txnId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTrxId() {
-        return trxId;
+    public String getTxnId() {
+        return txnId;
     }
 
     /**
-     * Sets the value of the trxId property.
+     * Sets the value of the txnId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTrxId(String value) {
-        this.trxId = value;
+    public void setTxnId(String value) {
+        this.txnId = value;
     }
 
     /**
@@ -81,27 +81,27 @@ public class CreditorTxnInfo {
     }
 
     /**
-     * Gets the value of the creditBankInfo property.
+     * Gets the value of the creditorBankInfo property.
      * 
      * @return
      *     possible object is
-     *     {@link BankDetails }
+     *     {@link BankInfo }
      *     
      */
-    public BankDetails getCreditBankInfo() {
-        return creditBankInfo;
+    public BankInfo getCreditorBankInfo() {
+        return creditorBankInfo;
     }
 
     /**
-     * Sets the value of the creditBankInfo property.
+     * Sets the value of the creditorBankInfo property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BankDetails }
+     *     {@link BankInfo }
      *     
      */
-    public void setCreditBankInfo(BankDetails value) {
-        this.creditBankInfo = value;
+    public void setCreditorBankInfo(BankInfo value) {
+        this.creditorBankInfo = value;
     }
 
     /**
@@ -109,10 +109,10 @@ public class CreditorTxnInfo {
      * 
      * @return
      *     possible object is
-     *     {@link Creditor }
+     *     {@link Party }
      *     
      */
-    public Creditor getCreditor() {
+    public Party getCreditor() {
         return creditor;
     }
 
@@ -121,10 +121,10 @@ public class CreditorTxnInfo {
      * 
      * @param value
      *     allowed object is
-     *     {@link Creditor }
+     *     {@link Party }
      *     
      */
-    public void setCreditor(Creditor value) {
+    public void setCreditor(Party value) {
         this.creditor = value;
     }
 

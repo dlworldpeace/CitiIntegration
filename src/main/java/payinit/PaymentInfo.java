@@ -11,106 +11,106 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PaymentInfo", propOrder = {
-    "payRefId",
-    "payMethod",
-    "paymentTrasType",
+    "paymentRefId",
+    "paymentMethod",
+    "paymentTransType",
     "paymentDate",
-    "debtorName",
-    "debtorAcc",
-    "debtorBankDetails",
+    "debtor",
+    "debtorAccount",
+    "debtorBankInfo",
     "creditorTxnInfo"
 })
 public class PaymentInfo {
 
-    @XmlElement(name = "PayRefId", required = true)
-    protected String payRefId;
-    @XmlElement(name = "PayMethod", required = true)
+    @XmlElement(name = "PaymentRefId", required = true)
+    protected String paymentRefId;
+    @XmlElement(name = "PaymentMethod", required = true)
     @XmlSchemaType(name = "string")
-    protected PaymentMethod3Code payMethod;
-    @XmlElement(name = "PaymentTrasType")
-    protected PaymentTransType paymentTrasType; // TODO
+    protected PaymentMethod3Code paymentMethod;
+    @XmlElement(name = "PaymentTransType")
+    protected PaymentTransType paymentTransType;
     @XmlElement(name = "PaymentDate", required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar paymentDate;
-    @XmlElement(name = "DebtorName", required = true)
-    protected String debtorName;
-    @XmlElement(name = "DebtorAcc", required = true)
-    protected String debtorAcc;
-    @XmlElement(name = "DebtorBankDetails", required = true)
-    protected BankDetails debtorBankDetails;
+    @XmlElement(name = "Debtor", required = true)
+    protected Party debtor;
+    @XmlElement(name = "DebtorAccount", required = true)
+    protected String debtorAccount;
+    @XmlElement(name = "DebtorBankInfo", required = true)
+    protected BankInfo debtorBankInfo;
     @XmlElement(name = "CreditorTxnInfo", required = true)
     protected List<CreditorTxnInfo> creditorTxnInfo;
 
     /**
-     * Gets the value of the payRefId property.
+     * Gets the value of the paymentRefId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPayRefId() {
-        return payRefId;
+    public String getPaymentRefId() {
+        return paymentRefId;
     }
 
     /**
-     * Sets the value of the payRefId property.
+     * Sets the value of the paymentRefId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPayRefId(String value) {
-        this.payRefId = value;
+    public void setPaymentRefId(String value) {
+        this.paymentRefId = value;
     }
 
     /**
-     * Gets the value of the payMethod property.
+     * Gets the value of the paymentMethod property.
      * 
      * @return
      *     possible object is
      *     {@link PaymentMethod3Code }
      *     
      */
-    public PaymentMethod3Code getPayMethod() {
-        return payMethod;
+    public PaymentMethod3Code getPaymentMethod() {
+        return paymentMethod;
     }
 
     /**
-     * Sets the value of the payMethod property.
+     * Sets the value of the paymentMethod property.
      * 
      * @param value
      *     allowed object is
      *     {@link PaymentMethod3Code }
      *     
      */
-    public void setPayMethod(PaymentMethod3Code value) {
-        this.payMethod = value;
+    public void setPaymentMethod(PaymentMethod3Code value) {
+        this.paymentMethod = value;
     }
 
     /**
-     * Gets the value of the paymentTrasType property.
+     * Gets the value of the paymentTransType property.
      * 
      * @return
      *     possible object is
      *     {@link PaymentTransType }
      *     
      */
-    public PaymentTransType getPaymentTrasType() {
-        return paymentTrasType;
+    public PaymentTransType getPaymentTransType() {
+        return paymentTransType;
     }
 
     /**
-     * Sets the value of the paymentTrasType property.
+     * Sets the value of the paymentTransType property.
      * 
      * @param value
      *     allowed object is
      *     {@link PaymentTransType }
      *     
      */
-    public void setPaymentTrasType(PaymentTransType value) {
-        this.paymentTrasType = value;
+    public void setPaymentTransType(PaymentTransType value) {
+        this.paymentTransType = value;
     }
 
     /**
@@ -138,75 +138,75 @@ public class PaymentInfo {
     }
 
     /**
-     * Gets the value of the debtorName property.
+     * Gets the value of the debtor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Party }
+     *     
+     */
+    public Party getDebtor() {
+        return debtor;
+    }
+
+    /**
+     * Sets the value of the debtor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Party }
+     *     
+     */
+    public void setDebtor(Party value) {
+        this.debtor = value;
+    }
+
+    /**
+     * Gets the value of the debtorAccount property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDebtorName() {
-        return debtorName;
+    public String getDebtorAccount() {
+        return debtorAccount;
     }
 
     /**
-     * Sets the value of the debtorName property.
+     * Sets the value of the debtorAccount property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDebtorName(String value) {
-        this.debtorName = value;
+    public void setDebtorAccount(String value) {
+        this.debtorAccount = value;
     }
 
     /**
-     * Gets the value of the debtorAcc property.
+     * Gets the value of the debtorBankInfo property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link BankInfo }
      *     
      */
-    public String getDebtorAcc() {
-        return debtorAcc;
+    public BankInfo getDebtorBankInfo() {
+        return debtorBankInfo;
     }
 
     /**
-     * Sets the value of the debtorAcc property.
+     * Sets the value of the debtorBankInfo property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link BankInfo }
      *     
      */
-    public void setDebtorAcc(String value) {
-        this.debtorAcc = value;
-    }
-
-    /**
-     * Gets the value of the debtorBankDetails property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BankDetails }
-     *     
-     */
-    public BankDetails getDebtorBankDetails() {
-        return debtorBankDetails;
-    }
-
-    /**
-     * Sets the value of the debtorBankDetails property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BankDetails }
-     *     
-     */
-    public void setDebtorBankDetails(BankDetails value) {
-        this.debtorBankDetails = value;
+    public void setDebtorBankInfo(BankInfo value) {
+        this.debtorBankInfo = value;
     }
 
     /**

@@ -7,35 +7,61 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PaymentTransType", propOrder = {
-    "cd"
+    "serviceLvlCode",
+    "localInstrmtCode"
 })
 public class PaymentTransType {
 
-    @XmlElement(name = "Cd")
-    protected String cd;
+    @XmlElement(name = "ServiceLvlCode")
+    protected String serviceLvlCode;
+    @XmlElement(name = "LocalInstrmtCode")
+    protected String localInstrmtCode;
 
     /**
-     * Gets the value of the cd property.
+     * Gets the value of the serviceLvlCode property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getCd() {
-        return cd;
+    public String getServiceLvlCode() {
+        return serviceLvlCode;
     }
 
     /**
-     * Sets the value of the cd property.
+     * Sets the value of the serviceLvlCode property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setCd(String value) {
-        this.cd = value;
+    public void setServiceLvlCode(String value) {
+        this.serviceLvlCode = value;
     }
 
+    /**
+     * Gets the value of the localInstrmtCode property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getLocalInstrmtCode() {
+        return this.localInstrmtCode;
+    }
+
+    /**
+     * Sets the value of the localInstrmtCode property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setLocalInstrmtCode(String value) {
+        this.localInstrmtCode = value;
+    }
 }

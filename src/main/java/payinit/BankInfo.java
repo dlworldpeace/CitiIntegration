@@ -8,12 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BankInfo", propOrder = {
     "bic",
-    "address",
+    "name",
+    "address"
 })
 public class BankInfo {
 
     @XmlElement(name = "BIC")
     protected String bic;
+    @XmlElement(name = "Name")
+    protected String name;
     @XmlElement(name = "Address")
     protected BankAddress address;
 
@@ -39,6 +42,30 @@ public class BankInfo {
      */
     public void setBIC(String value) {
         this.bic = value;
+    }
+
+    /**
+     * Gets the value of the name property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**

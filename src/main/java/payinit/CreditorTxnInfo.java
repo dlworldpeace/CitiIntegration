@@ -1,5 +1,6 @@
 package main.java.payinit;
 
+import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -8,7 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CreditorTxnInfo", propOrder = {
     "txnId",
-    "amountInfo",
+    "amount",
+    "amountCurrency",
     "creditorBankInfo",
     "creditor",
     "creditorAccount",
@@ -19,8 +21,10 @@ public class CreditorTxnInfo {
 
     @XmlElement(name = "TxnId", required = true)
     protected String txnId;
-    @XmlElement(name = "AmountInfo", required = true)
-    protected AmountInfo amountInfo;
+    @XmlElement(name = "Amount", required = true)
+    protected BigDecimal amount;
+    @XmlElement(name = "AmountCurrency", required = true)
+    protected String amountCurrency;
     @XmlElement(name = "CreditorBankInfo")
     protected BankInfo creditorBankInfo;
     @XmlElement(name = "Creditor")
@@ -57,27 +61,52 @@ public class CreditorTxnInfo {
     }
 
     /**
-     * Gets the value of the amountInfo property.
+     * Gets the value of the amount property.
      * 
      * @return
      *     possible object is
-     *     {@link AmountInfo }
+     *     {@link BigDecimal }
      *     
      */
-    public AmountInfo getAmountInfo() {
-        return amountInfo;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     /**
-     * Sets the value of the amountInfo property.
+     * Sets the value of the amount property.
      * 
      * @param value
      *     allowed object is
-     *     {@link AmountInfo }
+     *     {@link BigDecimal }
      *     
      */
-    public void setAmountInfo(AmountInfo value) {
-        this.amountInfo = value;
+    public void setAmount(BigDecimal value)
+    {
+        this.amount = value;
+    }
+
+    /**
+     * Gets the value of the currencyCode property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getAmountCurrency() {
+        return amountCurrency;
+    }
+
+    /**
+     * Sets the value of the currencyCode property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setAmountCurrency(String value) {
+        this.amountCurrency = value;
     }
 
     /**

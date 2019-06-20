@@ -1,5 +1,6 @@
 package main.java.payinit;
 
+import deskera.fintech.pain001.PaymentMethod3Code;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;

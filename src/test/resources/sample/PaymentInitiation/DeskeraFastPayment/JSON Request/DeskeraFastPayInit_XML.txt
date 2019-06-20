@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InitiatePayments>
+	<PaymentHeader>
+		<PaymentRefId>FASTTPM001</PaymentRefId>
+		<DateTime>2019-06-19T09:30:00</DateTime>
+		<NoOfTxs>1</NoOfTxs>
+		<PartyName>Deskera ERP</PartyName>
+	</PaymentHeader>
+	<PaymentInfo>
+		<PaymentRefId>FASTTPM001</PaymentRefId>
+		<PaymentMethod>TRF</PaymentMethod>
+		<PaymentTransType>
+		  <ServiceLvlCode>URNS</ServiceLvlCode>
+		  <LocalInstrmtCode>SGIP</LocalInstrmtCode>
+    </PaymentTransType>
+		<PaymentDate>2019-06-19</PaymentDate>
+		<Debtor>
+			<Name>Deskera Singapore Pte Ltd</Name>
+			<Address>
+				<CountryCode>SG</CountryCode>
+				<AdrLine>One Raffles Place</AdrLine>
+				<AdrLine>Singapore</AdrLine>
+			</Address>
+		</Debtor>
+		<DebtorAccount>865828039</DebtorAccount>
+		<DebtorBankInfo>
+				<BIC>CITISGSG</BIC>
+				<Address>
+					<CountryCode>SG</CountryCode>
+				</Address>
+		</DebtorBankInfo>
+		<CreditorTxnInfo>
+			<TxnId>FASTTPM001</TxnId>
+			<AmountInfo>
+				<Amount>1.00</Amount>
+				<CurrencyCode>SGD</CurrencyCode>
+			</AmountInfo>
+			<CreditorBankInfo>
+					<BIC>DEUTSGSG228</BIC>
+					<Name>DEUTSCHE BANK AG</Name>
+					<CountryCode>SG</CountryCode>>
+			</CreditorBankInfo>
+			<Creditor>
+				<Name>Mahamuni Sagar Subhash</Name>
+				<Address>
+					<CountryCode>SG</CountryCode>
+					<AdrLine>One Raffles Place </AdrLine>
+					<AdrLine>Singapore</AdrLine>
+				</Address>
+			</Creditor>
+			<CreditorAccount>480516840</CreditorAccount>
+			<Purpose>20</Purpose>
+			<RemittanceInfo>/IDTP/BBAN</RemittanceInfo>
+		</CreditorTxnInfo>
+	</PaymentInfo>
+</InitiatePayments>

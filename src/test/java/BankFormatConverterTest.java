@@ -3,6 +3,7 @@ package test.java;
 import static main.java.BankFormatConverter.convertCAMT053ToDeskeraStatement;
 import static main.java.BankFormatConverter.readCAMT052ToJson;
 import static main.java.BankFormatConverter.readCAMT053ToJson;
+import static main.java.BankFormatConverter.readDeskeraPaInXMLToDeskeraPaInJson;
 import static main.java.Handler.createPayInitDocumentInstance;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.DESKERA_STAT_CLASS_PATH;
@@ -128,5 +129,15 @@ public class BankFormatConverterTest extends TestCase {
     BankFormatConverter<DeskeraStatement> statConverter =
         new BankFormatConverter<>(DESKERA_STAT_CLASS_PATH);
     System.out.println(statConverter.writeElementToJson(stmtElement));
+  }
+
+  @Test
+  public void readDeskeraPaInXMLToDeskeraPaInJson_success ()
+      throws IOException, BankFormatConverterException {
+
+    final String deskeraPaInSampleXML = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
+            + "JSON Request/DeskeraFastPayInit_XML.txt")));
+    System.out.println(readDeskeraPaInXMLToDeskeraPaInJson(deskeraPaInSampleXML));
   }
 }

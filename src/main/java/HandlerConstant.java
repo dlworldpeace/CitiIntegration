@@ -41,6 +41,7 @@ public class HandlerConstant {
   public static final String PAY_INIT_CLASS_PATH = "deskera.fintech.payinit";
   public static final String STAT_INIT_CLASS_PATH = "deskera.fintech.statinit";
   public static final String STAT_RET_CLASS_PATH = "deskera.fintech.statret";
+  public static final String DESKERA_PAIN_CLASS_PATH = "main.java.payinit";
   public static final String DESKERA_STAT_CLASS_PATH = "main.java.statement";
 
   /* URLs for both UAT and PROD */

@@ -2,6 +2,7 @@ package main.java;
 
 import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
+import static main.java.HandlerConstant.DESKERA_PAIN_CLASS_PATH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -160,6 +161,24 @@ public class BankFormatConverter<T> {
         converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
     JAXBElement<deskera.fintech.camt052.Document> documentElement =
         converter.readXMLToElement(CAMT052Str);
+    return converter.writeElementToJson(documentElement);
+  }
+
+  /**
+   * Converter from deskera's payment initiation payload to PAIN.001.001.03.
+   *
+   * @param DeskeraPaIn XML string in deskera's custom format.
+   * @return its corresponding json format string.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from XML String
+   *                                      to JAXBElement and then to json String.
+   */
+  public static String readDeskeraPaInXMLToDeskeraPaInJson(String DeskeraPaIn)
+      throws BankFormatConverterException {
+    BankFormatConverter<main.java.payinit.InitiatePayments>
+        converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);
+    JAXBElement<main.java.payinit.InitiatePayments> documentElement =
+        converter.readXMLToElement(DeskeraPaIn);
     return converter.writeElementToJson(documentElement);
   }
 

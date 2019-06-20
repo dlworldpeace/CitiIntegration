@@ -25,6 +25,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import main.java.statement.DeskeraStatement;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 /**
  * This API supports all conversions between XML and Json via Format classes
@@ -45,7 +46,7 @@ public class BankFormatConverter<T> {
 
   /**
    * Convert {@code XMLStr} in standard ISO format such as camt.053.001.02 to
-   * a JAXBElement of rootElement fixed as Document type.
+   * a JAXBElement of rootElement.
    *
    * @param XMLStr XML String in standard ISO format.
    * @return a JAXBElement of a standard ISO format.
@@ -66,10 +67,37 @@ public class BankFormatConverter<T> {
   }
 
   /**
+   * Convert {@code jsonStr} in standard ISO format such as camt.053.001.02 to
+   * a JAXBElement of rootElement.
+   *
+   * @param jsonStr XML String in standard ISO format.
+   * @return a JAXBElement of a standard ISO format.
+   * @throws BankFormatConverterException if an unexpected event happens during
+   *                                      the conversion.
+   */
+  public JAXBElement<T> readJsonToElement (String jsonStr)
+      throws BankFormatConverterException {
+    System.setProperty("javax.xml.bind.context.factory",
+        "org.eclipse.persistence.jaxb.JAXBContextFactory");
+
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      unmarshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+      unmarshaller.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+      StringReader reader = new StringReader(jsonStr);
+      return (JAXBElement<T>) unmarshaller.unmarshal(reader);
+    } catch (JAXBException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new BankFormatConverterException(e.getMessage());
+    }
+  }
+
+  /**
    * Convert a JAXBElement of {@code rootElement} rooted at Document type to a
    * XML String of its corresponding standard ISO format such as camt.053.001.02.
    *
-   * @param rootElement JAXBElement rooted at Document Element.
+   * @param rootElement JAXBElement at rootElement of the seleceted structure.
    * @return corresponding XML String.
    * @throws BankFormatConverterException if an unexpected event happens during
    *                                      the conversion or adding some property
@@ -99,10 +127,10 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Convert a JAXBElement of {@code rootElement} rooted at Document type to a
-   * JSON String of its corresponding standard ISO format such as camt.053.001.02.
+   * Convert a JAXBElement of {@code rootElement} type to a JSON String of its
+   * corresponding standard ISO format such as camt.053.001.02.
    *
-   * @param rootElement JAXBElement rooted at Document Element.
+   * @param rootElement JAXBElement at rootElement of the seleceted structure.
    * @return corresponding JSON String.
    * @throws BankFormatConverterException if an unexpected event happens during
    *                                      the conversion.
@@ -165,21 +193,38 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Converter from deskera's payment initiation payload to PAIN.001.001.03.
+   * Converter from deskera's payment initiation xml payload to deskera's payment
+   * initiation json payload.
    *
-   * @param DeskeraPaIn XML string in deskera's custom format.
+   * @param DeskeraPaInXML XML string in deskera's custom format.
    * @return its corresponding json format string.
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readDeskeraPaInXMLToDeskeraPaInJson(String DeskeraPaIn)
+  public static String readDeskeraPaInXMLToDeskeraPaInJson(String DeskeraPaInXML)
       throws BankFormatConverterException {
     BankFormatConverter<main.java.payinit.InitiatePayments>
         converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);
     JAXBElement<main.java.payinit.InitiatePayments> documentElement =
-        converter.readXMLToElement(DeskeraPaIn);
+        converter.readXMLToElement(DeskeraPaInXML);
     return converter.writeElementToJson(documentElement);
+  }
+
+  /**
+   * Converter from Json to Deskera's custom payment initiation formatted element
+   *
+   * @param jsonStr json string in Deskera's custom payment initiation format
+   * @return its corresponding json format string.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from Json String
+   *                                      to JAXBElement.
+   */
+  public static JAXBElement<main.java.payinit.InitiatePayments>
+      readJsonToDeskeraPaInElement(String jsonStr) throws BankFormatConverterException {
+    BankFormatConverter<main.java.payinit.InitiatePayments>
+        converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);
+    return converter.readJsonToElement(jsonStr);
   }
 
   /**

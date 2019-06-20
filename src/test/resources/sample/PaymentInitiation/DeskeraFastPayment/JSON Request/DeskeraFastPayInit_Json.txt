@@ -1,51 +1,55 @@
 {
   "InitiatePayments" : {
-     "PaymentHeader" : {
-        "PaymentRefId" : "FASTTPM001",
-        "DateTime" : "2019-06-19T09:30:00",
-        "NoOfTxs" : "1",
-        "PartyName" : "Deskera ERP"
-     },
-     "PaymentInfo" : [ {
-        "PaymentRefId" : "FASTTPM001",
-        "PaymentMethod" : "TRF",
-        "PaymentTransType" : {
-           "ServiceLvlCode" : "URNS",
-           "LocalInstrmtCode" : "SGIP"
-        },
-        "PaymentDate" : "2019-06-19",
-        "Debtor" : {
-           "Name" : "Deskera Singapore Pte Ltd",
-           "Address" : {
-              "CountryCode" : "SG",
-              "AdrLine" : [ "One Raffles Place", "Singapore" ]
-           }
-        },
-        "DebtorAccount" : "865828039",
-        "DebtorBankInfo" : {
-           "BIC" : "CITISGSG",
-           "Address" : {
-              "CountryCode" : "SG"
-           }
-        },
-        "CreditorTxnInfo" : [ {
-           "TxnId" : "FASTTPM001",
-           "AmountInfo" : {
-           },
-           "CreditorBankInfo" : {
-              "BIC" : "DEUTSGSG228"
-           },
-           "Creditor" : {
-              "Name" : "Mahamuni Sagar Subhash",
-              "Address" : {
-                 "CountryCode" : "SG",
-                 "AdrLine" : [ "One Raffles Place ", "Singapore" ]
-              }
-           },
-           "CreditorAccount" : "480516840",
-           "Purpose" : "20",
-           "RemittanceInfo" : "/IDTP/BBAN"
-        } ]
-     } ]
-  }
+      "PaymentHeader" : {
+         "PaymentRefId" : "FASTTPM001",
+         "DateTime" : "2019-06-20T09:30:00",
+         "NoOfTxs" : "1",
+         "PartyName" : "Deskera Singapore"
+      },
+      "PaymentInfo" : [ {
+         "PaymentRefId" : "FASTTPM001",
+         "PaymentMethod" : "TRF",
+         "PaymentTransType" : {
+            "ServiceLvlCode" : "URNS",
+            "LocalInstrmtCode" : "SGIP"
+         },
+         "PaymentDate" : "2019-06-20",
+         "Debtor" : {
+            "Name" : "Deskera Singapore Pte Ltd",
+            "Address" : {
+               "CountryCode" : "SG",
+               "AdrLine" : [ "One Raffles Place", "Singapore" ]
+            }
+         },
+         "DebtorAccount" : "865828039",
+         "DebtorBankInfo" : {
+            "BIC" : "CITISGSG",
+            "Address" : {
+               "CountryCode" : "SG"
+            }
+         },
+         "CreditorTxnInfo" : [ {
+            "TxnId" : "FASTTPM001",
+            "Amount" : 1.00,
+            "AmountCurrency" : "SGD",
+            "CreditorBankInfo" : {
+               "BIC" : "DEUTSGSG228",
+               "Name" : "DEUTSCHE BANK AG",
+               "Address" : {
+                  "CountryCode" : "SG"
+               }
+            },
+            "Creditor" : {
+               "Name" : "Mahamuni Sagar Subhash",
+               "Address" : {
+                  "CountryCode" : "SG",
+                  "AdrLine" : [ "One Raffles Place", "Singapore" ]
+               }
+            },
+            "CreditorAccount" : "480516840",
+            "Purpose" : "20",
+            "RemittanceInfo" : "/IDTP/BBAN"
+         } ]
+      } ]
+   }
 }

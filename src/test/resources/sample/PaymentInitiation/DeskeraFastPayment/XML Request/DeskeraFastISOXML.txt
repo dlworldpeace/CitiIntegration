@@ -3,7 +3,7 @@
 	<CstmrCdtTrfInitn>
 		<GrpHdr>
 			<MsgId>FASTTPM001</MsgId>
-			<CreDtTm>2019-06-19T09:30:00</CreDtTm>
+			<CreDtTm>2019-06-20T09:30:00</CreDtTm>
 			<NbOfTxs>1</NbOfTxs>
 			<InitgPty>
 				<Nm>Deskera Singapore</Nm>
@@ -16,15 +16,23 @@
 				<SvcLvl>
 					<Cd>URNS</Cd>
 				</SvcLvl>
+				<LclInstrm>
+          <Prtry>SGIP</Prtry>
+        </LclInstrm>
 			</PmtTpInf>
-			<ReqdExctnDt>2019-06-19</ReqdExctnDt>
+			<ReqdExctnDt>2019-06-20</ReqdExctnDt>
 			<Dbtr>
 				<Nm>Deskera Singapore Pte Ltd</Nm>
+        <PstlAdr>
+          <Ctry>SG</Ctry>
+          <AdrLine>One Raffles Place </AdrLine>
+          <AdrLine>Singapore</AdrLine>
+        </PstlAdr>
 			</Dbtr>
 			<DbtrAcct>
 				<Id>
 					<Othr>
-						<Id>0865828039</Id>
+						<Id>865828039</Id>
 					</Othr>
 				</Id>
 			</DbtrAcct>
@@ -68,10 +76,10 @@
 					</Id>
 				</CdtrAcct>
 				<Purp>
-					<Prtry>Invoice Payment</Prtry>
+					<Prtry>20</Prtry>
 				</Purp>
 				<RmtInf> 								
-					<Ustrd>INV-2019-06-001</Ustrd>
+					<Ustrd>/IDTP/BBAN</Ustrd>
 				</RmtInf>
 			</CdtTrfTxInf>
 		</PmtInf>

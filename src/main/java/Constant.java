@@ -1,6 +1,6 @@
 package main.java;
 
-public class HandlerConstant {
+public class Constant {
 
   /* Inputs to the Encryption and Decryption Logic */
 

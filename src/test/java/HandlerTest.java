@@ -13,15 +13,13 @@ import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
-import static main.java.HandlerConstant.KEYSTORE_ALIAS;
-import static main.java.HandlerConstant.KEYSTORE_FILEPATH;
-import static main.java.HandlerConstant.KEYSTORE_PASSWORD;
-import static main.java.HandlerConstant.STATEMENT_RET_URL_MOCK;
-import static main.java.HandlerConstant.STATEMENT_RET_URL_UAT;
-import static main.java.HandlerConstant.TYPE_AUTH;
-import static main.java.HandlerConstant.TYPE_PAY_INIT;
-import static main.java.HandlerConstant.TAG_NAME_AUTH;
-import static main.java.HandlerConstant.TAG_NAME_PAY_INIT;
+import static main.java.Constant.KEYSTORE_ALIAS;
+import static main.java.Constant.KEYSTORE_FILEPATH;
+import static main.java.Constant.KEYSTORE_PASSWORD;
+import static main.java.Constant.TYPE_AUTH;
+import static main.java.Constant.TYPE_PAY_INIT;
+import static main.java.Constant.TAG_NAME_AUTH;
+import static main.java.Constant.TAG_NAME_PAY_INIT;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -45,7 +43,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 @RunWith(JUnit4.class)
 public class HandlerTest {

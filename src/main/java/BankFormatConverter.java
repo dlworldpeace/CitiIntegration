@@ -1,9 +1,9 @@
 package main.java;
 
-import static main.java.HandlerConstant.CAMT052_CLASS_PATH;
-import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
-import static main.java.HandlerConstant.DESKERA_PAIN_CLASS_PATH;
-import static main.java.HandlerConstant.PAIN001_CLASS_PATH;
+import static main.java.Constant.CAMT052_CLASS_PATH;
+import static main.java.Constant.CAMT053_CLASS_PATH;
+import static main.java.Constant.DESKERA_PAIN_CLASS_PATH;
+import static main.java.Constant.PAIN001_CLASS_PATH;
 
 import deskera.fintech.pain001.AccountIdentification4Choice;
 import deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount;

@@ -5,7 +5,6 @@ import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.des3DecodeCBC;
 import static main.java.Handler.extractAttachmentDecryptionKey;
 import static main.java.Handler.extractStatementId;
-import static main.java.Handler.createPayInitPayload;
 import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromISOXML;
@@ -23,7 +22,6 @@ import static main.java.HandlerConstant.TYPE_AUTH;
 import static main.java.HandlerConstant.TYPE_PAY_INIT;
 import static main.java.HandlerConstant.TAG_NAME_AUTH;
 import static main.java.HandlerConstant.TAG_NAME_PAY_INIT;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -393,17 +391,6 @@ public class HandlerTest {
   public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
       throws HandlerException {
     generateBase64PayloadFromISOXML(SOME_XML);
-  }
-
-  @Test
-  public void createPayInitPayload_resultSameAsSample ()
-      throws IOException, HandlerException, SAXException {
-    final String payloadSample = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
-            + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
-    final String payloadCreated = createPayInitPayload();
-
-    assertXMLEqual(payloadSample, payloadCreated);
   }
 
   @Test

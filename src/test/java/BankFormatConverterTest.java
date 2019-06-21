@@ -2,11 +2,11 @@ package test.java;
 
 import static main.java.BankFormatConverter.convertCAMT053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertJsonToPAIN001XML;
+import static main.java.BankFormatConverter.createPayInitDocumentInstance;
 import static main.java.BankFormatConverter.readCAMT052ToJson;
 import static main.java.BankFormatConverter.readCAMT053ToJson;
 import static main.java.BankFormatConverter.readDeskeraPaInXMLToDeskeraPaInJson;
 import static main.java.BankFormatConverter.readJsonToDeskeraPaInElement;
-import static main.java.Handler.createPayInitDocumentInstance;
 import static main.java.HandlerConstant.CAMT053_CLASS_PATH;
 import static main.java.HandlerConstant.DESKERA_STAT_CLASS_PATH;
 import static main.java.HandlerConstant.PAIN001_CLASS_PATH;

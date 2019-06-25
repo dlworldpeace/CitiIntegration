@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
   <CstmrCdtTrfInitn>
     <GrpHdr>
-      <MsgId>FASTTPM001</MsgId>
-      <CreDtTm>2019-06-21T09:30:00</CreDtTm>
+      <MsgId>GBP161111000001</MsgId>
+      <CreDtTm>2019-06-25T03:51:15</CreDtTm>
       <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>1.00</CtrlSum>
       <InitgPty>
-        <Nm>Deskera Singapore</Nm>
+        <Nm>ABC</Nm>
       </InitgPty>
     </GrpHdr>
     <PmtInf>
-      <PmtInfId>FASTTPM001</PmtInfId>
+      <PmtInfId>98765432 Fund Transfer Domestic</PmtInfId>
       <PmtMtd>TRF</PmtMtd>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>1.00</CtrlSum>
       <PmtTpInf>
         <SvcLvl>
-          <Cd>URNS</Cd>
+          <Cd>URGP</Cd>
         </SvcLvl>
-        <LclInstrm>
-          <Prtry>SGIP</Prtry>
-        </LclInstrm>
       </PmtTpInf>
-      <ReqdExctnDt>2019-06-21</ReqdExctnDt>
+      <ReqdExctnDt>2019-06-25</ReqdExctnDt>
       <Dbtr>
         <Nm>Deskera Singapore Pte Ltd</Nm>
         <PstlAdr>
@@ -28,6 +28,11 @@
           <AdrLine>One Raffles Place</AdrLine>
           <AdrLine>Singapore</AdrLine>
         </PstlAdr>
+        <Id>
+          <OrgId>
+            <BICOrBEI>CITIGB2L</BICOrBEI>
+          </OrgId>
+        </Id>
       </Dbtr>
       <DbtrAcct>
         <Id>
@@ -35,6 +40,7 @@
             <Id>865828039</Id>
           </Othr>
         </Id>
+        <Ccy>USD</Ccy>
       </DbtrAcct>
       <DbtrAgt>
         <FinInstnId>
@@ -43,49 +49,55 @@
             <Ctry>SG</Ctry>
           </PstlAdr>
         </FinInstnId>
-        <BrnchId>
-          <Id>001</Id>
-        </BrnchId>
       </DbtrAgt>
+      <ChrgBr>DEBT</ChrgBr>
       <CdtTrfTxInf>
         <PmtId>
-          <EndToEndId>FASTTPM001</EndToEndId>
+          <EndToEndId>ABC12345</EndToEndId>
         </PmtId>
         <Amt>
-          <InstdAmt Ccy="SGD">1.00</InstdAmt>
+          <InstdAmt Ccy="USD">1.00</InstdAmt>
         </Amt>
+        <UltmtDbtr>
+          <Id>
+            <PrvtId>
+              <Othr>
+                <Id>ABCDEF UK BR600 012345</Id>
+                <SchmeNm>
+                  <Prtry>DFT</Prtry>
+                </SchmeNm>
+              </Othr>
+            </PrvtId>
+          </Id>
+        </UltmtDbtr>
         <CdtrAgt>
           <FinInstnId>
             <BIC>DBSSSGSG</BIC>
+            <ClrSysMmbId>
+              <MmbId>185008</MmbId>
+            </ClrSysMmbId>
             <Nm>DBS Bank Ltd.</Nm>
             <PstlAdr>
               <Ctry>SG</Ctry>
             </PstlAdr>
           </FinInstnId>
-          <BrnchId>
-            <Id>480</Id>
-          </BrnchId>
         </CdtrAgt>
         <Cdtr>
           <Nm>Mahamuni Sagar Subhash</Nm>
           <PstlAdr>
             <Ctry>SG</Ctry>
-            <AdrLine>One Raffles Place</AdrLine>
-            <AdrLine>Singapore</AdrLine>
           </PstlAdr>
+          <CtctDtls>
+            <Nm>ABC LIMITED</Nm>
+          </CtctDtls>
         </Cdtr>
         <CdtrAcct>
           <Id>
-            <Othr>
-              <Id>480516840</Id>
-            </Othr>
+            <IBAN>480516840</IBAN>
           </Id>
         </CdtrAcct>
-        <Purp>
-          <Prtry>20</Prtry>
-        </Purp>
         <RmtInf>
-          <Ustrd>/IDTP/BBAN</Ustrd>
+          <Ustrd>TR002638</Ustrd>
         </RmtInf>
       </CdtTrfTxInf>
     </PmtInf>

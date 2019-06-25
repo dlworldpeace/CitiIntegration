@@ -397,6 +397,7 @@ public class Handler {
         getClientPrivateKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
     X509Certificate clientSigningCert = getClientSigningCert(KEYSTORE_ALIAS);
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
+    String signed = convertDocToXMLStr(payloadDoc);
     PublicKey citiPublicKey = getCitiPublicKey();
     Document encryptedSignedXMLPayloadDoc = encryptSignedXMLPayloadDoc(
         payloadDoc, citiPublicKey);

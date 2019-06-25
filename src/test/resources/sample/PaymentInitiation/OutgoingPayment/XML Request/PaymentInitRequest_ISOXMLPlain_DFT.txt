@@ -40,7 +40,7 @@
             <Id>865828039</Id>
           </Othr>
         </Id>
-        <Ccy>USD</Ccy>
+        <Ccy>SGD</Ccy>
       </DbtrAcct>
       <DbtrAgt>
         <FinInstnId>
@@ -53,10 +53,10 @@
       <ChrgBr>DEBT</ChrgBr>
       <CdtTrfTxInf>
         <PmtId>
-          <EndToEndId>ABC12345</EndToEndId>
+          <EndToEndId>SGD123</EndToEndId>
         </PmtId>
         <Amt>
-          <InstdAmt Ccy="USD">1.00</InstdAmt>
+          <InstdAmt Ccy="SGD">1.00</InstdAmt>
         </Amt>
         <UltmtDbtr>
           <Id>

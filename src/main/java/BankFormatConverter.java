@@ -5,32 +5,6 @@ import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_PAIN_CLASS_PATH;
 import static main.java.Constant.PAIN001_CLASS_PATH;
 
-import deskera.fintech.pain001.AccountIdentification4Choice;
-import deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount;
-import deskera.fintech.pain001.AmountType3Choice;
-import deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4;
-import deskera.fintech.pain001.CashAccount16;
-import deskera.fintech.pain001.ChargeBearerType1Code;
-import deskera.fintech.pain001.ClearingSystemMemberIdentification2;
-import deskera.fintech.pain001.ContactDetails2;
-import deskera.fintech.pain001.CreditTransferTransactionInformation10;
-import deskera.fintech.pain001.CustomerCreditTransferInitiationV03;
-import deskera.fintech.pain001.FinancialInstitutionIdentification7;
-import deskera.fintech.pain001.GenericAccountIdentification1;
-import deskera.fintech.pain001.GenericPersonIdentification1;
-import deskera.fintech.pain001.GroupHeader32;
-import deskera.fintech.pain001.OrganisationIdentification4;
-import deskera.fintech.pain001.Party6Choice;
-import deskera.fintech.pain001.PartyIdentification32;
-import deskera.fintech.pain001.PaymentIdentification1;
-import deskera.fintech.pain001.PaymentInstructionInformation3;
-import deskera.fintech.pain001.PaymentMethod3Code;
-import deskera.fintech.pain001.PaymentTypeInformation19;
-import deskera.fintech.pain001.PersonIdentification5;
-import deskera.fintech.pain001.PersonIdentificationSchemeName1Choice;
-import deskera.fintech.pain001.PostalAddress6;
-import deskera.fintech.pain001.RemittanceInformation5;
-import deskera.fintech.pain001.ServiceLevel8Choice;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -263,7 +237,7 @@ public class BankFormatConverter<T> {
   /**
    * Convert type {@link main.java.payinit.InitiatePayments} from Deskera client
    * to ISOXML standard payment payload type {@link deskera.fintech.pain001.Document}
-   * for sending to server.
+   * for initiating FAST or DFT payment
    *
    * @param deskeraPaIn instance of {@link JAXBElement }{@code <}{@link main.java.payinit.InitiatePayments}{@code >}
    * @return element instance of {@link JAXBElement }{@code <}{@link deskera.fintech.pain001.Document}{@code >}
@@ -344,6 +318,8 @@ public class BankFormatConverter<T> {
         new deskera.fintech.pain001.PostalAddress6();
     finInstnId.setPstlAdr(pstlAdr2);
     pstlAdr2.setCtry(debtorBankInfo.getAddress().getCountryCode());
+    pmtInf.setChrgBr(
+        deskera.fintech.pain001.ChargeBearerType1Code.valueOf(paymentInfo.getChargeBearer()));
 
     CreditorTxnInfo creditorTxnInfo = paymentInfo.getCreditorTxnInfo().get(0);
     deskera.fintech.pain001.CreditTransferTransactionInformation10 cdtTrfTxInf =
@@ -544,10 +520,11 @@ public class BankFormatConverter<T> {
     deskera.fintech.pain001.Document document =
         new deskera.fintech.pain001.Document();
     /* Start of cstmrCdtTrfInitn */
-    CustomerCreditTransferInitiationV03 cstmrCdtTrfInitn =
-        new CustomerCreditTransferInitiationV03();
+    deskera.fintech.pain001.CustomerCreditTransferInitiationV03 cstmrCdtTrfInitn =
+        new deskera.fintech.pain001.CustomerCreditTransferInitiationV03();
     /* Start of GrpHdr */
-    GroupHeader32 grpHdr = new GroupHeader32();
+    deskera.fintech.pain001.GroupHeader32 grpHdr =
+        new deskera.fintech.pain001.GroupHeader32();
     grpHdr.setMsgId("GBP161111000001");
     XMLGregorianCalendar creDtTm =
         dataType.newXMLGregorianCalendar(2016,11,11,3, 51, 15, 0, 0);
@@ -556,21 +533,26 @@ public class BankFormatConverter<T> {
     grpHdr.setCreDtTm(creDtTm);
     grpHdr.setNbOfTxs("1");
     grpHdr.setCtrlSum(new BigDecimal("1.00"));
-    PartyIdentification32 initgPty = new PartyIdentification32();
+    deskera.fintech.pain001.PartyIdentification32 initgPty =
+        new deskera.fintech.pain001.PartyIdentification32();
     initgPty.setNm("ABC");
     grpHdr.setInitgPty(initgPty);
     cstmrCdtTrfInitn.setGrpHdr(grpHdr);
     /* End of GrpHdr */
     /* Start of PmtInf */
-    List<PaymentInstructionInformation3> pmtInfList = cstmrCdtTrfInitn.getPmtInf();
-    PaymentInstructionInformation3 pmtInf = new PaymentInstructionInformation3();
+    List<deskera.fintech.pain001.PaymentInstructionInformation3> pmtInfList =
+        cstmrCdtTrfInitn.getPmtInf();
+    deskera.fintech.pain001.PaymentInstructionInformation3 pmtInf =
+        new deskera.fintech.pain001.PaymentInstructionInformation3();
     pmtInfList.add(pmtInf);
     pmtInf.setPmtInfId("98765432 Fund Transfer Domestic");
-    pmtInf.setPmtMtd(PaymentMethod3Code.TRF);
+    pmtInf.setPmtMtd(deskera.fintech.pain001.PaymentMethod3Code.TRF);
     pmtInf.setNbOfTxs("1");
     pmtInf.setCtrlSum(new BigDecimal("1.00"));
-    PaymentTypeInformation19 pmtTpInf = new PaymentTypeInformation19();
-    ServiceLevel8Choice svcLvl = new ServiceLevel8Choice();
+    deskera.fintech.pain001.PaymentTypeInformation19 pmtTpInf =
+        new deskera.fintech.pain001.PaymentTypeInformation19();
+    deskera.fintech.pain001.ServiceLevel8Choice svcLvl =
+        new deskera.fintech.pain001.ServiceLevel8Choice();
     svcLvl.setCd("URGP");
     pmtTpInf.setSvcLvl(svcLvl);
     pmtInf.setPmtTpInf(pmtTpInf);
@@ -579,22 +561,29 @@ public class BankFormatConverter<T> {
     reqdExctnDt.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
     pmtInf.setReqdExctnDt(reqdExctnDt);
     /* Start of Dbtr */
-    PartyIdentification32 dbtr = new PartyIdentification32();
+    deskera.fintech.pain001.PartyIdentification32 dbtr =
+        new deskera.fintech.pain001.PartyIdentification32();
     dbtr.setNm("ABCD DEMO");
-    PostalAddress6 pstlAdr1 = new PostalAddress6();
+    deskera.fintech.pain001.PostalAddress6 pstlAdr1 =
+        new deskera.fintech.pain001.PostalAddress6();
     pstlAdr1.setCtry("GB");
     dbtr.setPstlAdr(pstlAdr1);
-    Party6Choice id1 = new Party6Choice();
-    OrganisationIdentification4 orgId = new OrganisationIdentification4();
+    deskera.fintech.pain001.Party6Choice id1 =
+        new deskera.fintech.pain001.Party6Choice();
+    deskera.fintech.pain001.OrganisationIdentification4 orgId =
+        new deskera.fintech.pain001.OrganisationIdentification4();
     orgId.setBICOrBEI("CITIGB2L");
     id1.setOrgId(orgId);
     dbtr.setId(id1);
     pmtInf.setDbtr(dbtr);
     /* End of Dbtr */
     /* Start of DbtrAcct */
-    CashAccount16 dbtrAcct = new CashAccount16();
-    AccountIdentification4Choice id2 = new AccountIdentification4Choice();
-    GenericAccountIdentification1 othr1 = new GenericAccountIdentification1();
+    deskera.fintech.pain001.CashAccount16 dbtrAcct =
+        new deskera.fintech.pain001.CashAccount16();
+    deskera.fintech.pain001.AccountIdentification4Choice id2 =
+        new deskera.fintech.pain001.AccountIdentification4Choice();
+    deskera.fintech.pain001.GenericAccountIdentification1 othr1 =
+        new deskera.fintech.pain001.GenericAccountIdentification1();
     othr1.setId("12345678");
     id2.setOthr(othr1);
     dbtrAcct.setId(id2);
@@ -602,45 +591,53 @@ public class BankFormatConverter<T> {
     pmtInf.setDbtrAcct(dbtrAcct);
     /* End of DbtrAcct */
     /* Start of DbtrAgt */
-    BranchAndFinancialInstitutionIdentification4 dbtrAgt1 =
-        new BranchAndFinancialInstitutionIdentification4();
-    FinancialInstitutionIdentification7 finInstnId =
-        new FinancialInstitutionIdentification7();
+    deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 dbtrAgt1 =
+        new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
+    deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId =
+        new deskera.fintech.pain001.FinancialInstitutionIdentification7();
     finInstnId.setBIC("CITIGB2L");
-    PostalAddress6 pstlAdr2 = new PostalAddress6();
+    deskera.fintech.pain001.PostalAddress6 pstlAdr2 =
+        new deskera.fintech.pain001.PostalAddress6();
     pstlAdr2.setCtry("GB");
     finInstnId.setPstlAdr(pstlAdr2);
     dbtrAgt1.setFinInstnId(finInstnId);
     pmtInf.setDbtrAgt(dbtrAgt1);
     /* End of DbtrAgt */
-    pmtInf.setChrgBr(ChargeBearerType1Code.DEBT);
+    pmtInf.setChrgBr(deskera.fintech.pain001.ChargeBearerType1Code.DEBT);
     /* Start of cdtTrfTxInf */
-    List<CreditTransferTransactionInformation10> cdtTrfTxInfList =
+    List<deskera.fintech.pain001.CreditTransferTransactionInformation10> cdtTrfTxInfList =
         pmtInf.getCdtTrfTxInf();
-    CreditTransferTransactionInformation10 cdtTrfTxInf =
-        new CreditTransferTransactionInformation10();
+    deskera.fintech.pain001.CreditTransferTransactionInformation10 cdtTrfTxInf =
+        new deskera.fintech.pain001.CreditTransferTransactionInformation10();
     /* Start of PmtId */
-    PaymentIdentification1 pmtId = new PaymentIdentification1();
+    deskera.fintech.pain001.PaymentIdentification1 pmtId =
+        new deskera.fintech.pain001.PaymentIdentification1();
     pmtId.setEndToEndId("ABC1234");
     cdtTrfTxInf.setPmtId(pmtId);
     /* End of PmtId */
     /* Start of Amt */
-    AmountType3Choice amt = new AmountType3Choice();
-    ActiveOrHistoricCurrencyAndAmount instdAmt =
-        new ActiveOrHistoricCurrencyAndAmount();
+    deskera.fintech.pain001.AmountType3Choice amt =
+        new deskera.fintech.pain001.AmountType3Choice();
+    deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount instdAmt =
+        new deskera.fintech.pain001.ActiveOrHistoricCurrencyAndAmount();
     instdAmt.setCcy("USD");
     instdAmt.setValue(new BigDecimal("1.00"));
     amt.setInstdAmt(instdAmt);
     cdtTrfTxInf.setAmt(amt);
     /* Start of UltmtDbtr */
-    PartyIdentification32 ultmtDbtr = new PartyIdentification32();
-    Party6Choice id3 = new Party6Choice();
-    PersonIdentification5 prvtId = new PersonIdentification5();
-    List<GenericPersonIdentification1> othrList = prvtId.getOthr();
-    GenericPersonIdentification1 othr = new GenericPersonIdentification1();
+    deskera.fintech.pain001.PartyIdentification32 ultmtDbtr =
+        new deskera.fintech.pain001.PartyIdentification32();
+    deskera.fintech.pain001.Party6Choice id3 =
+        new deskera.fintech.pain001.Party6Choice();
+    deskera.fintech.pain001.PersonIdentification5 prvtId =
+        new deskera.fintech.pain001.PersonIdentification5();
+    List<deskera.fintech.pain001.GenericPersonIdentification1> othrList =
+        prvtId.getOthr();
+    deskera.fintech.pain001.GenericPersonIdentification1 othr = new
+        deskera.fintech.pain001.GenericPersonIdentification1();
     othr.setId("ABCDEF UK BR600 012345");
-    PersonIdentificationSchemeName1Choice schmeNm =
-        new PersonIdentificationSchemeName1Choice();
+    deskera.fintech.pain001.PersonIdentificationSchemeName1Choice schmeNm =
+        new deskera.fintech.pain001.PersonIdentificationSchemeName1Choice();
     schmeNm.setPrtry("INST");
     othr.setSchmeNm(schmeNm);
     othrList.add(othr);
@@ -649,42 +646,49 @@ public class BankFormatConverter<T> {
     cdtTrfTxInf.setUltmtDbtr(ultmtDbtr);
     /* End of UltmtDbtr */
     /* Start of CdtrAgt */
-    BranchAndFinancialInstitutionIdentification4 cdtrAgt2 =
-        new BranchAndFinancialInstitutionIdentification4();
-    FinancialInstitutionIdentification7 finInstnId2 =
-        new FinancialInstitutionIdentification7();
+    deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 cdtrAgt2 =
+        new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
+    deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId2 =
+        new deskera.fintech.pain001.FinancialInstitutionIdentification7();
     finInstnId2.setBIC("CITIGB2L");
-    ClearingSystemMemberIdentification2 clrSysMmbId =
-        new ClearingSystemMemberIdentification2();
+    deskera.fintech.pain001.ClearingSystemMemberIdentification2 clrSysMmbId =
+        new deskera.fintech.pain001.ClearingSystemMemberIdentification2();
     clrSysMmbId.setMmbId("185008");
     finInstnId2.setClrSysMmbId(clrSysMmbId);
     finInstnId2.setNm("CITIBANK(ISO)");
-    PostalAddress6 pstlAdr3 = new PostalAddress6();
+    deskera.fintech.pain001.PostalAddress6 pstlAdr3 =
+        new deskera.fintech.pain001.PostalAddress6();
     pstlAdr3.setCtry("GB");
     finInstnId2.setPstlAdr(pstlAdr3);
     cdtrAgt2.setFinInstnId(finInstnId2);
     cdtTrfTxInf.setCdtrAgt(cdtrAgt2);
     /* End of CdtrAgt */
     /* Start of Cdtr */
-    PartyIdentification32 cdtr = new PartyIdentification32();
+    deskera.fintech.pain001.PartyIdentification32 cdtr =
+        new deskera.fintech.pain001.PartyIdentification32();
     cdtr.setNm("8010643122X XXXXXXXXXXXXX XXX");
-    PostalAddress6 pstlAdr4 = new PostalAddress6();
+    deskera.fintech.pain001.PostalAddress6 pstlAdr4 =
+        new deskera.fintech.pain001.PostalAddress6();
     pstlAdr4.setCtry("GB");
     cdtr.setPstlAdr(pstlAdr4);
-    ContactDetails2 ctctDtls = new ContactDetails2();
+    deskera.fintech.pain001.ContactDetails2 ctctDtls =
+        new deskera.fintech.pain001.ContactDetails2();
     ctctDtls.setNm("ABC LIMITED");
     cdtr.setCtctDtls(ctctDtls);
     cdtTrfTxInf.setCdtr(cdtr);
     /* End of Cdtr */
     /* Start of CdtrAcct */
-    CashAccount16 cdtrAcct = new CashAccount16();
-    AccountIdentification4Choice id4 = new AccountIdentification4Choice();
+    deskera.fintech.pain001.CashAccount16 cdtrAcct =
+        new deskera.fintech.pain001.CashAccount16();
+    deskera.fintech.pain001.AccountIdentification4Choice id4 =
+        new deskera.fintech.pain001.AccountIdentification4Choice();
     id4.setIBAN("GB27CITI18500812345678");
     cdtrAcct.setId(id4);
     cdtTrfTxInf.setCdtrAcct(cdtrAcct);
     /* End of CdtrAcct */
     /* Start of RmtInf */
-    RemittanceInformation5 rmtInf = new RemittanceInformation5();
+    deskera.fintech.pain001.RemittanceInformation5 rmtInf =
+        new deskera.fintech.pain001.RemittanceInformation5();
     List<String> ustrdList = rmtInf.getUstrd();
     ustrdList.add("TR002638");
     cdtTrfTxInf.setRmtInf(rmtInf);

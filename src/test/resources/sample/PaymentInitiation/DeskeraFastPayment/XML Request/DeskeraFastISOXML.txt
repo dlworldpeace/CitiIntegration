@@ -3,7 +3,7 @@
   <CstmrCdtTrfInitn>
     <GrpHdr>
       <MsgId>FASTTPM001</MsgId>
-      <CreDtTm>2019-06-21T09:30:00</CreDtTm>
+      <CreDtTm>2019-06-25T09:30:00</CreDtTm>
       <NbOfTxs>1</NbOfTxs>
       <InitgPty>
         <Nm>Deskera Singapore</Nm>
@@ -20,7 +20,7 @@
           <Prtry>SGIP</Prtry>
         </LclInstrm>
       </PmtTpInf>
-      <ReqdExctnDt>2019-06-21</ReqdExctnDt>
+      <ReqdExctnDt>2019-06-25</ReqdExctnDt>
       <Dbtr>
         <Nm>Deskera Singapore Pte Ltd</Nm>
         <PstlAdr>
@@ -43,10 +43,8 @@
             <Ctry>SG</Ctry>
           </PstlAdr>
         </FinInstnId>
-        <BrnchId>
-          <Id>001</Id>
-        </BrnchId>
       </DbtrAgt>
+      <ChrgBr>DEBT</ChrgBr>
       <CdtTrfTxInf>
         <PmtId>
           <EndToEndId>FASTTPM001</EndToEndId>
@@ -57,14 +55,11 @@
         <CdtrAgt>
           <FinInstnId>
             <BIC>DBSSSGSG</BIC>
-            <Nm>DBS Bank Ltd.</Nm>
+            <Nm>DBS Bank Ltd</Nm>
             <PstlAdr>
               <Ctry>SG</Ctry>
             </PstlAdr>
           </FinInstnId>
-          <BrnchId>
-            <Id>480</Id>
-          </BrnchId>
         </CdtrAgt>
         <Cdtr>
           <Nm>Mahamuni Sagar Subhash</Nm>

@@ -2,7 +2,7 @@
   "InitiatePayments" : {
       "PaymentHeader" : {
          "PaymentRefId" : "FASTTPM001",
-         "DateTime" : "2019-06-20T09:30:00",
+         "DateTime" : "2019-06-25T09:30:00",
          "NoOfTxs" : "1",
          "PartyName" : "Deskera Singapore"
       },
@@ -13,7 +13,7 @@
             "ServiceLvlCode" : "URNS",
             "LocalInstrmtCode" : "SGIP"
          },
-         "PaymentDate" : "2019-06-20",
+         "PaymentDate" : "2019-06-25",
          "Debtor" : {
             "Name" : "Deskera Singapore Pte Ltd",
             "Address" : {
@@ -28,13 +28,14 @@
                "CountryCode" : "SG"
             }
          },
+         "ChargeBearer" : "DEBT",
          "CreditorTxnInfo" : [ {
             "TxnId" : "FASTTPM001",
             "Amount" : 1.00,
             "AmountCurrency" : "SGD",
             "CreditorBankInfo" : {
-               "BIC" : "DEUTSGSG228",
-               "Name" : "DEUTSCHE BANK AG",
+               "BIC" : "DBSSSGSG",
+               "Name" : "DBS Bank Ltd",
                "Address" : {
                   "CountryCode" : "SG"
                }

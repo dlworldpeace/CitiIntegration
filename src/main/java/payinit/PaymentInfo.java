@@ -19,6 +19,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "debtor",
     "debtorAccount",
     "debtorBankInfo",
+    "chargeBearer",
     "creditorTxnInfo"
 })
 public class PaymentInfo {
@@ -39,6 +40,8 @@ public class PaymentInfo {
     protected String debtorAccount;
     @XmlElement(name = "DebtorBankInfo", required = true)
     protected BankInfo debtorBankInfo;
+    @XmlElement(name = "ChargeBearer", required = true)
+    protected String chargeBearer;
     @XmlElement(name = "CreditorTxnInfo", required = true)
     protected List<CreditorTxnInfo> creditorTxnInfo;
 
@@ -208,6 +211,30 @@ public class PaymentInfo {
      */
     public void setDebtorBankInfo(BankInfo value) {
         this.debtorBankInfo = value;
+    }
+
+    /**
+     * Gets the value of the chargeBearer property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getChargeBearer() {
+        return chargeBearer;
+    }
+
+    /**
+     * Sets the value of the chargeBearer property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setChargeBearer(String value) {
+        this.chargeBearer = value;
     }
 
     /**

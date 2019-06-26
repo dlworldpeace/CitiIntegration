@@ -18,6 +18,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "paymentDate",
     "debtor",
     "debtorAccount",
+    "debtorAcctCurrency",
     "debtorBankInfo",
     "chargeBearer",
     "creditorTxnInfo"
@@ -38,6 +39,8 @@ public class PaymentInfo {
     protected Party debtor;
     @XmlElement(name = "DebtorAccount", required = true)
     protected String debtorAccount;
+    @XmlElement(name = "DebtorAcctCurrency")
+    protected String debtorAcctCurrency;
     @XmlElement(name = "DebtorBankInfo", required = true)
     protected BankInfo debtorBankInfo;
     @XmlElement(name = "ChargeBearer", required = true)
@@ -167,11 +170,11 @@ public class PaymentInfo {
 
     /**
      * Gets the value of the debtorAccount property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getDebtorAccount() {
         return debtorAccount;
@@ -179,14 +182,38 @@ public class PaymentInfo {
 
     /**
      * Sets the value of the debtorAccount property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setDebtorAccount(String value) {
         this.debtorAccount = value;
+    }
+
+    /**
+     * Gets the value of the debtorAcctCurrency property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getDebtorAcctCurrency() {
+      return debtorAcctCurrency;
+    }
+
+    /**
+     * Sets the value of the debtorAcctCurrency property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setdebtorAcctCurrency(String value) {
+      this.debtorAcctCurrency = value;
     }
 
     /**

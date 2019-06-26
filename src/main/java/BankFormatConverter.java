@@ -277,10 +277,12 @@ public class BankFormatConverter<T> {
     pmtTpInf.setSvcLvl(svcLvl);
     PaymentTransType paymentTransType = paymentInfo.getPaymentTransType();
     svcLvl.setCd(paymentTransType.getServiceLvlCode());
-    deskera.fintech.pain001.LocalInstrument2Choice lclInstrm =
-        new deskera.fintech.pain001.LocalInstrument2Choice();
-    pmtTpInf.setLclInstrm(lclInstrm);
-    lclInstrm.setPrtry(paymentTransType.getLocalInstrmtCode());
+    if (paymentTransType.getLocalInstrmtCode() != null) {
+      deskera.fintech.pain001.LocalInstrument2Choice lclInstrm =
+          new deskera.fintech.pain001.LocalInstrument2Choice();
+      pmtTpInf.setLclInstrm(lclInstrm);
+      lclInstrm.setPrtry(paymentTransType.getLocalInstrmtCode());
+    }
     pmtInf.setReqdExctnDt(paymentInfo.getPaymentDate());
 
     deskera.fintech.pain001.PartyIdentification32 dbtr =
@@ -305,6 +307,7 @@ public class BankFormatConverter<T> {
         new deskera.fintech.pain001.GenericAccountIdentification1();
     dbtrAcctId.setOthr(othr);
     othr.setId(paymentInfo.getDebtorAccount());
+    dbtrAcct.setCcy(paymentInfo.getDebtorAcctCurrency());
 
     BankInfo debtorBankInfo = paymentInfo.getDebtorBankInfo();
     deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 dbtrAgt =
@@ -376,10 +379,12 @@ public class BankFormatConverter<T> {
     cdtrAcctId.setOthr(cdtrOthr);
     cdtrOthr.setId(creditorTxnInfo.getCreditorAccount());
 
-    deskera.fintech.pain001.Purpose2Choice purp =
-        new deskera.fintech.pain001.Purpose2Choice();
-    cdtTrfTxInf.setPurp(purp);
-    purp.setPrtry(creditorTxnInfo.getPurpose());
+    if (creditorTxnInfo.getPurpose() != null) {
+      deskera.fintech.pain001.Purpose2Choice purp =
+          new deskera.fintech.pain001.Purpose2Choice();
+      cdtTrfTxInf.setPurp(purp);
+      purp.setPrtry(creditorTxnInfo.getPurpose());
+    }
 
     deskera.fintech.pain001.RemittanceInformation5 rmtInf =
         new deskera.fintech.pain001.RemittanceInformation5();

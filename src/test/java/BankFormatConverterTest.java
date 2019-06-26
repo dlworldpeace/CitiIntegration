@@ -156,7 +156,7 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test
-  public void convertJsonToPAIN001XML_success ()
+  public void convertFASTPayJsonToPAIN001XML_success ()
       throws BankFormatConverterException, IOException, SAXException {
 
     final String deskeraPaInSampleJson = new String(Files.readAllBytes(Paths.get(
@@ -165,6 +165,20 @@ public class BankFormatConverterTest extends TestCase {
     final String PAIN001Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
             + "XML Request/DeskeraFastISOXML.txt")));
+
+    assertXMLEqual(PAIN001Sample, convertJsonToPAIN001XML(deskeraPaInSampleJson));
+  }
+
+  @Test
+  public void convertDFTJsonToPAIN001XML_success ()
+      throws BankFormatConverterException, IOException, SAXException {
+
+    final String deskeraPaInSampleJson = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
+            + "JSON Request/DeskeraDFTinit_Json.txt")));
+    final String PAIN001Sample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+            + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT.txt")));
 
     assertXMLEqual(PAIN001Sample, convertJsonToPAIN001XML(deskeraPaInSampleJson));
   }

@@ -3,24 +3,21 @@
   <CstmrCdtTrfInitn>
     <GrpHdr>
       <MsgId>GBP161111000001</MsgId>
-      <CreDtTm>2019-06-25T03:51:15</CreDtTm>
+      <CreDtTm>2019-06-26T03:51:15</CreDtTm>
       <NbOfTxs>1</NbOfTxs>
-      <CtrlSum>1.00</CtrlSum>
       <InitgPty>
-        <Nm>ABC</Nm>
+        <Nm>Deskera Singapore</Nm>
       </InitgPty>
     </GrpHdr>
     <PmtInf>
       <PmtInfId>98765432 Fund Transfer Domestic</PmtInfId>
       <PmtMtd>TRF</PmtMtd>
-      <NbOfTxs>1</NbOfTxs>
-      <CtrlSum>1.00</CtrlSum>
       <PmtTpInf>
         <SvcLvl>
           <Cd>URGP</Cd>
         </SvcLvl>
       </PmtTpInf>
-      <ReqdExctnDt>2019-06-25</ReqdExctnDt>
+      <ReqdExctnDt>2019-06-26</ReqdExctnDt>
       <Dbtr>
         <Nm>Deskera Singapore Pte Ltd</Nm>
         <PstlAdr>
@@ -28,11 +25,6 @@
           <AdrLine>One Raffles Place</AdrLine>
           <AdrLine>Singapore</AdrLine>
         </PstlAdr>
-        <Id>
-          <OrgId>
-            <BICOrBEI>CITIGB2L</BICOrBEI>
-          </OrgId>
-        </Id>
       </Dbtr>
       <DbtrAcct>
         <Id>
@@ -58,25 +50,10 @@
         <Amt>
           <InstdAmt Ccy="SGD">1.00</InstdAmt>
         </Amt>
-        <UltmtDbtr>
-          <Id>
-            <PrvtId>
-              <Othr>
-                <Id>ABCDEF UK BR600 012345</Id>
-                <SchmeNm>
-                  <Prtry>DFT</Prtry>
-                </SchmeNm>
-              </Othr>
-            </PrvtId>
-          </Id>
-        </UltmtDbtr>
         <CdtrAgt>
           <FinInstnId>
             <BIC>DBSSSGSG</BIC>
-            <ClrSysMmbId>
-              <MmbId>185008</MmbId>
-            </ClrSysMmbId>
-            <Nm>DBS Bank Ltd.</Nm>
+            <Nm>DBS Bank Ltd</Nm>
             <PstlAdr>
               <Ctry>SG</Ctry>
             </PstlAdr>
@@ -87,13 +64,12 @@
           <PstlAdr>
             <Ctry>SG</Ctry>
           </PstlAdr>
-          <CtctDtls>
-            <Nm>ABC LIMITED</Nm>
-          </CtctDtls>
         </Cdtr>
         <CdtrAcct>
           <Id>
-            <IBAN>480516840</IBAN>
+            <Othr>
+              <Id>480516840</Id>
+            </Othr>
           </Id>
         </CdtrAcct>
         <RmtInf>

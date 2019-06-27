@@ -1,5 +1,6 @@
 package test.java;
 
+import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
 import static main.java.Handler.des3DecodeCBC;
@@ -50,6 +51,21 @@ public class HandlerTest {
   private final static String EMPTY_STRING = "";
   private final static String WHITE_SPACE = " ";
   private final static String SOME_XML = "<hi>123</hi>";
+  private final static String SAMPLE_ERROR_RESPONSE =
+      "<errormessage>\n"
+      + "<httpCode>400</httpCode>\n"
+      + "<httpMessage>BadRequest</httpMessage>\n"
+      + "<moreInformation>Schema Validation Failed</moreInformation>\n"
+      + "</errormessage>\n";
+  private final static String SAMPLE_CONDENSED_MSG =
+      "400. BadRequest. Schema Validation Failed. ";
+  private final static String SAMPLE_ERROR_RESPONSE_LESS_INFO =
+      "<errormessage>\n"
+          + "<httpCode>400</httpCode>\n"
+          + "<httpMessage>BadRequest</httpMessage>\n"
+          + "</errormessage>\n";
+  private final static String SAMPLE_CONDENSED_MSG_LESS_INFO =
+      "400. BadRequest. ";
 
   private Handler handler;
 
@@ -536,4 +552,35 @@ public class HandlerTest {
     extractAttachmentDecryptionKey(SOME_XML);
   }
 
+  @Test
+  public void condenseErrorResponse_sampleErrorResponse_success ()
+      throws HandlerException {
+    String condensedMsg = condenseErrorResponse(SAMPLE_ERROR_RESPONSE);
+    assertEquals(SAMPLE_CONDENSED_MSG, condensedMsg);
+  }
+
+  @Test
+  public void condenseErrorResponse_sampleErrorResponseWithoutMoreInfo_success ()
+      throws HandlerException {
+    String condensedMsg = condenseErrorResponse(SAMPLE_ERROR_RESPONSE_LESS_INFO);
+    assertEquals(SAMPLE_CONDENSED_MSG_LESS_INFO, condensedMsg);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void condenseErrorResponse_nonErrorResponse_throwsException ()
+      throws HandlerException {
+    String condensedMsg = condenseErrorResponse(SOME_XML);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void condenseErrorResponse_emptyStr_throwsException ()
+      throws HandlerException {
+    String condensedMsg = condenseErrorResponse(EMPTY_STRING);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void condenseErrorResponse_whiteSpace_throwsException ()
+      throws HandlerException {
+    String condensedMsg = condenseErrorResponse(WHITE_SPACE);
+  }
 }

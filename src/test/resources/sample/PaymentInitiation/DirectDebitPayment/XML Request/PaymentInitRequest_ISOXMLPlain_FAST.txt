@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+	<CstmrCdtTrfInitn>
+		<GrpHdr>
+			<MsgId>FASTTEST001</MsgId>
+			<CreDtTm>2018-06-25T05:33:47</CreDtTm>
+			<NbOfTxs>1</NbOfTxs>
+			<InitgPty>
+				<Nm>TEST INITIATING PARTY NAME</Nm>
+			</InitgPty>
+		</GrpHdr>
+		<PmtInf>
+			<PmtInfId>FASTTEST001</PmtInfId>
+			<PmtMtd>TRF</PmtMtd>
+			<PmtTpInf>
+				<SvcLvl>
+					<Cd>URNS</Cd>
+				</SvcLvl>
+				<LclInstrm>
+					<Prtry>SGIP</Prtry>
+				</LclInstrm>
+			</PmtTpInf>
+			<ReqdExctnDt>2019-06-25</ReqdExctnDt>
+			<Dbtr>
+				<Nm>TEST ORDERING PARTY NAME</Nm>
+				<PstlAdr>
+          <Ctry>SG</Ctry>
+          <AdrLine>One Raffles Place</AdrLine>
+          <AdrLine>Singapore</AdrLine>
+        </PstlAdr>
+			</Dbtr>
+			<DbtrAcct>
+				<Id>
+					<Othr>
+						<Id>865828039</Id>
+					</Othr>
+				</Id>
+			</DbtrAcct>
+			<DbtrAgt>
+				<FinInstnId>
+					<BIC>CITISGSG</BIC>
+					<PstlAdr>
+						<Ctry>SG</Ctry>
+					</PstlAdr>
+				</FinInstnId>
+			</DbtrAgt>
+      <ChrgBr>DEBT</ChrgBr>
+			<CdtTrfTxInf>
+				<PmtId>
+					<EndToEndId>FASTTEST001F</EndToEndId>
+				</PmtId>
+				<Amt>
+					<InstdAmt Ccy="SGD">1.00</InstdAmt>
+				</Amt>
+				<CdtrAgt>
+					<FinInstnId>
+						<BIC>CITISGSGXXX</BIC>
+						<Nm>CITIBANK SINGAPORE</Nm>
+						<PstlAdr>
+							<Ctry>SG</Ctry>
+						</PstlAdr>
+					</FinInstnId>
+				</CdtrAgt>
+				<Cdtr>
+					<Nm>TEST BENEFICIARY NAME</Nm>
+					<PstlAdr>
+						<Ctry>SG</Ctry>
+						<AdrLine>123 BUILDING, LEVEL 45 ABC STREET, </AdrLine>
+						<AdrLine>NEW TOWN 67-8, 90123</AdrLine>
+					</PstlAdr>
+				</Cdtr>
+				<CdtrAcct>
+					<Id>
+						<Othr>
+							<Id>123456789</Id>
+						</Othr>
+					</Id>
+				</CdtrAcct>
+				<Purp>
+					<Prtry>20</Prtry>
+				</Purp>
+				<RmtInf>
+					<Ustrd>/IDTP/BBAN</Ustrd>
+				</RmtInf>
+			</CdtTrfTxInf>
+		</PmtInf>
+	</CstmrCdtTrfInitn>
+</Document>

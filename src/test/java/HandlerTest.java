@@ -1,5 +1,7 @@
 package test.java;
 
+import static main.java.BankFormatConverter.readCAMT052ToJson;
+import static main.java.Constant.STATEMENT_RET_URL_MOCK;
 import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
@@ -33,6 +35,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import javax.xml.xpath.XPathExpressionException;
+import main.java.BankFormatConverterException;
 import main.java.Handler;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
@@ -317,7 +320,7 @@ public class HandlerTest {
   @Test
   public void authentication_validateAllAPIs_success ()
       throws IOException, XMLSecurityException, HandlerException,
-      CertificateEncodingException, XPathExpressionException {
+      CertificateEncodingException, XPathExpressionException, BankFormatConverterException {
 
 //    final String strAuth = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/Authentication/"
@@ -348,13 +351,13 @@ public class HandlerTest {
 //        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
 //    System.out.println(resInitPay_ISOXML);
 //
-    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
-            + "XML Request/paymentInq_Request_EndToEndId.txt")));
-    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
-    final String resCheckPay_Plain =
-        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
-    System.out.println(resCheckPay_Plain);
+//    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
+//            + "XML Request/paymentInq_Request_EndToEndId.txt")));
+//    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
+//    final String resCheckPay_Plain =
+//        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
+//    System.out.println(resCheckPay_Plain);
 //
 //    final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/BalanceInquiry/"
@@ -363,7 +366,7 @@ public class HandlerTest {
 //    final String resBalance =
 //        handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
 //    final String json = readCAMT052ToJson(resBalance);
-////    System.out.println(json);
+//    System.out.println(json);
 //
 //    final String strInitStat = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
@@ -371,8 +374,8 @@ public class HandlerTest {
 //    final String resInitStat_Encrypted = handler.initiateStatement(strInitStat);
 //    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
 //    final String statementId = extractStatementId(resInitStat);
-////      System.out.println(statementId);
-
+//    System.out.println(statementId);
+//
 //    final String strStatRet = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/StatementRetrieval/"
 //            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))

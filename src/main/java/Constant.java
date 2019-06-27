@@ -28,8 +28,7 @@ public class Constant {
   public static final String PAYMENT_TYPE_HEADER = "payloadType";
   public static final String OUTGOING_PAYMENT_TYPE =
       "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03";
-  public static final String PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID =
-      "ed86b7dbb2f1443a99758a7e19c39069";
+  public static final String PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID = "SGD123";
 
   /* Inputs to Response Parsing Logic */
 

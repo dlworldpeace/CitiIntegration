@@ -594,7 +594,7 @@ public class Handler {
     } catch (HttpStatusCodeException e) {
       response.put("HEADER", e.getResponseHeaders());
       response.put("STATUS", e.getStatusCode());
-      response.put("BODY", e.toString());// e.getStatusText());
+      response.put("BODY", e.getResponseBodyAsString());
     }
     return response;
   }
@@ -864,6 +864,58 @@ public class Handler {
   }
 
   /**
+   * parsing logic to extract only necessary info from the error response in xml
+   *
+   * @param errorResponse the decrypted and verified error response
+   * @return the condensed error message in one line
+   * @throws HandlerException if an unexpected event occurs when condensing the
+   *                          message
+   */
+  public static String condenseErrorResponse (String errorResponse)
+      throws HandlerException {
+    try {
+      String errorMsg = "";
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(
+          new InputSource(new StringReader(errorResponse)));
+      Element rootElement = document.getDocumentElement();
+      rootElement.normalize();
+      NodeList httpCode = rootElement.getElementsByTagName( "httpCode");
+      if (httpCode != null && httpCode.getLength() > 0) {
+        NodeList subList = httpCode.item(0).getChildNodes();
+
+        if (subList != null && subList.getLength() > 0) {
+          errorMsg +=  subList.item(0).getNodeValue()+ ". ";
+        }
+      }
+      NodeList httpMessage = rootElement.getElementsByTagName("httpMessage");
+      if (httpMessage != null && httpMessage.getLength() > 0) {
+        NodeList subList = httpMessage.item(0).getChildNodes();
+
+        if (subList != null && subList.getLength() > 0) {
+          errorMsg +=  subList.item(0).getNodeValue()+ ". ";
+        }
+      }
+      NodeList moreInfo = rootElement.getElementsByTagName("moreInformation");
+      if (moreInfo != null && moreInfo.getLength() > 0) {
+        NodeList subList = moreInfo.item(0).getChildNodes();
+
+        if (subList != null && subList.getLength() > 0) {
+          errorMsg +=  subList.item(0).getNodeValue()+ ". ";
+        }
+      }
+
+      if (!errorMsg.isEmpty())
+        return errorMsg;
+      throw new HandlerException("Fail to extract error info from XML");
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
    * Payment status inquiry logic using the unique APITrackingID (Message ID)
    * received from payment initiation made. This is done via the Enhanced Payment
    * Status Inquiry API.
@@ -876,7 +928,7 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   public String checkPaymentStatus (String payload) throws XMLSecurityException,
-      HandlerException {
+      HandlerException, CertificateEncodingException {
     String payload_SignedEncrypted = signAndEncryptXMLForCiti(payload);
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
@@ -889,7 +941,9 @@ public class Handler {
     if (statusCode == HttpStatus.OK) {
       return new String((byte[]) response.get("BODY"));
     } else { // error msg received instead of expected statement
-      String errorMsg = (String) response.get("BODY");
+      String errorResponse = (String) response.get("BODY");
+      String errorResponseDecrypted = decryptAndVerifyXMLFromCiti(errorResponse);
+      String errorMsg = condenseErrorResponse(errorResponseDecrypted);
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);
       throw new HandlerException(errorMsg);
     }
@@ -1119,7 +1173,8 @@ public class Handler {
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.parse(new InputSource(new StringReader(XML)));
       Element rootElement = document.getDocumentElement();
-      NodeList decryptionKeyElement = rootElement.getElementsByTagName("ns2:attachmentDecryptionKey");
+      NodeList decryptionKeyElement =
+          rootElement.getElementsByTagName("ns2:attachmentDecryptionKey");
       if (decryptionKeyElement != null && decryptionKeyElement.getLength() > 0) {
         NodeList subList = decryptionKeyElement.item(0).getChildNodes();
 

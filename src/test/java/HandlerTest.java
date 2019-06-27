@@ -303,36 +303,42 @@ public class HandlerTest {
       throws IOException, XMLSecurityException, HandlerException,
       CertificateEncodingException, XPathExpressionException {
 
+//    final String strAuth = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/Authentication/"
+//            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
+//            + "AuthorizationRequest_V3_Plain.txt")));
     final String strAuth = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/"
-            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
-            + "AuthorizationRequest_V3_Plain.txt")));
+        "src/test/resources/sample/Authentication/OutgoingPayment/"
+            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
     String response = handler.requestOAuth(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
         convertXMLStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
     handler.setOAuthToken(oAuthToken);
 
-    final String strInitPay = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
-            + "XML Request/PaymentInitRequest_ISOXMLPlain_Real.txt")));
+//    final String strInitPay = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
+//            + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT.txt")));
+//    final String strInitPay = new String(Files.readAllBytes(Paths.get(
+//        "src/test/resources/sample/PaymentInitiation/DirectDebitPayment/"
+//            + "XML Request/PaymentInitRequest_ISOXMLPlain_FAST.txt")));
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
 //            + "XML Request/DeskeraFastISOXML.txt")));
-    final String resInitPay_Encrypted = handler.initiatePayment(strInitPay);
-    final String resInitPay_Plain =
-        handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
-    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
-    System.out.println(resInitPay_ISOXML);
+//    final String resInitPay_Encrypted = handler.initiatePayment(strInitPay);
+//    final String resInitPay_Plain =
+//        handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
+//    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
+//        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+//    System.out.println(resInitPay_ISOXML);
 //
-//    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
-//            + "XML Request/paymentInq_Request_EndToEndId.txt")));
-//    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
-//    final String resCheckPay_Plain =
-//        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
-//    System.out.println(resCheckPay_Plain);
+    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
+            + "XML Request/paymentInq_Request_EndToEndId.txt")));
+    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
+    final String resCheckPay_Plain =
+        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
+    System.out.println(resCheckPay_Plain);
 //
 //    final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/BalanceInquiry/"

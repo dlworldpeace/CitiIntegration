@@ -1,7 +1,7 @@
 package test.java;
 
 import static main.java.BankFormatConverter.readCAMT052ToJson;
-import static main.java.Constant.STATEMENT_RET_URL_MOCK;
+import static main.java.Constant.*;
 import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXMLStr;
 import static main.java.Handler.convertXMLStrToDoc;
@@ -16,13 +16,6 @@ import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.signXMLPayloadDoc;
 import static main.java.Handler.verifyDecryptedXML;
-import static main.java.Constant.KEYSTORE_ALIAS;
-import static main.java.Constant.KEYSTORE_FILEPATH;
-import static main.java.Constant.KEYSTORE_PASSWORD;
-import static main.java.Constant.TYPE_AUTH;
-import static main.java.Constant.TYPE_PAY_INIT;
-import static main.java.Constant.TAG_NAME_AUTH;
-import static main.java.Constant.TAG_NAME_PAY_INIT;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 

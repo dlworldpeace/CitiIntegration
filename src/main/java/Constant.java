@@ -8,6 +8,10 @@ public class Constant {
       "src/main/resources/key/deskera/deskera.p12";
   public static final String KEYSTORE_PASSWORD = "clientpass";
   public static final String KEYSTORE_ALIAS = "1";
+  public static final String CITI_PUBLIC_KEY_PATH =
+      "src/main/resources/key/citi/citi_encryption_uat.pem";
+  public static final String CITI_SIGNING_CERT_PATH =
+    "src/main/resources/key/citi/citi_signature_uat.pem";
 
   /* Inputs to the Parsing Response Logic */
 
@@ -18,6 +22,10 @@ public class Constant {
 
   /* Inputs to APIs Calling Logic */
 
+  public static final String DESKERA_CLIENT_ID_FILE_PATH =
+      "src/main/resources/key/deskera/deskera_client_id.txt";
+  public static final String DESKERA_SECRET_KEY_FILE_PATH =
+      "src/main/resources/key/deskera/deskera_secret_key.txt";
   public static final String DESKERA_SSL_CERT_FILE_PATH =
       "src/main/resources/key/deskera/deskera_ssl.p12";
   public static final String DESKERA_SSL_CERT_PWD = "sslpass";

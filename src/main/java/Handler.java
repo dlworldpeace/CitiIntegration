@@ -1,19 +1,6 @@
 package main.java;
 
-import static main.java.Constant.BALANCE_INQUIRY_URL_UAT;
-import static main.java.Constant.CITI_SSL_CERT_FILE_PATH;
-import static main.java.Constant.CITI_SSL_CERT_PWD;
-import static main.java.Constant.KEYSTORE_ALIAS;
-import static main.java.Constant.KEYSTORE_PASSWORD;
-import static main.java.Constant.OUTGOING_PAYMENT_TYPE;
-import static main.java.Constant.OAUTH_URL_UAT;
-import static main.java.Constant.PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID;
-import static main.java.Constant.PAY_ENHANCED_STATUS_URL_UAT;
-import static main.java.Constant.PAY_INIT_URL_UAT;
-import static main.java.Constant.PAYMENT_TYPE_HEADER;
-import static main.java.Constant.DESKERA_SSL_CERT_FILE_PATH;
-import static main.java.Constant.DESKERA_SSL_CERT_PWD;
-import static main.java.Constant.STATEMENT_INIT_URL_UAT;
+import static main.java.Constant.*;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -99,7 +86,6 @@ import org.apache.xml.security.utils.Constants;
 import org.apache.xml.security.utils.ElementProxy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -140,10 +126,10 @@ public class Handler {
    * @return client id.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String getClientId () throws HandlerException {
+  private static String getClientId() throws HandlerException {
     try {
-      return new String(Files.readAllBytes(Paths.get(
-          "src/main/resources/key/deskera/deskera_client_id.txt"))).trim();
+      return new String(
+          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_PATH))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -156,10 +142,10 @@ public class Handler {
    * @return client secret key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static String getSecretKey () throws HandlerException {
+  private static String getSecretKey() throws HandlerException {
     try {
-      return new String(Files.readAllBytes(Paths.get(
-          "src/main/resources/key/deskera/deskera_secret_key.txt"))).trim();
+      return new String(
+          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_PATH))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -193,7 +179,8 @@ public class Handler {
    * @return client signing cert.
    * @throws HandlerException custom exception for Handler class.
    */
-  public X509Certificate getClientSigningCert (String ksAlias) throws HandlerException {
+  public X509Certificate getClientSigningCert (String ksAlias)
+      throws HandlerException {
     try {
       X509Certificate signCert = (X509Certificate) ks
           .getCertificate(ksAlias);
@@ -214,10 +201,12 @@ public class Handler {
    * @return PrivateKey client private key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public PrivateKey getClientPrivateKey (String ksAlias, String ksPswd) throws HandlerException {
+  public PrivateKey getClientPrivateKey (String ksAlias, String ksPswd)
+      throws HandlerException {
     try {
       return (PrivateKey) ks.getKey(ksAlias, ksPswd.toCharArray());
-    } catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
+    } catch (NoSuchAlgorithmException | UnrecoverableKeyException |
+        KeyStoreException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -229,11 +218,10 @@ public class Handler {
    * @return citi public key.
    * @throws HandlerException custom exception for Handler class.
    */
-  public static PublicKey getCitiPublicKey () throws HandlerException {
+  private static PublicKey getCitiPublicKey() throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_encryption_uat.pem");
+      FileInputStream is = new FileInputStream(CITI_PUBLIC_KEY_PATH);
       X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
       return cer.getPublicKey();
     } catch (IOException | CertificateException e) {
@@ -252,8 +240,7 @@ public class Handler {
   public static X509Certificate getCitiSigningCert () throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (
-          "src/main/resources/key/citi/citi_signature_uat.pem");
+      FileInputStream is = new FileInputStream (CITI_SIGNING_CERT_PATH);
       return (X509Certificate) fact.generateCertificate(is);
     } catch (CertificateException | FileNotFoundException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -651,7 +638,7 @@ public class Handler {
       } catch (CertificateEncodingException | XMLSecurityException ex) {
         Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, ex);
         throw new HandlerException(
-            "Decrypting and verifying error response body" + ex.getMessage());
+            "Decrypting and verifying error response body: " + ex.getMessage());
       }
       String errorMsg = condenseErrorResponse(errorResponseDecrypted);
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, errorMsg);

@@ -716,7 +716,7 @@ public class Handler {
       errorInResponse = "Response Message Doesn't have expected Information";
     } else {
       if (docRoot.getNodeName().equalsIgnoreCase("errormessage")) {
-        StringBuffer errorReponseSB = new StringBuffer();
+        StringBuilder errorReponseSB = new StringBuilder();
 
         String httpCodeTag = null, httpMessage = null, moreInformation = null;
 
@@ -811,7 +811,7 @@ public class Handler {
       throw new HandlerException(e.getMessage());
     }
 
-    StringBuffer xmlStrSb = new StringBuffer();
+    StringBuilder xmlStrSb = new StringBuilder();
     final char pem_array[] = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
         'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',

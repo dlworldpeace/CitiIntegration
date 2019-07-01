@@ -901,8 +901,7 @@ public class Handler {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
-    String url = PAY_ENHANCED_STATUS_URL_UAT + PAY_ENHANCED_STATUS_SAMPLE_ENDTOENDID
-        + "?client_id=" + getClientId();
+    String url = PAY_ENHANCED_STATUS_URL_UAT + "client_id=" + getClientId();
     return new String(handleHttp(headerList, payload, url));
   }
 

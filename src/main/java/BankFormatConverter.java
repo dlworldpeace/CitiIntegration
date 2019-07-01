@@ -275,13 +275,15 @@ public class BankFormatConverter<T> {
     deskera.fintech.pain001.ServiceLevel8Choice svcLvl =
         new deskera.fintech.pain001.ServiceLevel8Choice();
     pmtTpInf.setSvcLvl(svcLvl);
-    PaymentTransType paymentTransType = paymentInfo.getPaymentTransType();
-    svcLvl.setCd(paymentTransType.getServiceLvlCode());
-    if (paymentTransType.getLocalInstrmtCode() != null) {
+    PaymentTransTypeCode paymentTransType = paymentInfo.getPaymentTransType();
+    if (paymentTransType == PaymentTransTypeCode.DFT) {
+      svcLvl.setCd("URGP");
+    } else {
+      svcLvl.setCd("URNS");
       deskera.fintech.pain001.LocalInstrument2Choice lclInstrm =
           new deskera.fintech.pain001.LocalInstrument2Choice();
       pmtTpInf.setLclInstrm(lclInstrm);
-      lclInstrm.setPrtry(paymentTransType.getLocalInstrmtCode());
+      lclInstrm.setPrtry("SGIP");
     }
     pmtInf.setReqdExctnDt(paymentInfo.getPaymentDate());
 

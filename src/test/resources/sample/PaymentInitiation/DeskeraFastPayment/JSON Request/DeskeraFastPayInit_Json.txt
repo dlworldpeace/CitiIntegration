@@ -9,10 +9,7 @@
       "PaymentInfo" : [ {
          "PaymentRefId" : "FASTTPM001",
          "PaymentMethod" : "TRF",
-         "PaymentTransType" : {
-            "ServiceLvlCode" : "URNS",
-            "LocalInstrmtCode" : "SGIP"
-         },
+         "PaymentTransType" : "FAST",
          "PaymentDate" : "2019-06-25",
          "Debtor" : {
             "Name" : "Deskera Singapore Pte Ltd",

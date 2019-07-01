@@ -9,9 +9,7 @@
       "PaymentInfo" : [ {
          "PaymentRefId" : "98765432 Fund Transfer Domestic",
          "PaymentMethod" : "TRF",
-         "PaymentTransType" : {
-            "ServiceLvlCode" : "URGP"
-         },
+         "PaymentTransType" : "DFT",
          "PaymentDate" : "2019-06-26",
          "Debtor" : {
             "Name" : "Deskera Singapore Pte Ltd",

@@ -311,9 +311,9 @@ public class HandlerTest {
   }
 
   @Test
-  public void authentication_validateAllAPIs_success ()
-      throws IOException, XMLSecurityException, HandlerException,
-      CertificateEncodingException, XPathExpressionException, BankFormatConverterException {
+  public void authentication_validateAllAPIs_success () throws IOException,
+      XMLSecurityException, HandlerException, CertificateEncodingException,
+      XPathExpressionException, BankFormatConverterException {
 
 //    final String strAuth = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/Authentication/"

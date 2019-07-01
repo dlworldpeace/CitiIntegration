@@ -31,7 +31,8 @@ public class PaymentInfo {
     @XmlSchemaType(name = "string")
     protected PaymentMethod3Code paymentMethod;
     @XmlElement(name = "PaymentTransType")
-    protected PaymentTransType paymentTransType;
+    @XmlSchemaType(name = "string")
+    protected PaymentTransTypeCode paymentTransType;
     @XmlElement(name = "PaymentDate", required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar paymentDate;
@@ -101,10 +102,10 @@ public class PaymentInfo {
      * 
      * @return
      *     possible object is
-     *     {@link PaymentTransType }
+     *     {@link PaymentTransTypeCode }
      *     
      */
-    public PaymentTransType getPaymentTransType() {
+    public PaymentTransTypeCode getPaymentTransType() {
         return paymentTransType;
     }
 
@@ -113,10 +114,10 @@ public class PaymentInfo {
      * 
      * @param value
      *     allowed object is
-     *     {@link PaymentTransType }
+     *     {@link PaymentTransTypeCode }
      *     
      */
-    public void setPaymentTransType(PaymentTransType value) {
+    public void setPaymentTransType(PaymentTransTypeCode value) {
         this.paymentTransType = value;
     }
 

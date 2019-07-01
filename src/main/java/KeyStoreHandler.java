@@ -40,9 +40,9 @@ public class KeyStoreHandler {
    * Create a .p12 keystore file in the file system from a compatibble pair of
    * public cert and a private key
    *
-   * @param certificate Path to .crt file from input
-   * @param key Path to .key file from input
-   * @param keystore Path to the new .p12 keystore generated for output
+   * @param certificatePath Path to .crt file from input
+   * @param keyPath Path to .key file from input
+   * @param keyStorePath Path to the new .p12 keystore generated for output
    * @param alias alias of the generated certificate and private key set in the
    *              keystore
    * @param password char array of password to protect the keystore generated
@@ -51,22 +51,23 @@ public class KeyStoreHandler {
    *                                  the file system, or if an unexpected event
    *                                  occurs during keys operations
    */
-  public static void createKeystoreFromCertAndKey(String certificate, String key,
-      String keystore, String alias, char[] password) throws KeyStoreHandlerException {
+  public static void createKeystoreFromCertAndKey(String certificatePath,
+      String keyPath, String keyStorePath, String alias, char[] password)
+      throws KeyStoreHandlerException {
     try {
-      byte[] pkcs8 = decode(Files.readAllBytes(Paths.get(key)));
+      byte[] pkcs8 = decode(Files.readAllBytes(Paths.get(keyPath)));
       KeyFactory kf = KeyFactory.getInstance("RSA");
       PrivateKey pvt = kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8));
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       Certificate pub;
-      try (InputStream is = Files.newInputStream(Paths.get(certificate))) {
+      try (InputStream is = Files.newInputStream(Paths.get(certificatePath))) {
         pub = cf.generateCertificate(is);
       }
       KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
       pkcs12.load(null, null);
       pkcs12.setKeyEntry(alias, pvt, password, new Certificate[]{pub});
       try (OutputStream s = Files
-          .newOutputStream(Paths.get(keystore), StandardOpenOption.CREATE_NEW)) {
+          .newOutputStream(Paths.get(keyStorePath), StandardOpenOption.CREATE_NEW)) {
         pkcs12.store(s, password);
       }
     } catch (IOException | GeneralSecurityException e) {

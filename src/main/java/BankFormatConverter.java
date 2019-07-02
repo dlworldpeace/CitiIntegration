@@ -333,7 +333,7 @@ public class BankFormatConverter<T> {
     deskera.fintech.pain001.PaymentIdentification1 pmtId =
         new deskera.fintech.pain001.PaymentIdentification1();
     cdtTrfTxInf.setPmtId(pmtId);
-    pmtId.setEndToEndId(creditorTxnInfo.getTxnId());
+    pmtId.setEndToEndId(creditorTxnInfo.getEndToEndId());
     deskera.fintech.pain001.AmountType3Choice amt =
         new deskera.fintech.pain001.AmountType3Choice();
     cdtTrfTxInf.setAmt(amt);

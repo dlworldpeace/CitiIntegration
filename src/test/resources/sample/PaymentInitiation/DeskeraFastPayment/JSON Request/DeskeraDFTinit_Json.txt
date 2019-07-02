@@ -28,7 +28,7 @@
          },
          "ChargeBearer" : "DEBT",
          "CreditorTxnInfo" : [ {
-            "TxnId" : "SGD123",
+            "EndToEndId" : "SGD123",
             "Amount" : 1.00,
             "AmountCurrency" : "SGD",
             "CreditorBankInfo" : {

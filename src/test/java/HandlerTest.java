@@ -300,7 +300,7 @@ public class HandlerTest {
 
   @Test
   public void authenticate_responseReceivedSuccess ()
-      throws IOException, XMLSecurityException, HandlerException {
+      throws IOException, HandlerException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/"

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CreditorTxnInfo", propOrder = {
-    "txnId",
+    "endToEndId",
     "amount",
     "amountCurrency",
     "creditorBankInfo",
@@ -19,8 +19,8 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class CreditorTxnInfo {
 
-    @XmlElement(name = "TxnId", required = true)
-    protected String txnId;
+    @XmlElement(name = "EndToEndId", required = true)
+    protected String endToEndId;
     @XmlElement(name = "Amount", required = true)
     protected BigDecimal amount;
     @XmlElement(name = "AmountCurrency", required = true)
@@ -37,27 +37,27 @@ public class CreditorTxnInfo {
     protected String remittanceInfo;
 
     /**
-     * Gets the value of the txnId property.
+     * Gets the value of the endToEndId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTxnId() {
-        return txnId;
+    public String getEndToEndId() {
+        return endToEndId;
     }
 
     /**
-     * Sets the value of the txnId property.
+     * Sets the value of the endToEndId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTxnId(String value) {
-        this.txnId = value;
+    public void setEndToEndId(String value) {
+        this.endToEndId = value;
     }
 
     /**

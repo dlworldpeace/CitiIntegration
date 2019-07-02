@@ -27,7 +27,7 @@
          },
          "ChargeBearer" : "DEBT",
          "CreditorTxnInfo" : [ {
-            "TxnId" : "FASTTPM001",
+            "EndToEndId" : "FASTTPM001",
             "Amount" : 1.00,
             "AmountCurrency" : "SGD",
             "CreditorBankInfo" : {

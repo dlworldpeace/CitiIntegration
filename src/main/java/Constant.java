@@ -32,7 +32,6 @@ public class Constant {
   public static final String CITI_SSL_CERT_FILE_PATH =
       "src/main/resources/key/citi/citi_ssl_uat.jks";
   public static final String CITI_SSL_CERT_PWD = "citissl";
-  public static final String PROXY_URL = ""; // what is this? Guess if it is intranet proxy
   public static final String PAYMENT_TYPE_HEADER = "payloadType";
   public static final String OUTGOING_PAYMENT_TYPE =
       "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03";

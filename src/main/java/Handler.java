@@ -14,6 +14,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -107,7 +108,11 @@ import org.xml.sax.SAXException;
 
 public class Handler {
 
-  /* Instance Variables */
+  /* Class-level Variables */
+
+  public final static Boolean isPROD = true;
+
+  /* Instance-level Variables */
 
   private String oAuthToken;
   private KeyStore ks;
@@ -126,10 +131,12 @@ public class Handler {
    * @return client id.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static String getClientId() throws HandlerException {
+  private String getClientId() throws HandlerException {
     try {
-      return new String(
-          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_PATH_UAT))).trim();
+      Path path = isPROD
+          ? Paths.get(DESKERA_CLIENT_ID_FILE_PATH_PROD)
+          : Paths.get(DESKERA_CLIENT_ID_FILE_PATH_UAT);
+      return new String(Files.readAllBytes(path)).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -142,10 +149,12 @@ public class Handler {
    * @return client secret key.
    * @throws HandlerException custom exception for Handler class.
    */
-  private static String getSecretKey() throws HandlerException {
+  private String getSecretKey() throws HandlerException {
     try {
-      return new String(
-          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_PATH_UAT))).trim();
+      Path path = isPROD
+          ? Paths.get(DESKERA_SECRET_KEY_FILE_PATH_PROD)
+          : Paths.get(DESKERA_SECRET_KEY_FILE_PATH_UAT);
+      return new String(Files.readAllBytes(path)).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -221,7 +230,9 @@ public class Handler {
   private static PublicKey getCitiPublicKey() throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream(CITI_PUBLIC_KEY_PATH_UAT);
+      FileInputStream is = isPROD
+          ? new FileInputStream(CITI_PUBLIC_KEY_PATH_PROD)
+          : new FileInputStream(CITI_PUBLIC_KEY_PATH_UAT);
       X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
       return cer.getPublicKey();
     } catch (IOException | CertificateException e) {
@@ -240,7 +251,9 @@ public class Handler {
   public static X509Certificate getCitiSigningCert () throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (CITI_SIGNING_CERT_PATH_UAT);
+      FileInputStream is = isPROD
+          ? new FileInputStream (CITI_SIGNING_CERT_PATH_PROD)
+          : new FileInputStream (CITI_SIGNING_CERT_PATH_UAT);
       return (X509Certificate) fact.generateCertificate(is);
     } catch (CertificateException | FileNotFoundException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -380,9 +393,12 @@ public class Handler {
   public String signAndEncryptXMLForCiti (String payloadXML)
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertXMLStrToDoc(payloadXML);
-    PrivateKey clientPrivateKey =
-        getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    X509Certificate clientSigningCert = getClientSigningCert(KEYSTORE_ALIAS_UAT);
+    PrivateKey clientPrivateKey = isPROD
+        ? getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    X509Certificate clientSigningCert = isPROD
+        ? getClientSigningCert(KEYSTORE_ALIAS_PROD)
+        : getClientSigningCert(KEYSTORE_ALIAS_UAT);
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
     String signed = convertDocToXMLStr(payloadDoc);
     PublicKey citiPublicKey = getCitiPublicKey();
@@ -536,8 +552,9 @@ public class Handler {
    */
   public String decryptAndVerifyXMLFromCiti (String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
-    PrivateKey clientPrivateDecryptionKey =
-        getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PrivateKey clientPrivateDecryptionKey = isPROD
+        ? getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document encryptedSignedXMLResponseDoc =
         convertXMLStrToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
@@ -659,15 +676,25 @@ public class Handler {
   public String requestOAuth (String oAuthPayload) throws HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH_UAT),
-          DESKERA_SSL_CERT_PWD_UAT.toCharArray());
+      FileInputStream deskeraIS = isPROD
+          ? new FileInputStream(DESKERA_SSL_CERT_FILE_PATH_PROD)
+          : new FileInputStream(DESKERA_SSL_CERT_FILE_PATH_UAT);
+      char[] deskeraPswd = isPROD
+          ? DESKERA_SSL_CERT_PWD_PROD.toCharArray()
+          : DESKERA_SSL_CERT_PWD_UAT.toCharArray();
+      clientStore.load(deskeraIS, deskeraPswd);
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, DESKERA_SSL_CERT_PWD_UAT.toCharArray());
+      kmf.init(clientStore, deskeraPswd);
 
       KeyStore trustStore = KeyStore.getInstance("JKS");
-      trustStore.load(new FileInputStream(CITI_SSL_CERT_FILE_PATH_UAT),
-          CITI_SSL_CERT_PWD_UAT.toCharArray());
+      FileInputStream citiIS = isPROD
+          ? new FileInputStream(CITI_SSL_CERT_FILE_PATH_PROD)
+          : new FileInputStream(CITI_SSL_CERT_FILE_PATH_UAT);
+      char[] citiPswd = isPROD
+          ? CITI_SSL_CERT_PWD_PROD.toCharArray()
+          : CITI_SSL_CERT_PWD_UAT.toCharArray();
+      trustStore.load(citiIS, citiPswd);
       TrustManagerFactory tmf = TrustManagerFactory
           .getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(trustStore);
@@ -685,7 +712,9 @@ public class Handler {
           + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
           .getBytes()).replaceAll("([\\r\\n])", ""));
 
-      return new String(handleHttp(headerList, oAuthPayload, OAUTH_URL_UAT));
+      return isPROD
+          ? new String(handleHttp(headerList, oAuthPayload, OAUTH_URL_PROD))
+          : new String(handleHttp(headerList, oAuthPayload, OAUTH_URL_UAT));
 
     } catch (IOException | CertificateException | UnrecoverableKeyException |
         NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
@@ -883,8 +912,10 @@ public class Handler {
     headerList.put("Content-Type", "application/xml");
     headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
-    return new String(handleHttp(headerList, base64Payload,
-        PAY_INIT_URL_UAT + "client_id=" + getClientId()));
+    String url = isPROD
+        ? PAY_INIT_URL_PROD + "client_id=" + getClientId()
+        :PAY_INIT_URL_UAT + "client_id=" + getClientId();
+    return new String(handleHttp(headerList, base64Payload, url));
   }
 
   /**
@@ -901,7 +932,9 @@ public class Handler {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
-    String url = PAY_ENHANCED_STATUS_URL_UAT + "client_id=" + getClientId();
+    String url = isPROD
+        ? PAY_ENHANCED_STATUS_URL_PROD + "client_id=" + getClientId()
+        : PAY_ENHANCED_STATUS_URL_UAT + "client_id=" + getClientId();
     return new String(handleHttp(headerList, payload, url));
   }
 
@@ -916,8 +949,10 @@ public class Handler {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
-    return new String(handleHttp(headerList, payload,
-        BALANCE_INQUIRY_URL_UAT + "client_id=" + getClientId()));
+    String url = isPROD
+        ? BALANCE_INQUIRY_URL_PROD + "client_id=" + getClientId()
+        : BALANCE_INQUIRY_URL_UAT + "client_id=" + getClientId();
+    return new String(handleHttp(headerList, payload, url));
   }
 
   /**
@@ -932,8 +967,10 @@ public class Handler {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oAuthToken);
-    return new String(handleHttp(headerList, payLoad,
-        STATEMENT_INIT_URL_UAT + "client_id=" + getClientId()));
+    String url = isPROD
+        ?  STATEMENT_INIT_URL_PROD + "client_id=" + getClientId()
+        :  STATEMENT_INIT_URL_UAT + "client_id=" + getClientId();
+    return new String(handleHttp(headerList, payLoad, url));
   }
 
   /**

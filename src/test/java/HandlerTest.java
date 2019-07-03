@@ -11,6 +11,7 @@ import static main.java.Handler.decryptEncryptedAndSignedXML;
 import static main.java.Handler.encryptSignedXMLPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromISOXML;
 import static main.java.Handler.getCitiSigningCert;
+import static main.java.Handler.isPROD;
 import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMIMEResponse;
 import static main.java.Handler.signXMLPayloadDoc;
@@ -75,7 +76,10 @@ public class HandlerTest {
   public void setUp() throws HandlerException {
     if(handler == null) {
       handler = new Handler();
-      handler.loadKeystore(KEYSTORE_FILEPATH_UAT, KEYSTORE_PASSWORD_UAT);
+      if (Handler.isPROD)
+        handler.loadKeystore(KEYSTORE_FILEPATH_PROD, KEYSTORE_PASSWORD_PROD);
+      else
+        handler.loadKeystore(KEYSTORE_FILEPATH_UAT, KEYSTORE_PASSWORD_UAT);
     }
   }
 
@@ -119,10 +123,12 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain.txt")));
 
-    X509Certificate signingCert = handler.getClientSigningCert(
-        KEYSTORE_ALIAS_UAT);
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    X509Certificate signingCert = isPROD
+        ? handler.getClientSigningCert(KEYSTORE_ALIAS_PROD)
+        : handler.getClientSigningCert(KEYSTORE_ALIAS_UAT);
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     verifyDecryptedXML(doc, signingCert);
@@ -138,8 +144,9 @@ public class HandlerTest {
             + "BalanceInquiryRequest_Plain.txt")));
 
     X509Certificate signingCert = Handler.getCitiSigningCert();
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     verifyDecryptedXML(doc, signingCert);
@@ -154,8 +161,9 @@ public class HandlerTest {
             + "BalanceInquiryRequest_Plain.txt")));
 
     X509Certificate signingCert = Handler.getCitiSigningCert();
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, signingCert, privKey);
     String payloadSignedOnce = convertDocToXMLStr(doc);
@@ -174,9 +182,12 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
 
-    PublicKey pubKey = handler.getClientSigningCert(KEYSTORE_ALIAS_UAT).getPublicKey();
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PublicKey pubKey = isPROD
+        ? handler.getClientSigningCert(KEYSTORE_ALIAS_PROD).getPublicKey()
+        : handler.getClientSigningCert(KEYSTORE_ALIAS_UAT).getPublicKey();
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document encryptedDoc = encryptSignedXMLPayloadDoc(
         convertXMLStrToDoc(str), pubKey);
     String decryptedStr = convertDocToXMLStr(
@@ -192,8 +203,9 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
 
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document nonEncryptedDoc = convertXMLStrToDoc(str);
     decryptEncryptedAndSignedXML(nonEncryptedDoc, privKey);
   }
@@ -206,11 +218,13 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain.txt")));
 
-    X509Certificate clientSigningCert =
-        handler.getClientSigningCert(KEYSTORE_ALIAS_UAT);
+    X509Certificate clientSigningCert = isPROD
+        ? handler.getClientSigningCert(KEYSTORE_ALIAS_PROD)
+        : handler.getClientSigningCert(KEYSTORE_ALIAS_UAT);
     X509Certificate citiSigningCert = getCitiSigningCert();
-    PrivateKey privKey =
-        handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    PrivateKey privKey = isPROD
+        ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
+        : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document doc = convertXMLStrToDoc(str);
     signXMLPayloadDoc(doc, clientSigningCert, privKey);
     verifyDecryptedXML(doc, citiSigningCert);

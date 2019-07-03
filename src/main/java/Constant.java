@@ -22,10 +22,14 @@ public class Constant {
 
   /* Inputs to APIs Calling Logic */
 
-  public static final String DESKERA_CLIENT_ID_FILE_PATH =
-      "src/main/resources/key/deskera/deskera_client_id.txt";
-  public static final String DESKERA_SECRET_KEY_FILE_PATH =
-      "src/main/resources/key/deskera/deskera_secret_key.txt";
+  public static final String DESKERA_CLIENT_ID_FILE_UAT_PATH =
+      "src/main/resources/key/deskera/deskera_client_id_uat.txt";
+  public static final String DESKERA_CLIENT_ID_FILE_PROD_PATH =
+      "src/main/resources/key/deskera/deskera_client_id_prod.txt";
+  public static final String DESKERA_SECRET_KEY_FILE_UAT_PATH =
+      "src/main/resources/key/deskera/deskera_secret_key_uat.txt";
+  public static final String DESKERA_SECRET_KEY_FILE_PROD_PATH =
+      "src/main/resources/key/deskera/deskera_secret_key_prod.txt";
   public static final String DESKERA_SSL_CERT_FILE_PATH =
       "src/main/resources/key/deskera/deskera_ssl.p12";
   public static final String DESKERA_SSL_CERT_PWD = "sslpass";

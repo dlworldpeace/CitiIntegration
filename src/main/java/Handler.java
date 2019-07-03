@@ -129,7 +129,7 @@ public class Handler {
   private static String getClientId() throws HandlerException {
     try {
       return new String(
-          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_PATH))).trim();
+          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_UAT_PATH))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -145,7 +145,7 @@ public class Handler {
   private static String getSecretKey() throws HandlerException {
     try {
       return new String(
-          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_PATH))).trim();
+          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_UAT_PATH))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());

@@ -28,7 +28,9 @@ hs_err_pid*
 *.jks
 *.key
 *.crt
-deskera_client_id.txt
-deskera_secret_key.txt
+deskera_client_id_uat.txt
+deskera_client_id_prod.txt
+deskera_secret_key_uat.txt
+deskera_secret_key_prod.txt
 BalanceInquiryRequest_Plain_Real.txt
 StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt

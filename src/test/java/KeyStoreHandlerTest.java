@@ -1,11 +1,11 @@
 package test.java;
 
-import static main.java.Handler.convertDocToXMLStr;
-import static main.java.Handler.convertXMLStrToDoc;
-import static main.java.Handler.decryptEncryptedAndSignedXML;
-import static main.java.Handler.encryptSignedXMLPayloadDoc;
-import static main.java.Handler.signXMLPayloadDoc;
-import static main.java.Handler.verifyDecryptedXML;
+import static main.java.Handler.convertDocToXmlStr;
+import static main.java.Handler.convertXmlStrToDoc;
+import static main.java.Handler.decryptEncryptedAndSignedXml;
+import static main.java.Handler.encryptSignedXmlPayloadDoc;
+import static main.java.Handler.signXmlPayloadDoc;
+import static main.java.Handler.verifyDecryptedXml;
 import static main.java.KeyStoreHandler.createKeystoreFromCertAndKey;
 import static main.java.KeyStoreHandler.deleteP12IfExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
@@ -77,13 +77,13 @@ public class KeyStoreHandlerTest extends TestCase {
     X509Certificate signCert = handler.getClientSigningCert(KS_ALIAS);
     PublicKey pubKey = handler.getClientSigningCert(KS_ALIAS).getPublicKey();
     PrivateKey privKey = handler.getClientPrivateKey(KS_ALIAS, KS_PASSWORD);
-    Document sampleDoc = convertXMLStrToDoc(sample);
-    signXMLPayloadDoc(sampleDoc, signCert, privKey);
-    String signedSample = convertDocToXMLStr(sampleDoc);
-    Document encryptedDoc = encryptSignedXMLPayloadDoc(sampleDoc, pubKey);
-    Document decryptedDoc = decryptEncryptedAndSignedXML(encryptedDoc, privKey);
-    verifyDecryptedXML(decryptedDoc, signCert);
-    String decryptedSample = convertDocToXMLStr(decryptedDoc);
+    Document sampleDoc = convertXmlStrToDoc(sample);
+    signXmlPayloadDoc(sampleDoc, signCert, privKey);
+    String signedSample = convertDocToXmlStr(sampleDoc);
+    Document encryptedDoc = encryptSignedXmlPayloadDoc(sampleDoc, pubKey);
+    Document decryptedDoc = decryptEncryptedAndSignedXml(encryptedDoc, privKey);
+    verifyDecryptedXml(decryptedDoc, signCert);
+    String decryptedSample = convertDocToXmlStr(decryptedDoc);
     assertXMLEqual(signedSample, decryptedSample);
   }
 
@@ -106,9 +106,9 @@ public class KeyStoreHandlerTest extends TestCase {
     handler.loadKeystore(KS_PATH, KS_PASSWORD);
     PublicKey pubKey = handler.getClientSigningCert(KS_ALIAS).getPublicKey();
     PrivateKey privKey = handler.getClientPrivateKey(KS_ALIAS, KS_PASSWORD);
-    Document sampleDoc = convertXMLStrToDoc(sample);
-    Document encryptedDoc = encryptSignedXMLPayloadDoc(sampleDoc, pubKey);
-    decryptEncryptedAndSignedXML(encryptedDoc, privKey);
+    Document sampleDoc = convertXmlStrToDoc(sample);
+    Document encryptedDoc = encryptSignedXmlPayloadDoc(sampleDoc, pubKey);
+    decryptEncryptedAndSignedXml(encryptedDoc, privKey);
   }
 
   @Test

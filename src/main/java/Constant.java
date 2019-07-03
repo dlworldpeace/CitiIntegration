@@ -89,8 +89,8 @@ public class Constant {
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/"
           + "payment/enhancedinquiry?";
   public static final String PAY_ENHANCED_STATUS_URL_PROD =
-      "https://tts.apib2b.citi.com/citiconnect/prodpaymentservices/v1/payment/"
-          + "enhancedinquiry/";
+      "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
+          + "enhancedinquiry?";
   public static final String BALANCE_INQUIRY_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices"
           + "/v1/balance/inquiry?";

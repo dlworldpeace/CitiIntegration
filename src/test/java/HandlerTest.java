@@ -2,20 +2,20 @@ package test.java;
 
 import static main.java.Constant.*;
 import static main.java.Handler.condenseErrorResponse;
-import static main.java.Handler.convertDocToXMLStr;
-import static main.java.Handler.convertXMLStrToDoc;
-import static main.java.Handler.des3DecodeCBC;
+import static main.java.Handler.convertDocToXmlStr;
+import static main.java.Handler.convertXmlStrToDoc;
+import static main.java.Handler.des3DecodeCbc;
 import static main.java.Handler.extractAttachmentDecryptionKey;
 import static main.java.Handler.extractStatementId;
-import static main.java.Handler.decryptEncryptedAndSignedXML;
-import static main.java.Handler.encryptSignedXMLPayloadDoc;
-import static main.java.Handler.generateBase64PayloadFromISOXML;
+import static main.java.Handler.decryptEncryptedAndSignedXml;
+import static main.java.Handler.encryptSignedXmlPayloadDoc;
+import static main.java.Handler.generateBase64PayloadFromIsoXml;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.isPROD;
 import static main.java.Handler.parseAuthOrPayInitResponse;
-import static main.java.Handler.parseMIMEResponse;
-import static main.java.Handler.signXMLPayloadDoc;
-import static main.java.Handler.verifyDecryptedXML;
+import static main.java.Handler.parseMimeResponse;
+import static main.java.Handler.signXmlPayloadDoc;
+import static main.java.Handler.verifyDecryptedXml;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -93,25 +93,25 @@ public class HandlerTest {
     final String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
 
     assertEquals(strWithoutFirstLine,
-        convertDocToXMLStr(convertXMLStrToDoc(strWithoutFirstLine)));
+        convertDocToXmlStr(convertXmlStrToDoc(strWithoutFirstLine)));
   }
 
   @Test
   public void convertStringToDoc_improperXmlStr_success()
       throws HandlerException {
-    convertXMLStrToDoc(SOME_XML);
+    convertXmlStrToDoc(SOME_XML);
   }
 
   @Test (expected = HandlerException.class)
   public void convertStringToDoc_emptyStr_throwsHandlerException ()
       throws HandlerException {
-    convertXMLStrToDoc(EMPTY_STRING);
+    convertXmlStrToDoc(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
   public void convertStringToDoc_nonXmlStr_throwsHandlerException ()
       throws HandlerException {
-    convertXMLStrToDoc(WHITE_SPACE);
+    convertXmlStrToDoc(WHITE_SPACE);
   }
 
   @Test
@@ -129,9 +129,9 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document doc = convertXMLStrToDoc(str);
-    signXMLPayloadDoc(doc, signingCert, privKey);
-    verifyDecryptedXML(doc, signingCert);
+    Document doc = convertXmlStrToDoc(str);
+    signXmlPayloadDoc(doc, signingCert, privKey);
+    verifyDecryptedXml(doc, signingCert);
   }
 
   @Test (expected = HandlerException.class)
@@ -147,9 +147,9 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document doc = convertXMLStrToDoc(str);
-    signXMLPayloadDoc(doc, signingCert, privKey);
-    verifyDecryptedXML(doc, signingCert);
+    Document doc = convertXmlStrToDoc(str);
+    signXmlPayloadDoc(doc, signingCert, privKey);
+    verifyDecryptedXml(doc, signingCert);
   }
 
   @Test
@@ -164,11 +164,11 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document doc = convertXMLStrToDoc(str);
-    signXMLPayloadDoc(doc, signingCert, privKey);
-    String payloadSignedOnce = convertDocToXMLStr(doc);
-    signXMLPayloadDoc(doc, signingCert, privKey);
-    String payloadSignedTwice = convertDocToXMLStr(doc);
+    Document doc = convertXmlStrToDoc(str);
+    signXmlPayloadDoc(doc, signingCert, privKey);
+    String payloadSignedOnce = convertDocToXmlStr(doc);
+    signXmlPayloadDoc(doc, signingCert, privKey);
+    String payloadSignedTwice = convertDocToXmlStr(doc);
     assertThat(payloadSignedOnce, not(equalTo(payloadSignedTwice)));
   }
 
@@ -188,10 +188,10 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document encryptedDoc = encryptSignedXMLPayloadDoc(
-        convertXMLStrToDoc(str), pubKey);
-    String decryptedStr = convertDocToXMLStr(
-        decryptEncryptedAndSignedXML(encryptedDoc, privKey));
+    Document encryptedDoc = encryptSignedXmlPayloadDoc(
+        convertXmlStrToDoc(str), pubKey);
+    String decryptedStr = convertDocToXmlStr(
+        decryptEncryptedAndSignedXml(encryptedDoc, privKey));
     assertEquals(str, decryptedStr);
   }
 
@@ -206,8 +206,8 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document nonEncryptedDoc = convertXMLStrToDoc(str);
-    decryptEncryptedAndSignedXML(nonEncryptedDoc, privKey);
+    Document nonEncryptedDoc = convertXmlStrToDoc(str);
+    decryptEncryptedAndSignedXml(nonEncryptedDoc, privKey);
   }
 
   @Test (expected = HandlerException.class)
@@ -225,9 +225,9 @@ public class HandlerTest {
     PrivateKey privKey = isPROD
         ? handler.getClientPrivateKey(KEYSTORE_ALIAS_PROD, KEYSTORE_PASSWORD_PROD)
         : handler.getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
-    Document doc = convertXMLStrToDoc(str);
-    signXMLPayloadDoc(doc, clientSigningCert, privKey);
-    verifyDecryptedXML(doc, citiSigningCert);
+    Document doc = convertXmlStrToDoc(str);
+    signXmlPayloadDoc(doc, clientSigningCert, privKey);
+    verifyDecryptedXml(doc, citiSigningCert);
   }
 
   @Test (expected = XMLSecurityException.class)
@@ -239,8 +239,8 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain.txt")));
 
-    String signedEncryptedStr = handler.signAndEncryptXMLForCiti(str);
-    handler.decryptAndVerifyXMLFromCiti(signedEncryptedStr);
+    String signedEncryptedStr = handler.signAndEncryptXmlForCiti(str);
+    handler.decryptAndVerifyXmlFromCiti(signedEncryptedStr);
   }
 
   @Test
@@ -257,7 +257,7 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(authResponse), TYPE_AUTH, TAG_NAME_AUTH);
+        convertXmlStrToDoc(authResponse), TYPE_AUTH, TAG_NAME_AUTH);
     assertEquals(oAuthToken, oAuthTokenParsed);
   }
 
@@ -274,7 +274,7 @@ public class HandlerTest {
             + "DirectDebitResponse_ISOXMLPlain.xml")));
 
     String payInitResponseParsed = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(payInitResponse), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+        convertXmlStrToDoc(payInitResponse), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
     assertEquals(sampleISOXML, payInitResponseParsed);
   }
 
@@ -292,14 +292,14 @@ public class HandlerTest {
             + "XML Response/AuthorizationResponse_Token.txt")));
 
     String oAuthTokenParsed = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), TYPE_PAY_INIT, TAG_NAME_AUTH);
+        convertXmlStrToDoc(response), TYPE_PAY_INIT, TAG_NAME_AUTH);
     assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
 
     exception.expect(HandlerException.class);
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), TYPE_AUTH, TAG_NAME_PAY_INIT);
+        convertXmlStrToDoc(response), TYPE_AUTH, TAG_NAME_PAY_INIT);
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(response), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+        convertXmlStrToDoc(response), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
   }
 
   @Test
@@ -309,7 +309,7 @@ public class HandlerTest {
     exception.expect(HandlerException.class);
     exception.expectMessage("No content extracted from response");
     parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(SOME_XML), TYPE_PAY_INIT, TAG_NAME_AUTH);
+        convertXmlStrToDoc(SOME_XML), TYPE_PAY_INIT, TAG_NAME_AUTH);
   }
 
   @Test
@@ -337,9 +337,9 @@ public class HandlerTest {
         "src/test/resources/sample/Authentication/OutgoingPayment/"
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
     String response = handler.requestOAuth(strAuth);
-    String decryptedVerifiedResponse = handler.decryptAndVerifyXMLFromCiti(response);
+    String decryptedVerifiedResponse = handler.decryptAndVerifyXmlFromCiti(response);
     String oAuthToken = parseAuthOrPayInitResponse(
-        convertXMLStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
+        convertXmlStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
     handler.setOAuthToken(oAuthToken);
 
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
@@ -353,9 +353,9 @@ public class HandlerTest {
 //            + "XML Request/DeskeraFastISOXML.txt")));
 //    final String resInitPay_Encrypted = handler.initiatePayment(strInitPay);
 //    final String resInitPay_Plain =
-//        handler.decryptAndVerifyXMLFromCiti(resInitPay_Encrypted);
+//        handler.decryptAndVerifyXmlFromCiti(resInitPay_Encrypted);
 //    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
-//        convertXMLStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+//        convertXmlStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
 //    System.out.println(resInitPay_ISOXML);
 //
 //    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
@@ -363,7 +363,7 @@ public class HandlerTest {
 //            + "XML Request/paymentInq_Request_EndToEndId.txt")));
 //    final String resCheckPay_Encrypted = handler.checkPaymentStatus(strCheckPay);
 //    final String resCheckPay_Plain =
-//        handler.decryptAndVerifyXMLFromCiti(resCheckPay_Encrypted);
+//        handler.decryptAndVerifyXmlFromCiti(resCheckPay_Encrypted);
 //    System.out.println(resCheckPay_Plain);
 //
 //    final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
@@ -371,7 +371,7 @@ public class HandlerTest {
 //            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
 //    final String resBalance_Encypted = handler.checkBalance(strCheckBalance);
 //    final String resBalance =
-//        handler.decryptAndVerifyXMLFromCiti(resBalance_Encypted);
+//        handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
 //    final String json = readCAMT052ToJson(resBalance);
 //    System.out.println(json);
 //
@@ -379,7 +379,7 @@ public class HandlerTest {
 //        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
 //            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
 //    final String resInitStat_Encrypted = handler.initiateStatement(strInitStat);
-//    final String resInitStat = handler.decryptAndVerifyXMLFromCiti(resInitStat_Encrypted);
+//    final String resInitStat = handler.decryptAndVerifyXmlFromCiti(resInitStat_Encrypted);
 //    final String statementId = extractStatementId(resInitStat);
 //    System.out.println(statementId);
 //
@@ -403,26 +403,26 @@ public class HandlerTest {
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
 
-    String ISOXML_base64 = generateBase64PayloadFromISOXML(ISOXML);
+    String ISOXML_base64 = generateBase64PayloadFromIsoXml(ISOXML);
     assertEquals(payloadSample, ISOXML_base64);
   }
 
   @Test (expected = HandlerException.class)
   public void generateBase64PayloadFromISOXML_emptyStr_throwsException ()
       throws HandlerException {
-    generateBase64PayloadFromISOXML(EMPTY_STRING);
+    generateBase64PayloadFromIsoXml(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
   public void generateBase64PayloadFromISOXML_whiteSpace_throwsException ()
       throws HandlerException {
-    generateBase64PayloadFromISOXML(WHITE_SPACE);
+    generateBase64PayloadFromIsoXml(WHITE_SPACE);
   }
 
   @Test (expected = HandlerException.class)
   public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
       throws HandlerException {
-    generateBase64PayloadFromISOXML(SOME_XML);
+    generateBase64PayloadFromIsoXml(SOME_XML);
   }
 
   @Test
@@ -439,7 +439,7 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf.txt"));
 
-    HashMap<String, Object> body = parseMIMEResponse(responseSample);
+    HashMap<String, Object> body = parseMimeResponse(responseSample);
     final String firstHalfParsed = (String) body.get("ENCRYPTED_KEY");
     final byte[] secondHalfParsed = (byte[]) body.get("ENCRYPTED_FILE");
 
@@ -461,7 +461,7 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf_Decrypted.txt"));
 
-    byte[] decryptedStatFile = des3DecodeCBC(decryptionKey, encryptedStatFile);
+    byte[] decryptedStatFile = des3DecodeCbc(decryptionKey, encryptedStatFile);
     assertArrayEquals(sampleStatFile, decryptedStatFile);
   }
 
@@ -473,7 +473,7 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf.txt"));
 
-    des3DecodeCBC(EMPTY_STRING, encryptedStatFile);
+    des3DecodeCbc(EMPTY_STRING, encryptedStatFile);
   }
 
   @Test (expected = HandlerException.class)
@@ -484,7 +484,7 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf.txt"));
 
-    des3DecodeCBC(WHITE_SPACE, encryptedStatFile);
+    des3DecodeCbc(WHITE_SPACE, encryptedStatFile);
   }
 
   @Test (expected = HandlerException.class)
@@ -495,7 +495,7 @@ public class HandlerTest {
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "response_secondHalf.txt"));
 
-    des3DecodeCBC(SOME_XML, encryptedStatFile);
+    des3DecodeCbc(SOME_XML, encryptedStatFile);
   }
 
   @Test

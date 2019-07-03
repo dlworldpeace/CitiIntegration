@@ -2,16 +2,47 @@ package main.java;
 
 public class Constant {
 
-  /* Inputs to the Encryption and Decryption Logic */
+  /* Inputs to the UAT Keys and Certificates */
 
-  public static final String KEYSTORE_FILEPATH =
-      "src/main/resources/key/deskera/deskera.p12";
-  public static final String KEYSTORE_PASSWORD = "clientpass";
-  public static final String KEYSTORE_ALIAS = "1";
-  public static final String CITI_PUBLIC_KEY_PATH =
+  public static final String KEYSTORE_FILEPATH_UAT =
+      "src/main/resources/key/deskera/UAT/deskera_uat.p12";
+  public static final String KEYSTORE_PASSWORD_UAT = "clientpass";
+  public static final String KEYSTORE_ALIAS_UAT = "1";
+  public static final String CITI_PUBLIC_KEY_PATH_UAT =
       "src/main/resources/key/citi/citi_encryption_uat.pem";
-  public static final String CITI_SIGNING_CERT_PATH =
+  public static final String CITI_SIGNING_CERT_PATH_UAT =
     "src/main/resources/key/citi/citi_signature_uat.pem";
+  public static final String DESKERA_CLIENT_ID_FILE_PATH_UAT =
+      "src/main/resources/key/deskera/UAT/deskera_client_id_uat.txt";
+  public static final String DESKERA_SECRET_KEY_FILE_PATH_UAT =
+      "src/main/resources/key/deskera/UAT/deskera_secret_key_uat.txt";
+  public static final String DESKERA_SSL_CERT_FILE_PATH_UAT =
+      "src/main/resources/key/deskera/UAT/deskera_ssl_uat.p12";
+  public static final String DESKERA_SSL_CERT_PWD_UAT = "sslpass";
+  public static final String CITI_SSL_CERT_FILE_PATH_UAT =
+      "src/main/resources/key/citi/citi_ssl_uat.jks";
+  public static final String CITI_SSL_CERT_PWD_UAT = "citissl";
+
+  /* Inputs to the PROD Keys and Certificates */
+
+  public static final String KEYSTORE_FILEPATH_PROD =
+      "src/main/resources/key/deskera/PROD/deskera_prod.p12";
+  public static final String KEYSTORE_PASSWORD_PROD= "clientpass";
+  public static final String KEYSTORE_ALIAS_PROD = "1";
+  public static final String CITI_PUBLIC_KEY_PATH_PROD =
+      "src/main/resources/key/citi/citi_encryption_prod.pem";
+  public static final String CITI_SIGNING_CERT_PATH_PROD =
+      "src/main/resources/key/citi/citi_signature_prod.pem";
+  public static final String DESKERA_CLIENT_ID_FILE_PATH_PROD =
+      "src/main/resources/key/deskera/PROD/deskera_client_id_prod.txt";
+  public static final String DESKERA_SECRET_KEY_FILE_PATH_PROD =
+      "src/main/resources/key/deskera/PROD/deskera_secret_key_prod.txt";
+  public static final String DESKERA_SSL_CERT_FILE_PATH_PROD =
+      "src/main/resources/key/deskera/PROD/deskera_ssl_prod.p12";
+  public static final String DESKERA_SSL_CERT_PWD_PROD = "sslpass";
+  public static final String CITI_SSL_CERT_FILE_PATH_PROD =
+      "src/main/resources/key/citi/citi_ssl_prod.jks";
+  public static final String CITI_SSL_CERT_PWD_PROD = "citissl";
 
   /* Inputs to the Parsing Response Logic */
 
@@ -20,22 +51,8 @@ public class Constant {
   public static final String TAG_NAME_AUTH = "//access_token/text()";
   public static final String TAG_NAME_PAY_INIT = "//Response/text()";
 
-  /* Inputs to APIs Calling Logic */
+  /* Inputs to API Headers */
 
-  public static final String DESKERA_CLIENT_ID_FILE_UAT_PATH =
-      "src/main/resources/key/deskera/deskera_client_id_uat.txt";
-  public static final String DESKERA_CLIENT_ID_FILE_PROD_PATH =
-      "src/main/resources/key/deskera/deskera_client_id_prod.txt";
-  public static final String DESKERA_SECRET_KEY_FILE_UAT_PATH =
-      "src/main/resources/key/deskera/deskera_secret_key_uat.txt";
-  public static final String DESKERA_SECRET_KEY_FILE_PROD_PATH =
-      "src/main/resources/key/deskera/deskera_secret_key_prod.txt";
-  public static final String DESKERA_SSL_CERT_FILE_PATH =
-      "src/main/resources/key/deskera/deskera_ssl.p12";
-  public static final String DESKERA_SSL_CERT_PWD = "sslpass";
-  public static final String CITI_SSL_CERT_FILE_PATH =
-      "src/main/resources/key/citi/citi_ssl_uat.jks";
-  public static final String CITI_SSL_CERT_PWD = "citissl";
   public static final String PAYMENT_TYPE_HEADER = "payloadType";
   public static final String OUTGOING_PAYMENT_TYPE =
       "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03";

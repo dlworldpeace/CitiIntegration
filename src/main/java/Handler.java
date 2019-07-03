@@ -129,7 +129,7 @@ public class Handler {
   private static String getClientId() throws HandlerException {
     try {
       return new String(
-          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_UAT_PATH))).trim();
+          Files.readAllBytes(Paths.get(DESKERA_CLIENT_ID_FILE_PATH_UAT))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -145,7 +145,7 @@ public class Handler {
   private static String getSecretKey() throws HandlerException {
     try {
       return new String(
-          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_UAT_PATH))).trim();
+          Files.readAllBytes(Paths.get(DESKERA_SECRET_KEY_FILE_PATH_UAT))).trim();
     } catch (IOException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
@@ -221,7 +221,7 @@ public class Handler {
   private static PublicKey getCitiPublicKey() throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream(CITI_PUBLIC_KEY_PATH);
+      FileInputStream is = new FileInputStream(CITI_PUBLIC_KEY_PATH_UAT);
       X509Certificate cer = (X509Certificate) fact.generateCertificate(is);
       return cer.getPublicKey();
     } catch (IOException | CertificateException e) {
@@ -240,7 +240,7 @@ public class Handler {
   public static X509Certificate getCitiSigningCert () throws HandlerException {
     try {
       CertificateFactory fact = CertificateFactory.getInstance("X.509");
-      FileInputStream is = new FileInputStream (CITI_SIGNING_CERT_PATH);
+      FileInputStream is = new FileInputStream (CITI_SIGNING_CERT_PATH_UAT);
       return (X509Certificate) fact.generateCertificate(is);
     } catch (CertificateException | FileNotFoundException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -381,8 +381,8 @@ public class Handler {
       throws XMLSecurityException, HandlerException {
     Document payloadDoc = convertXMLStrToDoc(payloadXML);
     PrivateKey clientPrivateKey =
-        getClientPrivateKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
-    X509Certificate clientSigningCert = getClientSigningCert(KEYSTORE_ALIAS);
+        getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
+    X509Certificate clientSigningCert = getClientSigningCert(KEYSTORE_ALIAS_UAT);
     signXMLPayloadDoc(payloadDoc, clientSigningCert, clientPrivateKey);
     String signed = convertDocToXMLStr(payloadDoc);
     PublicKey citiPublicKey = getCitiPublicKey();
@@ -537,7 +537,7 @@ public class Handler {
   public String decryptAndVerifyXMLFromCiti (String encryptedSignedXMLResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
     PrivateKey clientPrivateDecryptionKey =
-        getClientPrivateKey(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+        getClientPrivateKey(KEYSTORE_ALIAS_UAT, KEYSTORE_PASSWORD_UAT);
     Document encryptedSignedXMLResponseDoc =
         convertXMLStrToDoc(encryptedSignedXMLResponse);
     Document SignedXMLResponseDoc = decryptEncryptedAndSignedXML(
@@ -659,15 +659,15 @@ public class Handler {
   public String requestOAuth (String oAuthPayload) throws HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
-      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH),
-          DESKERA_SSL_CERT_PWD.toCharArray());
+      clientStore.load(new FileInputStream(DESKERA_SSL_CERT_FILE_PATH_UAT),
+          DESKERA_SSL_CERT_PWD_UAT.toCharArray());
       KeyManagerFactory kmf = KeyManagerFactory
           .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(clientStore, DESKERA_SSL_CERT_PWD.toCharArray());
+      kmf.init(clientStore, DESKERA_SSL_CERT_PWD_UAT.toCharArray());
 
       KeyStore trustStore = KeyStore.getInstance("JKS");
-      trustStore.load(new FileInputStream(CITI_SSL_CERT_FILE_PATH),
-          CITI_SSL_CERT_PWD.toCharArray());
+      trustStore.load(new FileInputStream(CITI_SSL_CERT_FILE_PATH_UAT),
+          CITI_SSL_CERT_PWD_UAT.toCharArray());
       TrustManagerFactory tmf = TrustManagerFactory
           .getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(trustStore);

@@ -1042,11 +1042,6 @@ public class Handler {
           new ByteArrayDataSource(xmlResponse, TEXT_XML_VALUE));
       for (int i = 0; i < mp.getCount(); i++) {
         BodyPart bodyPart = mp.getBodyPart(i);
-        String contentType = bodyPart.getContentType();
-        Logger.getLogger(Handler.class.getName())
-            .info("ContentType==>" + contentType);
-        Logger.getLogger(Handler.class.getName())
-            .info("Content==>" + bodyPart.getContent());
 
         if (bodyPart.isMimeType("text/xml")
             || bodyPart.isMimeType("application/xml")) {

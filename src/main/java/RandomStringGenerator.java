@@ -10,12 +10,12 @@ public class RandomStringGenerator {
 
   /**
    * Generate a random string.
-   *
    * return a secure random string of length preset
    */
   public String nextString() {
-    for (int idx = 0; idx < buf.length; ++idx)
+    for (int idx = 0; idx < buf.length; ++idx) {
       buf[idx] = symbols[random.nextInt(symbols.length)];
+    }
     return new String(buf);
   }
 
@@ -33,9 +33,20 @@ public class RandomStringGenerator {
 
   private final char[] buf;
 
+  /**
+   * Create an alphanumeric string generator instance.
+   *
+   * @param length size of the String to be generated
+   * @param random source of the randomnes, controlled by this Random object
+   * @param symbols all available charsets that the random result can use
+   */
   public RandomStringGenerator(int length, Random random, String symbols) {
-    if (length < 1) throw new IllegalArgumentException();
-    if (symbols.length() < 2) throw new IllegalArgumentException();
+    if (length < 1) {
+      throw new IllegalArgumentException();
+    }
+    if (symbols.length() < 2) {
+      throw new IllegalArgumentException();
+    }
     this.random = Objects.requireNonNull(random);
     this.symbols = symbols.toCharArray();
     this.buf = new char[length];
@@ -52,8 +63,8 @@ public class RandomStringGenerator {
    * Create an alphanumeric strings from a secure generator.
    */
   public RandomStringGenerator(int length) throws NoSuchAlgorithmException {
-    this(length, System.getProperty("os.name").toLowerCase().contains("win") ?
-        SecureRandom.getInstance("Windows-PRNG") : new SecureRandom());
+    this(length, System.getProperty("os.name").toLowerCase().contains("win")
+        ? SecureRandom.getInstance("Windows-PRNG") : new SecureRandom());
     // WIN Default constructor would have returned insecure SHA1PRNG algorithm
     // UNIX Default constructor would have returned secure NativePRNG algorithm
   }

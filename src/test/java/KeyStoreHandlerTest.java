@@ -32,22 +32,22 @@ import org.xml.sax.SAXException;
 @RunWith(JUnit4.class)
 public class KeyStoreHandlerTest extends TestCase {
 
-  private final String CTMR_CERT_PATH =
+  private static final String CTMR_CERT_PATH =
       "src/main/resources/key/deskera/deskera_sign_encryption_pubkey.crt";
-  private final String CTMR_KEY_PATH =
+  private static final String CTMR_KEY_PATH =
       "src/main/resources/key/deskera/deskera_customer_private.key";
-  private final String VNDR_CERT_PATH =
+  private static final String VNDR_CERT_PATH =
       "src/main/resources/key/deskera/deskera_ssl_pubkey.crt";
-  private final String VNDR_KEY_PATH =
+  private static final String VNDR_KEY_PATH =
       "src/main/resources/key/deskera/deskera_vendor_private.key";
-  private final String KS_PATH = "src/test/resources/key/as9Jijl4P2Yjhs.p12";
-  private final String KS_ALIAS = "alias";
-  private final String NONEXSISTENT_KS_PATH = "src/test/resources/key/ha2dTaNfpOn.p12";
-  private final String FOLDER_PATH = "src/test/resources/key/";
-  private final String KS_PASSWORD = "7NLuioh2zn80";
+  private static final String KS_PATH = "src/test/resources/key/as9Jijl4P2Yjhs.p12";
+  private static final String KS_ALIAS = "alias";
+  private static final String NONEXSISTENT_KS_PATH = "src/test/resources/key/ha2dTaNfpOn.p12";
+  private static final String FOLDER_PATH = "src/test/resources/key/";
+  private static final String KS_PASSWORD = "7NLuioh2zn80";
 
   @Test
-  public void createKeystoreFromCertAndKey_compatibleCertAndKey_createSuccess ()
+  public void createKeystoreFromCertAndKey_compatibleCertAndKey_createSuccess()
       throws KeyStoreHandlerException {
 
     deleteP12IfExists(KS_PATH);
@@ -58,7 +58,7 @@ public class KeyStoreHandlerTest extends TestCase {
   }
 
   @Test
-  public void createKeystoreFromCertAndKey_compatibleCertAndKey_decryptVerifySuccess ()
+  public void createKeystoreFromCertAndKey_compatibleCertAndKey_decryptVerifySuccess()
       throws KeyStoreHandlerException, HandlerException, XMLSecurityException,
       CertificateEncodingException, IOException, SAXException {
 
@@ -88,7 +88,7 @@ public class KeyStoreHandlerTest extends TestCase {
   }
 
   @Test (expected = XMLSecurityException.class)
-  public void createKeystoreFromCertAndKey_incompatibleCertAndKey_throwsException ()
+  public void createKeystoreFromCertAndKey_incompatibleCertAndKey_throwsException()
       throws KeyStoreHandlerException, HandlerException, IOException,
       XMLSecurityException  {
 
@@ -112,7 +112,7 @@ public class KeyStoreHandlerTest extends TestCase {
   }
 
   @Test
-  public void deleteP12IfExists_existingP12_deletionSuccess ()
+  public void deleteP12IfExists_existingP12_deletionSuccess()
       throws KeyStoreHandlerException {
 
     deleteP12IfExists(KS_PATH);
@@ -125,13 +125,13 @@ public class KeyStoreHandlerTest extends TestCase {
   }
 
   @Test
-  public void deleteP12IfExists_nonExistentP12_noDeletion ()
+  public void deleteP12IfExists_nonExistentP12_noDeletion()
       throws KeyStoreHandlerException {
     deleteP12IfExists(NONEXSISTENT_KS_PATH);
   }
 
   @Test (expected = KeyStoreHandlerException.class)
-  public void deleteP12IfExists_nonFile_throwsException ()
+  public void deleteP12IfExists_nonFile_throwsException()
       throws KeyStoreHandlerException {
     deleteP12IfExists(FOLDER_PATH);
   }

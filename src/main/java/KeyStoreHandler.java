@@ -77,14 +77,15 @@ public class KeyStoreHandler {
   }
 
   /**
-   * Decode a base64 encoded private key
+   * Decode a base64 encoded private key.
    *
    * @param raw byte array of raw key data
    * @return decoded information of the encoded key string
    */
   private static byte[] decode(byte[] raw) {
-    if (!Arrays.equals(Arrays.copyOfRange(raw, 0, HEADER.length), HEADER))
+    if (!Arrays.equals(Arrays.copyOfRange(raw, 0, HEADER.length), HEADER)) {
       return raw;
+    }
     CharBuffer pem = StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(raw));
     String[] lines = Pattern.compile("\\R").split(pem);
     String[] body = Arrays.copyOfRange(lines, 1, lines.length - 1);
@@ -98,22 +99,24 @@ public class KeyStoreHandler {
    * @throws KeyStoreHandlerException if the file path specified does not end
    *                                  with .p12
    */
-  public static void deleteP12IfExists (String p12KeyStore)
+  public static void deleteP12IfExists(String p12KeyStore)
       throws KeyStoreHandlerException {
     try {
       PathMatcher matcher = FileSystems.getDefault()
           .getPathMatcher("glob:**/*.p12");
-      if (!matcher.matches(Paths.get(p12KeyStore)))
-        throw new KeyStoreHandlerException("File path specified does not end with .p12");
-
+      if (!matcher.matches(Paths.get(p12KeyStore))) {
+        throw new KeyStoreHandlerException(
+            "File path specified does not end with .p12");
+      }
       boolean isDeleted = Files.deleteIfExists(Paths.get(p12KeyStore));
-      if (isDeleted)
+      if (isDeleted) {
         Logger.getLogger(Handler.class.getName())
             .log(Level.INFO, "Delete specified .p12 successful");
-      else
+      } else {
         Logger.getLogger(Handler.class.getName())
             .log(Level.INFO, "No such file/directory exists");
-    } catch(IOException e) {
+      }
+    } catch (IOException e) {
       Logger.getLogger(Handler.class.getName())
           .log(Level.SEVERE, "Invalid permissions");
       throw new KeyStoreHandlerException("Invalid permissions");

@@ -4,11 +4,11 @@ import static main.java.Constant.*;
 import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXmlStr;
 import static main.java.Handler.convertXmlStrToDoc;
+import static main.java.Handler.decryptEncryptedAndSignedXml;
 import static main.java.Handler.des3DecodeCbc;
+import static main.java.Handler.encryptSignedXmlPayloadDoc;
 import static main.java.Handler.extractAttachmentDecryptionKey;
 import static main.java.Handler.extractStatementId;
-import static main.java.Handler.decryptEncryptedAndSignedXml;
-import static main.java.Handler.encryptSignedXmlPayloadDoc;
 import static main.java.Handler.generateBase64PayloadFromIsoXml;
 import static main.java.Handler.getCitiSigningCert;
 import static main.java.Handler.isPROD;
@@ -16,8 +16,8 @@ import static main.java.Handler.parseAuthOrPayInitResponse;
 import static main.java.Handler.parseMimeResponse;
 import static main.java.Handler.signXmlPayloadDoc;
 import static main.java.Handler.verifyDecryptedXml;
-import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,23 +44,23 @@ import org.w3c.dom.Document;
 @RunWith(JUnit4.class)
 public class HandlerTest {
 
-  private final static String EMPTY_STRING = "";
-  private final static String WHITE_SPACE = " ";
-  private final static String SOME_XML = "<hi>123</hi>";
-  private final static String SAMPLE_ERROR_RESPONSE =
+  private static final String EMPTY_STRING = "";
+  private static final String WHITE_SPACE = " ";
+  private static final String SOME_XML = "<hi>123</hi>";
+  private static final String SAMPLE_ERROR_RESPONSE =
       "<errormessage>\n"
       + "<httpCode>400</httpCode>\n"
       + "<httpMessage>BadRequest</httpMessage>\n"
       + "<moreInformation>Schema Validation Failed</moreInformation>\n"
       + "</errormessage>\n";
-  private final static String SAMPLE_CONDENSED_MSG =
+  private static final String SAMPLE_CONDENSED_MSG =
       "400. BadRequest. Schema Validation Failed. ";
-  private final static String SAMPLE_ERROR_RESPONSE_LESS_INFO =
+  private static final String SAMPLE_ERROR_RESPONSE_LESS_INFO =
       "<errormessage>\n"
           + "<httpCode>400</httpCode>\n"
           + "<httpMessage>BadRequest</httpMessage>\n"
           + "</errormessage>\n";
-  private final static String SAMPLE_CONDENSED_MSG_LESS_INFO =
+  private static final String SAMPLE_CONDENSED_MSG_LESS_INFO =
       "400. BadRequest. ";
 
   private Handler handler;
@@ -74,23 +74,24 @@ public class HandlerTest {
    */
   @Before
   public void setUp() throws HandlerException {
-    if(handler == null) {
+    if (handler == null) {
       handler = new Handler();
-      if (Handler.isPROD)
+      if (Handler.isPROD) {
         handler.loadKeystore(KEYSTORE_FILEPATH_PROD, KEYSTORE_PASSWORD_PROD);
-      else
+      } else {
         handler.loadKeystore(KEYSTORE_FILEPATH_UAT, KEYSTORE_PASSWORD_UAT);
+      }
     }
   }
 
   @Test
-  public void convertStringToDocToString_xmlStr_remainsSame ()
+  public void convertStringToDocToString_xmlStr_remainsSame()
       throws HandlerException, IOException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain.txt")));
-    final String strWithoutFirstLine = str.substring(str.indexOf('\n')+1);
+    final String strWithoutFirstLine = str.substring(str.indexOf('\n') + 1);
 
     assertEquals(strWithoutFirstLine,
         convertDocToXmlStr(convertXmlStrToDoc(strWithoutFirstLine)));
@@ -103,19 +104,19 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void convertStringToDoc_emptyStr_throwsHandlerException ()
+  public void convertStringToDoc_emptyStr_throwsHandlerException()
       throws HandlerException {
     convertXmlStrToDoc(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
-  public void convertStringToDoc_nonXmlStr_throwsHandlerException ()
+  public void convertStringToDoc_nonXmlStr_throwsHandlerException()
       throws HandlerException {
     convertXmlStrToDoc(WHITE_SPACE);
   }
 
   @Test
-  public void signXMLPayloadDoc_verifyDecryptedXML_success ()
+  public void signXmlPayloadDoc_verifyDecryptedXml_success()
       throws IOException, HandlerException, XMLSecurityException,
       CertificateEncodingException {
 
@@ -135,7 +136,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void signXMLPayloadDoc_wrongPairOfCertAndPrivKey_throwsHandlerException ()
+  public void signXmlPayloadDoc_wrongPairOfCertAndPrivKey_throwsHandlerException()
       throws IOException, HandlerException, XMLSecurityException,
       CertificateEncodingException {
 
@@ -153,7 +154,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void signXMLPayloadDoc_alreadySignedDoc_throwsHandlerException ()
+  public void signXmlPayloadDoc_alreadySignedDoc_throwsHandlerException()
       throws IOException, HandlerException, XMLSecurityException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
@@ -173,7 +174,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void decryptEncryptedAndSignedXML_encryptSignedXMLPayloadDoc_remainsSame ()
+  public void decryptEncryptedAndSignedXml_encryptSignedXmlPayloadDoc_remainsSame()
       throws IOException, HandlerException, XMLEncryptionException {
 
     org.apache.xml.security.Init.init();
@@ -196,7 +197,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void decryptEncryptedAndSignedXML_nonEncryptedXml_throwsHandlerException ()
+  public void decryptEncryptedAndSignedXml_nonEncryptedXml_throwsHandlerException()
       throws HandlerException, XMLEncryptionException, IOException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
@@ -211,7 +212,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void verifyDecryptedXML_verifySignWithWrongCert_throwsHandlerException ()
+  public void verifyDecryptedXml_verifySignWithWrongCert_throwsHandlerException()
       throws HandlerException, XMLSecurityException, CertificateEncodingException,
       IOException {
     final String str = new String(Files.readAllBytes(Paths.get(
@@ -231,7 +232,7 @@ public class HandlerTest {
   }
 
   @Test (expected = XMLSecurityException.class)
-  public void signAndEncryptXMLForCiti_decryptAndVerifyXMLFromCiti_throwsXMLSecurityException ()
+  public void signAndEncryptXmlForCiti_decryptAndVerifyXmlFromCiti_throwsException()
       throws IOException, XMLSecurityException, HandlerException,
       CertificateEncodingException {
 
@@ -244,7 +245,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void parseAuthOrPayInitResponse_AuthResponse_parseSuccess ()
+  public void parseAuthOrPayInitResponse_AuthResponse_parseSuccess()
       throws HandlerException, XPathExpressionException, IOException {
 
     final String authResponse = new String(Files.readAllBytes(Paths.get(
@@ -256,30 +257,30 @@ public class HandlerTest {
             + "DirectDebitPaymentandUSFasterPayment/"
             + "XML Response/AuthorizationResponse_Token.txt")));
 
-    String oAuthTokenParsed = parseAuthOrPayInitResponse(
+    String oauthTokenParsed = parseAuthOrPayInitResponse(
         convertXmlStrToDoc(authResponse), TYPE_AUTH, TAG_NAME_AUTH);
-    assertEquals(oAuthToken, oAuthTokenParsed);
+    assertEquals(oAuthToken, oauthTokenParsed);
   }
 
   @Test
-  public void parseAuthOrPayInitResponse_PayInitResponse_parseSuccess ()
+  public void parseAuthOrPayInitResponse_PayInitResponse_parseSuccess()
       throws HandlerException, XPathExpressionException, IOException {
 
     final String payInitResponse = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/DirectDebitPayment/"
             + "XML Response/DirectDebitResponse_Plain.xml")));
-    final String sampleISOXML = new String(Files.readAllBytes(
+    final String sampleIsoXml = new String(Files.readAllBytes(
         Paths.get("src/test/resources/sample/PaymentInitiation/"
             + "DirectDebitPayment/XML Response/"
             + "DirectDebitResponse_ISOXMLPlain.xml")));
 
     String payInitResponseParsed = parseAuthOrPayInitResponse(
         convertXmlStrToDoc(payInitResponse), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
-    assertEquals(sampleISOXML, payInitResponseParsed);
+    assertEquals(sampleIsoXml, payInitResponseParsed);
   }
 
   @Test
-  public void parseAuthOrPayInitResponse_AuthResponse_wrongArgsThrowsException ()
+  public void parseAuthOrPayInitResponse_AuthResponse_wrongArgsThrowsException()
       throws HandlerException, XPathExpressionException, IOException {
 
     final String response = new String(Files.readAllBytes(Paths.get(
@@ -291,9 +292,9 @@ public class HandlerTest {
             + "DirectDebitPaymentandUSFasterPayment/"
             + "XML Response/AuthorizationResponse_Token.txt")));
 
-    String oAuthTokenParsed = parseAuthOrPayInitResponse(
+    String oauthTokenParsed = parseAuthOrPayInitResponse(
         convertXmlStrToDoc(response), TYPE_PAY_INIT, TAG_NAME_AUTH);
-    assertThat(oAuthToken, not(equalTo(oAuthTokenParsed)));
+    assertThat(oAuthToken, not(equalTo(oauthTokenParsed)));
 
     exception.expect(HandlerException.class);
     parseAuthOrPayInitResponse(
@@ -303,7 +304,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void parseAuthOrPayInitResponse_someXml_throwsHandlerException ()
+  public void parseAuthOrPayInitResponse_someXml_throwsHandlerException()
       throws HandlerException, XPathExpressionException {
 
     exception.expect(HandlerException.class);
@@ -313,7 +314,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void authenticate_responseReceivedSuccess ()
+  public void authenticate_responseReceivedSuccess()
       throws IOException, HandlerException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
@@ -325,7 +326,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void authentication_validateAllAPIs_success () throws IOException,
+  public void authentication_validateAllApi_success() throws IOException,
       XMLSecurityException, HandlerException, CertificateEncodingException,
       XPathExpressionException, BankFormatConverterException {
 
@@ -338,9 +339,9 @@ public class HandlerTest {
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
     String response = handler.requestOAuth(strAuth);
     String decryptedVerifiedResponse = handler.decryptAndVerifyXmlFromCiti(response);
-    String oAuthToken = parseAuthOrPayInitResponse(
+    String oauthToken = parseAuthOrPayInitResponse(
         convertXmlStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
-    handler.setOAuthToken(oAuthToken);
+    handler.setOAuthToken(oauthToken);
 
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
@@ -393,40 +394,40 @@ public class HandlerTest {
   }
 
   @Test
-  public void generateBase64InputFromISOXMLPayload_success ()
+  public void generateBase64InputFromIsoXmlPayload_success()
       throws IOException, HandlerException {
 
     final String payloadSample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_Plain.txt")));
-    final String ISOXML = new String(Files.readAllBytes(Paths.get(
+    final String isoXml = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain.txt")));
 
-    String ISOXML_base64 = generateBase64PayloadFromIsoXml(ISOXML);
-    assertEquals(payloadSample, ISOXML_base64);
+    String isoXmlBase64 = generateBase64PayloadFromIsoXml(isoXml);
+    assertEquals(payloadSample, isoXmlBase64);
   }
 
   @Test (expected = HandlerException.class)
-  public void generateBase64PayloadFromISOXML_emptyStr_throwsException ()
+  public void generateBase64PayloadFromIsoXml_emptyStr_throwsException()
       throws HandlerException {
     generateBase64PayloadFromIsoXml(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
-  public void generateBase64PayloadFromISOXML_whiteSpace_throwsException ()
+  public void generateBase64PayloadFromIsoXml_whiteSpace_throwsException()
       throws HandlerException {
     generateBase64PayloadFromIsoXml(WHITE_SPACE);
   }
 
   @Test (expected = HandlerException.class)
-  public void generateBase64PayloadFromISOXML_nonISOXML_throwsException ()
+  public void generateBase64PayloadFromIsoXml_nonIsoXml_throwsException()
       throws HandlerException {
     generateBase64PayloadFromIsoXml(SOME_XML);
   }
 
   @Test
-  public void parseMIMEResponse_sampleResponse_parseSuccess ()
+  public void parseMimeResponse_sampleResponse_parseSuccess()
       throws HandlerException, IOException {
 
     final byte[] responseSample = Files.readAllBytes(Paths.get(
@@ -448,7 +449,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void des3DecodeCBC_mockStatement_decryptSuccess ()
+  public void des3DecodeCbc_mockStatement_decryptSuccess()
       throws HandlerException, IOException {
 
     final String decryptionKey = new String(Files.readAllBytes(Paths.get(
@@ -466,7 +467,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void des3DecodeCBC_emptyKey_throwsHandlerException ()
+  public void des3DecodeCbc_emptyKey_throwsHandlerException()
       throws HandlerException, IOException {
 
     final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
@@ -477,7 +478,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void des3DecodeCBC_whiteSpaceKey_throwsHandlerException ()
+  public void des3DecodeCbc_whiteSpaceKey_throwsHandlerException()
       throws HandlerException, IOException {
 
     final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
@@ -488,7 +489,7 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void des3DecodeCBC_invalidKey_throwsHandlerException ()
+  public void des3DecodeCbc_invalidKey_throwsHandlerException()
       throws HandlerException, IOException {
 
     final byte[] encryptedStatFile = Files.readAllBytes(Paths.get(
@@ -499,7 +500,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void extractStatementId_sampleResponse_success ()
+  public void extractStatementId_sampleResponse_success()
       throws IOException, HandlerException {
     final String intradayResponse = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/Intraday/"
@@ -510,28 +511,28 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void extractStatementId_emptyStr_throwsHandlerException ()
+  public void extractStatementId_emptyStr_throwsHandlerException()
       throws HandlerException {
 
     extractStatementId(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
-  public void extractStatementId_whiteSpace_throwsHandlerException ()
+  public void extractStatementId_whiteSpace_throwsHandlerException()
       throws HandlerException {
 
     extractStatementId(WHITE_SPACE);
   }
 
   @Test (expected = HandlerException.class)
-  public void extractStatementId_invalidResponse_throwsHandlerException ()
+  public void extractStatementId_invalidResponse_throwsHandlerException()
       throws HandlerException {
 
     extractStatementId(SOME_XML);
   }
 
   @Test
-  public void extractAttachmentDecryptionKey_sampleResponse_success ()
+  public void extractAttachmentDecryptionKey_sampleResponse_success()
       throws IOException, HandlerException {
     final String xmlResponse = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
@@ -542,54 +543,54 @@ public class HandlerTest {
   }
 
   @Test (expected = HandlerException.class)
-  public void extractAttachmentDecryptionKey_emptyStr_throwsHandlerException ()
+  public void extractAttachmentDecryptionKey_emptyStr_throwsHandlerException()
       throws HandlerException {
 
     extractAttachmentDecryptionKey(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
-  public void extractAttachmentDecryptionKey_whiteSpace_throwsHandlerException ()
+  public void extractAttachmentDecryptionKey_whiteSpace_throwsHandlerException()
       throws HandlerException {
 
     extractAttachmentDecryptionKey(WHITE_SPACE);
   }
 
   @Test (expected = HandlerException.class)
-  public void extractAttachmentDecryptionKey_invalidResponse_throwsHandlerException ()
+  public void extractAttachmentDecryptionKey_invalidResponse_throwsHandlerException()
       throws HandlerException {
 
     extractAttachmentDecryptionKey(SOME_XML);
   }
 
   @Test
-  public void condenseErrorResponse_sampleErrorResponse_success ()
+  public void condenseErrorResponse_sampleErrorResponse_success()
       throws HandlerException {
     String condensedMsg = condenseErrorResponse(SAMPLE_ERROR_RESPONSE);
     assertEquals(SAMPLE_CONDENSED_MSG, condensedMsg);
   }
 
   @Test
-  public void condenseErrorResponse_sampleErrorResponseWithoutMoreInfo_success ()
+  public void condenseErrorResponse_sampleErrorResponseWithoutMoreInfo_success()
       throws HandlerException {
     String condensedMsg = condenseErrorResponse(SAMPLE_ERROR_RESPONSE_LESS_INFO);
     assertEquals(SAMPLE_CONDENSED_MSG_LESS_INFO, condensedMsg);
   }
 
   @Test (expected = HandlerException.class)
-  public void condenseErrorResponse_nonErrorResponse_throwsException ()
+  public void condenseErrorResponse_nonErrorResponse_throwsException()
       throws HandlerException {
     String condensedMsg = condenseErrorResponse(SOME_XML);
   }
 
   @Test (expected = HandlerException.class)
-  public void condenseErrorResponse_emptyStr_throwsException ()
+  public void condenseErrorResponse_emptyStr_throwsException()
       throws HandlerException {
     String condensedMsg = condenseErrorResponse(EMPTY_STRING);
   }
 
   @Test (expected = HandlerException.class)
-  public void condenseErrorResponse_whiteSpace_throwsException ()
+  public void condenseErrorResponse_whiteSpace_throwsException()
       throws HandlerException {
     String condensedMsg = condenseErrorResponse(WHITE_SPACE);
   }

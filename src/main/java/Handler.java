@@ -110,7 +110,7 @@ public class Handler {
 
   /* Class-level Constants */
 
-  public static final Boolean isPROD = true;
+  public static final Boolean isPROD = false;
 
   /* Instance-level Variables */
 

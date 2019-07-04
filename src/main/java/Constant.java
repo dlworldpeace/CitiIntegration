@@ -11,7 +11,7 @@ public class Constant {
   public static final String CITI_PUBLIC_KEY_PATH_UAT =
       "src/main/resources/key/citi/citi_encryption_uat.pem";
   public static final String CITI_SIGNING_CERT_PATH_UAT =
-    "src/main/resources/key/citi/citi_signature_uat.pem";
+      "src/main/resources/key/citi/citi_signature_uat.pem";
   public static final String DESKERA_CLIENT_ID_FILE_PATH_UAT =
       "src/main/resources/key/deskera/UAT/deskera_client_id_uat.txt";
   public static final String DESKERA_SECRET_KEY_FILE_PATH_UAT =
@@ -27,7 +27,7 @@ public class Constant {
 
   public static final String KEYSTORE_FILEPATH_PROD =
       "src/main/resources/key/deskera/PROD/deskera_prod.p12";
-  public static final String KEYSTORE_PASSWORD_PROD= "clientpass";
+  public static final String KEYSTORE_PASSWORD_PROD = "clientpass";
   public static final String KEYSTORE_ALIAS_PROD = "1";
   public static final String CITI_PUBLIC_KEY_PATH_PROD =
       "src/main/resources/key/citi/citi_encryption_prod.pem";

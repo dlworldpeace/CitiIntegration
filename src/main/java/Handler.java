@@ -131,7 +131,7 @@ public class Handler {
    * @return client id.
    * @throws HandlerException custom exception for Handler class.
    */
-  private String getClientId() throws HandlerException {
+  public static String getClientId() throws HandlerException {
     try {
       Path path = isPROD
           ? Paths.get(DESKERA_CLIENT_ID_FILE_PATH_PROD)
@@ -149,7 +149,7 @@ public class Handler {
    * @return client secret key.
    * @throws HandlerException custom exception for Handler class.
    */
-  private String getSecretKey() throws HandlerException {
+  public static String getSecretKey() throws HandlerException {
     try {
       Path path = isPROD
           ? Paths.get(DESKERA_SECRET_KEY_FILE_PATH_PROD)
@@ -668,11 +668,15 @@ public class Handler {
   /**
    * Authentication Calling Logic: establish handshake through keys.
    *
+   * @param clientId account-specific identifier
+   * @param secretKey account-specific secret key
    * @param oauthpayload request body in xml.
    * @return response received from the successful handshake with Citi API.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String requestOAuth(String oauthpayload) throws HandlerException {
+  public String requestOAuth(String clientId, String secretKey,
+      String oauthpayload) throws HandlerException {
+
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
       FileInputStream deskeraIs = isPROD
@@ -708,7 +712,7 @@ public class Handler {
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
       headerList.put(HttpHeaders.AUTHORIZATION, "Basic "
-          + Base64.encodeBase64String((getClientId() + ":" + getSecretKey())
+          + Base64.encodeBase64String((clientId + ":" + secretKey)
           .getBytes()).replaceAll("([\\r\\n])", ""));
 
       String url = isPROD ? OAUTH_URL_PROD : OAUTH_URL_UAT;
@@ -900,6 +904,7 @@ public class Handler {
    * Payment initiation logic via Outgoing Payment method, which takes the
    * necessary data required in ISOXML V3 (pain.001.001.03).
    *
+   * @param clientId account-specific identifier
    * @param isoXml data in ISOXML V3 format.
    * @return a response that denotes whether the payment has passed the basic
    *         validations. The Partner has the ability to view transaction or
@@ -908,15 +913,15 @@ public class Handler {
    *         its URI.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String initiatePayment(String isoXml) throws HandlerException {
+  public String initiatePayment(String clientId, String isoXml) throws HandlerException {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String base64Payload = generateBase64PayloadFromIsoXml(isoXml);
     String url = isPROD
-        ? PAY_INIT_URL_PROD + getClientId()
-        : PAY_INIT_URL_UAT + getClientId();
+        ? PAY_INIT_URL_PROD + clientId
+        : PAY_INIT_URL_UAT + clientId;
     return new String(handleHttp(headerList, base64Payload, url));
   }
 
@@ -925,53 +930,56 @@ public class Handler {
    * received from payment initiation made. This is done via the Enhanced Payment
    * Status Inquiry API.
    *
+   * @param clientId account-specific identifier
    * @param payload data that follows a custom schema formatting and contains the
    *               unique APITrackingID.
    * @return a response that follows the ISOXML (pain.002.001.03) standards.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String checkPaymentStatus(String payload) throws HandlerException {
+  public String checkPaymentStatus(String clientId, String payload) throws HandlerException {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ? PAY_ENHANCED_STATUS_URL_PROD + getClientId()
-        : PAY_ENHANCED_STATUS_URL_UAT + getClientId();
+        ? PAY_ENHANCED_STATUS_URL_PROD + clientId
+        : PAY_ENHANCED_STATUS_URL_UAT + clientId;
     return new String(handleHttp(headerList, payload, url));
   }
 
   /**
    * Balance inquiry logic.
    *
+   * @param clientId account-specific identifier
    * @param payload Payload that contains account number or branch number
    * @return a response in camt.052.001.02
    * @throws HandlerException custom exception for Handler class
    */
-  public String checkBalance(String payload) throws HandlerException {
+  public String checkBalance(String clientId, String payload) throws HandlerException {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ? BALANCE_INQUIRY_URL_PROD + getClientId()
-        : BALANCE_INQUIRY_URL_UAT + getClientId();
+        ? BALANCE_INQUIRY_URL_PROD + clientId
+        : BALANCE_INQUIRY_URL_UAT + clientId;
     return new String(handleHttp(headerList, payload, url));
   }
 
   /**
    * Statement initiation logic.
    *
+   * @param clientId account-specific identifier
    * @param payLoad data in XML format.
    * @return a response that contains the statement ID which can be used to call
    *         statement retrieval API to obtain the specific statement file.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String initiateStatement(String payLoad) throws HandlerException {
+  public String initiateStatement(String clientId, String payLoad) throws HandlerException {
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ?  STATEMENT_INIT_URL_PROD + getClientId()
-        :  STATEMENT_INIT_URL_UAT + getClientId();
+        ?  STATEMENT_INIT_URL_PROD + clientId
+        :  STATEMENT_INIT_URL_UAT + clientId;
     return new String(handleHttp(headerList, payLoad, url));
   }
 
@@ -1157,6 +1165,7 @@ public class Handler {
   /**
    * Get the intended statement file using its statement ID.
    *
+   * @param clientId account-specific identifier
    * @param payload the xml payload that contains statement ID.
    * @param url the address that we are sending the statement retrieval request
    *            to.
@@ -1168,7 +1177,7 @@ public class Handler {
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server.
    */
-  public String retrieveStatement(String payload, String url) throws XMLSecurityException,
+  public String retrieveStatement(String clientId, String payload, String url) throws XMLSecurityException,
       CertificateEncodingException, HandlerException {
 
     Map<String, String> headerList = new HashMap<>();
@@ -1176,7 +1185,7 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
 
     HashMap<String, Object> body = parseMimeResponse(
-        handleHttp(headerList, payload, url + getClientId()));
+        handleHttp(headerList, payload, url + clientId));
     String firstHalf =
         decryptAndVerifyXmlFromCiti((String) body.get("ENCRYPTED_KEY"));
     String decryptionKey = extractAttachmentDecryptionKey(firstHalf);

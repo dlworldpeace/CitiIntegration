@@ -1,5 +1,6 @@
 package test.java;
 
+import static main.java.BankFormatConverter.readCamt052ToJson;
 import static main.java.Constant.*;
 import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXmlStr;

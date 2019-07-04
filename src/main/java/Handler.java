@@ -191,8 +191,7 @@ public class Handler {
   public X509Certificate getClientSigningCert(String ksAlias)
       throws HandlerException {
     try {
-      X509Certificate signCert = (X509Certificate) ks
-          .getCertificate(ksAlias);
+      X509Certificate signCert = (X509Certificate) ks.getCertificate(ksAlias);
       signCert.checkValidity();
       return signCert;
     } catch (CertificateNotYetValidException | CertificateExpiredException
@@ -916,8 +915,8 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String base64Payload = generateBase64PayloadFromIsoXml(isoXml);
     String url = isPROD
-        ? PAY_INIT_URL_PROD + "client_id=" + getClientId()
-        : PAY_INIT_URL_UAT + "client_id=" + getClientId();
+        ? PAY_INIT_URL_PROD + getClientId()
+        : PAY_INIT_URL_UAT + getClientId();
     return new String(handleHttp(headerList, base64Payload, url));
   }
 
@@ -936,8 +935,8 @@ public class Handler {
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ? PAY_ENHANCED_STATUS_URL_PROD + "client_id=" + getClientId()
-        : PAY_ENHANCED_STATUS_URL_UAT + "client_id=" + getClientId();
+        ? PAY_ENHANCED_STATUS_URL_PROD + getClientId()
+        : PAY_ENHANCED_STATUS_URL_UAT + getClientId();
     return new String(handleHttp(headerList, payload, url));
   }
 
@@ -953,8 +952,8 @@ public class Handler {
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ? BALANCE_INQUIRY_URL_PROD + "client_id=" + getClientId()
-        : BALANCE_INQUIRY_URL_UAT + "client_id=" + getClientId();
+        ? BALANCE_INQUIRY_URL_PROD + getClientId()
+        : BALANCE_INQUIRY_URL_UAT + getClientId();
     return new String(handleHttp(headerList, payload, url));
   }
 
@@ -971,8 +970,8 @@ public class Handler {
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
     String url = isPROD
-        ?  STATEMENT_INIT_URL_PROD + "client_id=" + getClientId()
-        :  STATEMENT_INIT_URL_UAT + "client_id=" + getClientId();
+        ?  STATEMENT_INIT_URL_PROD + getClientId()
+        :  STATEMENT_INIT_URL_UAT + getClientId();
     return new String(handleHttp(headerList, payLoad, url));
   }
 
@@ -1182,7 +1181,7 @@ public class Handler {
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
 
     HashMap<String, Object> body = parseMimeResponse(
-        handleHttp(headerList, payload, url + "client_id=" + getClientId()));
+        handleHttp(headerList, payload, url + getClientId()));
     String firstHalf =
         decryptAndVerifyXmlFromCiti((String) body.get("ENCRYPTED_KEY"));
     String decryptionKey = extractAttachmentDecryptionKey(firstHalf);

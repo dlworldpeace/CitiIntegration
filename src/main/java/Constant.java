@@ -81,35 +81,35 @@ public class Constant {
           + "oauth/token";
   public static final String PAY_INIT_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/"
-          + "payment/initiation?";
+          + "payment/initiation?client_id=";
   public static final String PAY_INIT_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
-          + "initiation?";
+          + "initiation?client_id=";
   public static final String PAY_ENHANCED_STATUS_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/paymentservices/v1/"
-          + "payment/enhancedinquiry?";
+          + "payment/enhancedinquiry?client_id=";
   public static final String PAY_ENHANCED_STATUS_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/paymentservices/v1/payment/"
-          + "enhancedinquiry?";
+          + "enhancedinquiry?client_id=";
   public static final String BALANCE_INQUIRY_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices"
-          + "/v1/balance/inquiry?";
+          + "/v1/balance/inquiry?client_id=";
   public static final String BALANCE_INQUIRY_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
-          + "balance/inquiry?";
+          + "balance/inquiry?client_id=";
   public static final String STATEMENT_INIT_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
-          + "v1/statement/initiation?";
+          + "v1/statement/initiation?client_id=";
   public static final String STATEMENT_INIT_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
-          + "statement/initiation?";
+          + "statement/initiation?client_id=";
   public static final String STATEMENT_RET_URL_UAT =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
-          + "v1/statement/retrieval?";
+          + "v1/statement/retrieval?client_id=";
   public static final String STATEMENT_RET_URL_MOCK =
       "https://tts.sandbox.apib2b.citi.com/citiconnect/sb/accountstatementservices/"
-          + "v1/mock/statement/retrieval?";
+          + "v1/mock/statement/retrieval?client_id=";
   public static final String STATEMENT_RET_URL_PROD =
       "https://tts.apib2b.citi.com/citiconnect/prod/accountstatementservices/v1/"
-          + "statement/retrieval?";
+          + "statement/retrieval?client_id=";
 }

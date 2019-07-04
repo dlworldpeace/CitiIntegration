@@ -373,7 +373,7 @@ public class HandlerTest {
 //    final String resBalance_Encypted = handler.checkBalance(strCheckBalance);
 //    final String resBalance =
 //        handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
-//    final String json = readCAMT052ToJson(resBalance);
+//    final String json = readCamt052ToJson(resBalance);
 //    System.out.println(json);
 //
 //    final String strInitStat = new String(Files.readAllBytes(Paths.get(

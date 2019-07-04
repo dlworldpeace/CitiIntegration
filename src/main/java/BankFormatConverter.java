@@ -29,8 +29,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import main.java.statement.DeskeraStatement;
 import main.java.payinit.*;
+import main.java.statement.DeskeraStatement;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 /**
@@ -51,20 +51,20 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Convert {@code XMLStr} in standard ISO format such as camt.053.001.02 to
+   * Convert {@code xmlStr} in standard ISO format such as camt.053.001.02 to
    * a JAXBElement of rootElement.
    *
-   * @param XMLStr XML String in standard ISO format.
+   * @param xmlStr XML String in standard ISO format.
    * @return a JAXBElement of a standard ISO format.
    * @throws BankFormatConverterException if an unexpected event happens during
    *                                      the conversion.
    */
-  public JAXBElement<T> readXMLToElement (String XMLStr)
+  public JAXBElement<T> readXmlToElement(String xmlStr)
       throws BankFormatConverterException {
     try {
       JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-      StringReader reader = new StringReader(XMLStr);
+      StringReader reader = new StringReader(xmlStr);
       return (JAXBElement<T>) unmarshaller.unmarshal(reader);
     } catch (JAXBException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -81,7 +81,7 @@ public class BankFormatConverter<T> {
    * @throws BankFormatConverterException if an unexpected event happens during
    *                                      the conversion.
    */
-  public JAXBElement<T> readJsonToElement (String jsonStr)
+  public JAXBElement<T> readJsonToElement(String jsonStr)
       throws BankFormatConverterException {
     System.setProperty("javax.xml.bind.context.factory",
         "org.eclipse.persistence.jaxb.JAXBContextFactory");
@@ -109,23 +109,23 @@ public class BankFormatConverter<T> {
    *                                      the conversion or adding some property
    *                                      to the string styles.
    */
-  public String writeElementToXML (JAXBElement<T> rootElement)
+  public String writeElementToXml(JAXBElement<T> rootElement)
       throws BankFormatConverterException {
     try {
-    JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
-    Marshaller marshaller = jaxbContext.createMarshaller();
-    OutputStream out = new ByteArrayOutputStream();
-    DOMResult domResult = new DOMResult();
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    marshaller.marshal(rootElement, domResult);
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
-    transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty(
-        "{http://xml.apache.org/xslt}indent-amount", "2");
-    transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
-    return out.toString();
+      JAXBContext jaxbContext = JAXBContext.newInstance(classPath);
+      Marshaller marshaller = jaxbContext.createMarshaller();
+      DOMResult domResult = new DOMResult();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.marshal(rootElement, domResult);
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(
+          "{http://xml.apache.org/xslt}indent-amount", "2");
+      OutputStream out = new ByteArrayOutputStream();
+      transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(out));
+      return out.toString();
     } catch (JAXBException | TransformerException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new BankFormatConverterException(e.getMessage());
@@ -141,7 +141,7 @@ public class BankFormatConverter<T> {
    * @throws BankFormatConverterException if an unexpected event happens during
    *                                      the conversion.
    */
-  public String writeElementToJson (JAXBElement<T> rootElement)
+  public String writeElementToJson(JAXBElement<T> rootElement)
       throws BankFormatConverterException {
     System.setProperty("javax.xml.bind.context.factory",
         "org.eclipse.persistence.jaxb.JAXBContextFactory");
@@ -151,9 +151,9 @@ public class BankFormatConverter<T> {
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       marshaller.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
       marshaller.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-     StringWriter sw = new StringWriter();
-     marshaller.marshal(rootElement, sw);
-     return sw.toString();
+      StringWriter sw = new StringWriter();
+      marshaller.marshal(rootElement, sw);
+      return sw.toString();
     } catch (JAXBException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new BankFormatConverterException(e.getMessage());
@@ -164,18 +164,18 @@ public class BankFormatConverter<T> {
    * Converter from camt.053.001.02 formatted String to its corresponding json
    * String.
    *
-   * @param CAMT053Str XML string in ISO 20022 camt.053.001.02 format.
+   * @param camt053Str XML string in ISO 20022 camt.053.001.02 format.
    * @return its corresponding json format string.
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readCAMT053ToJson(String CAMT053Str)
+  public static String readCamt053ToJson(String camt053Str)
       throws BankFormatConverterException {
     BankFormatConverter<deskera.fintech.camt053.Document>
         converter = new BankFormatConverter<>(CAMT053_CLASS_PATH);
     JAXBElement<deskera.fintech.camt053.Document> documentElement =
-        converter.readXMLToElement(CAMT053Str);
+        converter.readXmlToElement(camt053Str);
     return converter.writeElementToJson(documentElement);
   }
 
@@ -183,18 +183,18 @@ public class BankFormatConverter<T> {
    * Converter from camt.052.001.02 formatted String to its corresponding json
    * String.
    *
-   * @param CAMT052Str XML string in ISO 20022 camt.052.001.02 format.
+   * @param camt052Str XML string in ISO 20022 camt.052.001.02 format.
    * @return its corresponding json format string.
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readCAMT052ToJson(String CAMT052Str)
+  public static String readCamt052ToJson(String camt052Str)
       throws BankFormatConverterException {
     BankFormatConverter<deskera.fintech.camt052.Document>
         converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
     JAXBElement<deskera.fintech.camt052.Document> documentElement =
-        converter.readXMLToElement(CAMT052Str);
+        converter.readXmlToElement(camt052Str);
     return converter.writeElementToJson(documentElement);
   }
 
@@ -202,23 +202,23 @@ public class BankFormatConverter<T> {
    * Converter from deskera's payment initiation xml payload to deskera's payment
    * initiation json payload.
    *
-   * @param DeskeraPaInXML XML string in deskera's custom format.
+   * @param deskeraPaInXml XML string in deskera's custom format.
    * @return its corresponding json format string.
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readDeskeraPaInXMLToDeskeraPaInJson(String DeskeraPaInXML)
+  public static String readDeskeraPaInXmlToDeskeraPaInJson(String deskeraPaInXml)
       throws BankFormatConverterException {
     BankFormatConverter<main.java.payinit.InitiatePayments>
         converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);
     JAXBElement<main.java.payinit.InitiatePayments> documentElement =
-        converter.readXMLToElement(DeskeraPaInXML);
+        converter.readXmlToElement(deskeraPaInXml);
     return converter.writeElementToJson(documentElement);
   }
 
   /**
-   * Converter from Json to Deskera's custom payment initiation formatted element
+   * Converter from Json to Deskera's custom payment initiation formatted element.
    *
    * @param jsonStr json string in Deskera's custom payment initiation format
    * @return its corresponding {@link JAXBElement} {@code <}
@@ -237,12 +237,14 @@ public class BankFormatConverter<T> {
   /**
    * Convert type {@link main.java.payinit.InitiatePayments} from Deskera client
    * to ISOXML standard payment payload type {@link deskera.fintech.pain001.Document}
-   * for initiating FAST or DFT payment
+   * for initiating FAST or DFT payment.
    *
-   * @param deskeraPaIn instance of {@link JAXBElement }{@code <}{@link main.java.payinit.InitiatePayments}{@code >}
-   * @return element instance of {@link JAXBElement }{@code <}{@link deskera.fintech.pain001.Document}{@code >}
+   * @param deskeraPaIn instance of {@link JAXBElement }{@code <}
+   *                    {@link main.java.payinit.InitiatePayments}{@code >}
+   * @return element instance of {@link JAXBElement }{@code <}
+   *         {@link deskera.fintech.pain001.Document}{@code >}
    */
-  public static JAXBElement<deskera.fintech.pain001.Document> convertDeskeraPaInToPAIN001
+  public static JAXBElement<deskera.fintech.pain001.Document> convertDeskeraPaInToPaIn001
       (JAXBElement<main.java.payinit.InitiatePayments> deskeraPaIn) {
 
     InitiatePayments initiatePayments = deskeraPaIn.getValue();
@@ -296,8 +298,9 @@ public class BankFormatConverter<T> {
         new deskera.fintech.pain001.PostalAddress6();
     dbtr.setPstlAdr(pstlAdr);
     pstlAdr.setCtry(debtor.getAddress().getCountryCode());
-    if (!debtor.getAddress().getAdrLine().isEmpty())
+    if (!debtor.getAddress().getAdrLine().isEmpty()) {
       pstlAdr.getAdrLine().addAll(debtor.getAddress().getAdrLine());
+    }
 
     deskera.fintech.pain001.CashAccount16 dbtrAcct =
         new deskera.fintech.pain001.CashAccount16();
@@ -367,8 +370,9 @@ public class BankFormatConverter<T> {
         new deskera.fintech.pain001.PostalAddress6();
     cdtr.setPstlAdr(pstlAdr4);
     pstlAdr4.setCtry(creditor.getAddress().getCountryCode());
-    if (!creditor.getAddress().getAdrLine().isEmpty())
+    if (!creditor.getAddress().getAdrLine().isEmpty()) {
       pstlAdr4.getAdrLine().addAll(creditor.getAddress().getAdrLine());
+    }
 
     deskera.fintech.pain001.CashAccount16 cdtrAcct =
         new deskera.fintech.pain001.CashAccount16();
@@ -405,15 +409,15 @@ public class BankFormatConverter<T> {
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process.
    */
-  public static String convertJsonToPAIN001XML (String jsonStr)
+  public static String convertJsonToPaIn001Xml(String jsonStr)
       throws BankFormatConverterException {
     JAXBElement<main.java.payinit.InitiatePayments> initiatePaymentsElement =
         readJsonToDeskeraPaInElement(jsonStr);
     JAXBElement<deskera.fintech.pain001.Document> documentElement =
-        convertDeskeraPaInToPAIN001(initiatePaymentsElement);
+        convertDeskeraPaInToPaIn001(initiatePaymentsElement);
     BankFormatConverter<deskera.fintech.pain001.Document>
         converter = new BankFormatConverter<>(PAIN001_CLASS_PATH);
-    return converter.writeElementToXML(documentElement);
+    return converter.writeElementToXml(documentElement);
   }
 
   /**
@@ -421,10 +425,12 @@ public class BankFormatConverter<T> {
    * statement file to simpler type {@link main.java.statement.DeskeraStatement}
    * for client to read.
    *
-   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt053.Document}{@code >}
-   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement}{@code >}
+   * @param documentElement instance of {@link JAXBElement }{@code <}
+   *                        {@link deskera.fintech.camt053.Document}{@code >}
+   * @return instance of {@link JAXBElement }{@code <}
+   *         {@link main.java.statement.DeskeraStatement}{@code >}
    */
-  public static JAXBElement<DeskeraStatement> convertCAMT053ToDeskeraStatement
+  public static JAXBElement<DeskeraStatement> convertCamt053ToDeskeraStatement
       (JAXBElement<deskera.fintech.camt053.Document> documentElement) {
 
     DeskeraStatement deskeraStmt = new DeskeraStatement();
@@ -450,13 +456,16 @@ public class BankFormatConverter<T> {
     deskeraStmt.setAcctNm(acct.getNm());
     deskeraStmt.setAcctOwnrNm(acct.getOwnr().getNm());
     deskeraStmt.setAcctSvcr(acct.getSvcr());
-    if (!stmt.getBal().isEmpty())
+    if (!stmt.getBal().isEmpty()) {
       deskeraStmt.setBal(stmt.getBal());
-    if (!stmt.getIntrst().isEmpty())
+    }
+    if (!stmt.getIntrst().isEmpty()) {
       deskeraStmt.setIntrst(stmt.getIntrst());
+    }
     deskeraStmt.setTxsSummry(stmt.getTxsSummry());
-    if (!stmt.getNtry().isEmpty())
+    if (!stmt.getNtry().isEmpty()) {
       deskeraStmt.setNtry(stmt.getNtry());
+    }
         /* End of Stmt */
       /* End of BkToCstmrStmt */
     /* End of Document */
@@ -469,8 +478,10 @@ public class BankFormatConverter<T> {
 //   * file to simpler type {@link main.java.statement.DeskeraStatement} for client
 //   * to read.
 //   *
-//   * @param documentElement instance of {@link JAXBElement }{@code <}{@link deskera.fintech.camt052.Document}{@code >}
-//   * @return instance of {@link JAXBElement }{@code <}{@link main.java.statement.DeskeraStatement}{@code >}
+//   * @param documentElement instance of {@link JAXBElement }{@code <}
+//   *                        {@link deskera.fintech.camt052.Document}{@code >}
+//   * @return instance of {@link JAXBElement }{@code <}
+//   *         {@link main.java.statement.DeskeraStatement}{@code >}
 //   */
 //  public static JAXBElement<DeskeraStatement> convertCAMT052ToDeskeraStatement
 //  (JAXBElement<deskera.fintech.camt052.Document> documentElement) {
@@ -529,6 +540,7 @@ public class BankFormatConverter<T> {
     /* Start of cstmrCdtTrfInitn */
     deskera.fintech.pain001.CustomerCreditTransferInitiationV03 cstmrCdtTrfInitn =
         new deskera.fintech.pain001.CustomerCreditTransferInitiationV03();
+    document.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
     /* Start of GrpHdr */
     deskera.fintech.pain001.GroupHeader32 grpHdr =
         new deskera.fintech.pain001.GroupHeader32();
@@ -602,12 +614,12 @@ public class BankFormatConverter<T> {
         new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
     deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId =
         new deskera.fintech.pain001.FinancialInstitutionIdentification7();
+    dbtrAgt1.setFinInstnId(finInstnId);
     finInstnId.setBIC("CITIGB2L");
     deskera.fintech.pain001.PostalAddress6 pstlAdr2 =
         new deskera.fintech.pain001.PostalAddress6();
     pstlAdr2.setCtry("GB");
     finInstnId.setPstlAdr(pstlAdr2);
-    dbtrAgt1.setFinInstnId(finInstnId);
     pmtInf.setDbtrAgt(dbtrAgt1);
     /* End of DbtrAgt */
     pmtInf.setChrgBr(deskera.fintech.pain001.ChargeBearerType1Code.DEBT);
@@ -616,6 +628,7 @@ public class BankFormatConverter<T> {
         pmtInf.getCdtTrfTxInf();
     deskera.fintech.pain001.CreditTransferTransactionInformation10 cdtTrfTxInf =
         new deskera.fintech.pain001.CreditTransferTransactionInformation10();
+    cdtTrfTxInfList.add(cdtTrfTxInf);
     /* Start of PmtId */
     deskera.fintech.pain001.PaymentIdentification1 pmtId =
         new deskera.fintech.pain001.PaymentIdentification1();
@@ -634,27 +647,28 @@ public class BankFormatConverter<T> {
     /* Start of UltmtDbtr */
     deskera.fintech.pain001.PartyIdentification32 ultmtDbtr =
         new deskera.fintech.pain001.PartyIdentification32();
+    cdtTrfTxInf.setUltmtDbtr(ultmtDbtr);
     deskera.fintech.pain001.Party6Choice id3 =
         new deskera.fintech.pain001.Party6Choice();
+    ultmtDbtr.setId(id3);
     deskera.fintech.pain001.PersonIdentification5 prvtId =
         new deskera.fintech.pain001.PersonIdentification5();
     List<deskera.fintech.pain001.GenericPersonIdentification1> othrList =
         prvtId.getOthr();
     deskera.fintech.pain001.GenericPersonIdentification1 othr = new
         deskera.fintech.pain001.GenericPersonIdentification1();
+    othrList.add(othr);
     othr.setId("ABCDEF UK BR600 012345");
     deskera.fintech.pain001.PersonIdentificationSchemeName1Choice schmeNm =
         new deskera.fintech.pain001.PersonIdentificationSchemeName1Choice();
     schmeNm.setPrtry("INST");
     othr.setSchmeNm(schmeNm);
-    othrList.add(othr);
     id3.setPrvtId(prvtId);
-    ultmtDbtr.setId(id3);
-    cdtTrfTxInf.setUltmtDbtr(ultmtDbtr);
     /* End of UltmtDbtr */
     /* Start of CdtrAgt */
     deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4 cdtrAgt2 =
         new deskera.fintech.pain001.BranchAndFinancialInstitutionIdentification4();
+    cdtTrfTxInf.setCdtrAgt(cdtrAgt2);
     deskera.fintech.pain001.FinancialInstitutionIdentification7 finInstnId2 =
         new deskera.fintech.pain001.FinancialInstitutionIdentification7();
     finInstnId2.setBIC("CITIGB2L");
@@ -668,7 +682,6 @@ public class BankFormatConverter<T> {
     pstlAdr3.setCtry("GB");
     finInstnId2.setPstlAdr(pstlAdr3);
     cdtrAgt2.setFinInstnId(finInstnId2);
-    cdtTrfTxInf.setCdtrAgt(cdtrAgt2);
     /* End of CdtrAgt */
     /* Start of Cdtr */
     deskera.fintech.pain001.PartyIdentification32 cdtr =
@@ -700,11 +713,9 @@ public class BankFormatConverter<T> {
     ustrdList.add("TR002638");
     cdtTrfTxInf.setRmtInf(rmtInf);
     /* End of RmtInf */
-    cdtTrfTxInfList.add(cdtTrfTxInf);
     /* End of cdtTrfTxInf */
     /* End of PmtInf */
     /* End of cstmrCdtTrfInitn */
-    document.setCstmrCdtTrfInitn(cstmrCdtTrfInitn);
     /* End of Document */
 
     return document;

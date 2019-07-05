@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.BankFormatConverter.convertCamt052ToJson;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.Constant.*;
 import static org.apache.commons.io.IOUtils.toByteArray;
@@ -912,7 +913,7 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param payload data in ISOXML V3 format.
-   * @return a response that denotes whether the payment has passed the basic
+   * @return a json response that denotes whether the payment has passed the basic
    *         validations. The Partner has the ability to view transaction or
    *         payment status at any later point using the Payment Status Inquiry
    *         API. The response also contains an APITrackingID (Message ID) as
@@ -953,7 +954,7 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param endToEndId payment transaction URI
-   * @return a response that follows the ISOXML (pain.002.001.03) standards.
+   * @return a json response that follows the ISOXML (pain.002.001.03) standards.
    * @throws HandlerException custom exception for Handler class.
    */
   public String checkPaymentStatus(String clientId, String endToEndId)
@@ -990,7 +991,7 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param payload Payload that contains account number or branch number
-   * @return a response in camt.052.001.02
+   * @return a json response in the format of camt.052.001.02
    * @throws HandlerException custom exception for Handler class
    */
   public String checkBalance(String clientId, String payload) throws HandlerException {
@@ -1000,13 +1001,21 @@ public class Handler {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw e;
     }
-    Map<String, String> headerList = new HashMap<>();
-    headerList.put("Content-Type", "application/xml");
-    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-    String url = isPROD
-        ? BALANCE_INQUIRY_URL_PROD + clientId
-        : BALANCE_INQUIRY_URL_UAT + clientId;
-    return new String(handleHttp(headerList, payload, url));
+    try {
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      String url = isPROD
+          ? BALANCE_INQUIRY_URL_PROD + clientId
+          : BALANCE_INQUIRY_URL_UAT + clientId;
+      String resEncrypted = new String(handleHttp(headerList, payload, url));
+      final String resPlain = decryptAndVerifyXmlFromCiti(resEncrypted);
+      return convertCamt052ToJson(resPlain);
+    } catch (XMLSecurityException | CertificateEncodingException
+        | BankFormatConverterException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
   }
 
   /**

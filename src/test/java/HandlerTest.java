@@ -368,11 +368,8 @@ public class HandlerTest {
     final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/"
             + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
-    final String resBalance_Encypted = handler.checkBalance(clientId, strCheckBalance);
-    final String resBalance =
-        handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
-    final String json = convertCamt052ToJson(resBalance);
-    System.out.println(json);
+    final String resBalance = handler.checkBalance(clientId, strCheckBalance);
+    System.out.println(resBalance);
 
     final String strInitStat = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"

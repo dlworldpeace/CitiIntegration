@@ -2,6 +2,7 @@ package test.java;
 
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
+import static main.java.BankFormatConverter.convertJsonToStatInitXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.BankFormatConverter.createPayInitDocumentInstance;
 import static main.java.BankFormatConverter.convertCamt052ToJson;
@@ -207,5 +208,20 @@ public class BankFormatConverterTest extends TestCase {
             + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT.txt")));
 
     assertXMLEqual(pain001Sample, convertJsonToPaIn001Xml(deskeraPaInSampleJson));
+  }
+
+  @Test
+  public void convertJsonToStatInitXml_success()
+      throws BankFormatConverterException, IOException {
+    final String sampleJson =
+        "{\n"
+            + "  \"statementInitiationRequest\": {\n"
+            + "    \"accountNumber\": \"865828039\",\n"
+            + "    \"formatName\": \"CAMT_053_001_02\",\n"
+            + "    \"fromDate\": \"2018-05-31\",\n"
+            + "    \"toDate\": \"2018-06-09\"\n"
+            + "  }\n"
+            + "}";
+    System.out.println(convertJsonToStatInitXml(sampleJson));
   }
 }

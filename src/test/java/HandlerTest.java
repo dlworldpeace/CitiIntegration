@@ -332,7 +332,7 @@ public class HandlerTest {
 
   @Test
   public void authentication_validateAllApi_success() throws IOException,
-      HandlerException{
+      HandlerException {
 
     handler.requestOAuth(clientId, secretKey, PaymentType.DFT);
 
@@ -377,8 +377,7 @@ public class HandlerTest {
         "src/test/resources/sample/BalanceInquiry/"
             + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
     final String resBalance_Encypted = handler.checkBalance(clientId, strCheckBalance);
-    final String resBalance =
-        handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
+    final String resBalance = handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
     final String json = convertCamt052ToJson(resBalance);
     System.out.println(json);
   }

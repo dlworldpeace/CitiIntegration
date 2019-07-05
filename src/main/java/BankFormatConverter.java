@@ -5,6 +5,7 @@ import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_PAIN_CLASS_PATH;
 import static main.java.Constant.PAIN001_CLASS_PATH;
 import static main.java.Constant.PAIN002_CLASS_PATH;
+import static main.java.Constant.STAT_INIT_CLASS_PATH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -438,6 +439,41 @@ public class BankFormatConverter<T> {
     BankFormatConverter<deskera.fintech.pain001.Document>
         converter = new BankFormatConverter<>(PAIN001_CLASS_PATH);
     return converter.writeElementToXml(documentElement);
+  }
+
+  /**
+   * Converter from Json to Deskera's custom payment initiation formatted element.
+   *
+   * @param jsonStr json string in Deskera's custom payment initiation format
+   * @return its corresponding {@link JAXBElement} {@code <}
+   *         {@link main.java.payinit.InitiatePayments} {@code >} class instance
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from Json String
+   *                                      to JAXBElement.
+   */
+  public static JAXBElement<deskera.fintech.statinit.StatementInitiationRequestType>
+  readJsonToStatInitElement(String jsonStr) throws BankFormatConverterException {
+    BankFormatConverter<deskera.fintech.statinit.StatementInitiationRequestType>
+        converter = new BankFormatConverter<>(STAT_INIT_CLASS_PATH);
+    return converter.readJsonToElement(jsonStr);
+  }
+
+  /**
+   * Converter from Deskera's custom payment initiation formatted Json String to
+   * its corresponding Xml String in pain.001.001.03 standards.
+   *
+   * @param jsonStr Json string in Deskera's custom payment initiation format.
+   * @return its corresponding xml string in pain.001.001.03 standards.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process.
+   */
+  public static String convertJsonToStatInitXml(String jsonStr)
+      throws BankFormatConverterException {
+    JAXBElement<deskera.fintech.statinit.StatementInitiationRequestType>
+        statInitElement = readJsonToStatInitElement(jsonStr);
+    BankFormatConverter<deskera.fintech.statinit.StatementInitiationRequestType>
+        converter = new BankFormatConverter<>(STAT_INIT_CLASS_PATH);
+    return converter.writeElementToXml(statInitElement);
   }
 
   /**

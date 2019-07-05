@@ -113,7 +113,7 @@ public class Handler {
   /* Enum */
 
   public enum PaymentType { DFT, FAST }
-  
+
   /* Class-level Attributes */
 
   public static final Boolean isPROD = false; // is UAT otherwise

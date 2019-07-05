@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<paymentInquiryRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/payment/v1">
-  <EndToEndId>SGD123</EndToEndId>
-</paymentInquiryRequest>

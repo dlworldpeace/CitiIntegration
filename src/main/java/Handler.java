@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.Constant.*;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
@@ -946,17 +947,16 @@ public class Handler {
   }
 
   /**
-   * Payment status inquiry logic using the unique APITrackingID (Message ID)
-   * received from payment initiation made. This is done via the Enhanced Payment
+   * Payment status inquiry logic using the unique EndToEndId specified in the
+   * payment initiation payload. This is done via the Enhanced Payment
    * Status Inquiry API.
    *
    * @param clientId account-specific identifier
-   * @param payload data that follows a custom schema formatting and contains the
-   *               unique APITrackingID.
+   * @param endToEndId payment transaction URI
    * @return a response that follows the ISOXML (pain.002.001.03) standards.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String checkPaymentStatus(String clientId, String payload)
+  public String checkPaymentStatus(String clientId, String endToEndId)
       throws HandlerException {
     if (oauthtoken == null) {
       HandlerException e =
@@ -964,13 +964,25 @@ public class Handler {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw e;
     }
-    Map<String, String> headerList = new HashMap<>();
-    headerList.put("Content-Type", "application/xml");
-    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-    String url = isPROD
-        ? PAY_ENHANCED_STATUS_URL_PROD + clientId
-        : PAY_ENHANCED_STATUS_URL_UAT + clientId;
-    return new String(handleHttp(headerList, payload, url));
+    try {
+      String payload = new String(Files.readAllBytes(Paths.get(
+          "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
+              + "XML Request/paymentInq_Request_EndToEndId_Format.txt")))
+          .replace("placeholder", endToEndId);
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      String url = isPROD
+          ? PAY_ENHANCED_STATUS_URL_PROD + clientId
+          : PAY_ENHANCED_STATUS_URL_UAT + clientId;
+      String resEncrypted = new String(handleHttp(headerList, payload, url));
+      String resPlain = decryptAndVerifyXmlFromCiti(resEncrypted);
+      return convertPaIn002ToJson(resPlain);
+    } catch (XMLSecurityException | CertificateEncodingException | IOException
+        | BankFormatConverterException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
   }
 
   /**

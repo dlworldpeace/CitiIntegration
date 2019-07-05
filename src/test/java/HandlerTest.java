@@ -1,6 +1,6 @@
 package test.java;
 
-import static main.java.BankFormatConverter.readCamt052ToJson;
+import static main.java.BankFormatConverter.convertCamt052ToJson;
 import static main.java.Constant.*;
 import static main.java.Handler.condenseErrorResponse;
 import static main.java.Handler.convertDocToXmlStr;
@@ -359,16 +359,11 @@ public class HandlerTest {
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
 //            + "XML Request/DeskeraFastISOXML.txt")));
-    final String resInitPay_ISOXML = handler.initiatePayment(clientId, strInitPay);
-    System.out.println(resInitPay_ISOXML);
+    final String resInitPay = handler.initiatePayment(clientId, strInitPay);
+    System.out.println(resInitPay);
 
-//    final String strCheckPay = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
-//            + "XML Request/paymentInq_Request_EndToEndId.txt")));
-//    final String resCheckPay_Encrypted = handler.checkPaymentStatus(clientId, strCheckPay);
-//    final String resCheckPay_Plain =
-//        handler.decryptAndVerifyXmlFromCiti(resCheckPay_Encrypted);
-//    System.out.println(resCheckPay_Plain);
+//    final String resCheckPay = handler.checkPaymentStatus(clientId, "SGD123");
+//    System.out.println(resCheckPay);
 
     final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/"
@@ -376,7 +371,7 @@ public class HandlerTest {
     final String resBalance_Encypted = handler.checkBalance(clientId, strCheckBalance);
     final String resBalance =
         handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
-    final String json = readCamt052ToJson(resBalance);
+    final String json = convertCamt052ToJson(resBalance);
     System.out.println(json);
 
     final String strInitStat = new String(Files.readAllBytes(Paths.get(
@@ -407,7 +402,7 @@ public class HandlerTest {
     final String resBalance_Encypted = handler.checkBalance(clientId, strCheckBalance);
     final String resBalance =
         handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
-    final String json = readCamt052ToJson(resBalance);
+    final String json = convertCamt052ToJson(resBalance);
     System.out.println(json);
   }
 

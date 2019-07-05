@@ -377,12 +377,8 @@ public class HandlerTest {
     final String statementId = handler.initiateStatement(clientId, strInitStat);
     System.out.println(statementId);
 
-    final String strStatRet = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/StatementRetrieval/"
-            + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
-        .replace("placeholder", "111111114");
     final String resStatRet = handler.retrieveStatement(
-        clientId, strStatRet, STATEMENT_RET_URL_MOCK);
+        clientId, "111111114", STATEMENT_RET_URL_MOCK);
     System.out.println(resStatRet);
   }
 

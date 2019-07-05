@@ -1233,35 +1233,57 @@ public class Handler {
    * Get the intended statement file using its statement ID.
    *
    * @param clientId account-specific identifier
-   * @param payload the xml payload that contains statement ID.
+   * @param statementId unique statement identifier
    * @param url the address that we are sending the statement retrieval request
    *            to.
-   * @return the expected statement file decrypted.
-   * @throws XMLSecurityException if an unexpected exception occurs while
-   *                              decrypting the xml section of the body.
-   * @throws CertificateEncodingException if an unexpected exception occurs while
-   *                                      verifying the xml section of the body.
+   * @return the expected statement file decrypted
    * @throws HandlerException if an unexpected exception occurs while requesting
-   *                          for the specific statement file from the server.
+   *                          for the specific statement file from the server
    */
-  public String retrieveStatement(String clientId, String payload, String url) throws XMLSecurityException,
-      CertificateEncodingException, HandlerException {
+  public String retrieveStatement(String clientId, String statementId, String url)
+      throws HandlerException {
+    try {
+      final String payload = new String(Files.readAllBytes(Paths.get(
+          "src/test/resources/sample/StatementRetrieval/"
+              + "XML Request/StatementRetrievalRequest_Plain_Format.txt")))
+          .replace("placeholder", statementId);
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      HashMap<String, Object> body = parseMimeResponse(
+          handleHttp(headerList, payload, url + clientId));
+      String firstHalf =
+          decryptAndVerifyXmlFromCiti((String) body.get("ENCRYPTED_KEY"));
+      String decryptionKey = extractAttachmentDecryptionKey(firstHalf);
+      return new String(
+          des3DecodeCbc(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE")));
+    } catch (XMLSecurityException | CertificateEncodingException | IOException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
+  }
+
+  /**
+   * Method overloader to get the intended statement file using its statement ID.
+   *
+   * @param clientId account-specific identifier
+   * @param statementId unique statement identifier
+   * @return the expected statement file decrypted
+   * @throws HandlerException if an unexpected exception occurs while requesting
+   *                          for the specific statement file from the server
+   */
+  public String retrieveStatement(String clientId, String statementId)
+      throws HandlerException {
     if (oauthtoken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw e;
     }
-    Map<String, String> headerList = new HashMap<>();
-    headerList.put("Content-Type", "application/xml");
-    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-    HashMap<String, Object> body = parseMimeResponse(
-        handleHttp(headerList, payload, url + clientId));
-    String firstHalf =
-        decryptAndVerifyXmlFromCiti((String) body.get("ENCRYPTED_KEY"));
-    String decryptionKey = extractAttachmentDecryptionKey(firstHalf);
-    return new String(
-        des3DecodeCbc(decryptionKey, (byte[]) body.get("ENCRYPTED_FILE")));
+    String url = isPROD
+        ? STATEMENT_RET_URL_PROD + clientId
+        : STATEMENT_RET_URL_UAT + clientId;
+    return retrieveStatement(clientId, statementId, url);
   }
 
 }

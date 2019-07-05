@@ -374,9 +374,7 @@ public class HandlerTest {
     final String strInitStat = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
             + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
-    final String resInitStat_Encrypted = handler.initiateStatement(clientId, strInitStat);
-    final String resInitStat = handler.decryptAndVerifyXmlFromCiti(resInitStat_Encrypted);
-    final String statementId = extractStatementId(resInitStat);
+    final String statementId = handler.initiateStatement(clientId, strInitStat);
     System.out.println(statementId);
 
     final String strStatRet = new String(Files.readAllBytes(Paths.get(

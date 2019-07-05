@@ -1034,13 +1034,20 @@ public class Handler {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw e;
     }
-    Map<String, String> headerList = new HashMap<>();
-    headerList.put("Content-Type", "application/xml");
-    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-    String url = isPROD
-        ?  STATEMENT_INIT_URL_PROD + clientId
-        :  STATEMENT_INIT_URL_UAT + clientId;
-    return new String(handleHttp(headerList, payLoad, url));
+    try {
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      String url = isPROD
+          ? STATEMENT_INIT_URL_PROD + clientId
+          : STATEMENT_INIT_URL_UAT + clientId;
+      String resEncrypted = new String(handleHttp(headerList, payLoad, url));
+      String resInitStat = decryptAndVerifyXmlFromCiti(resEncrypted);
+      return extractStatementId(resInitStat);
+    } catch (XMLSecurityException | CertificateEncodingException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
   }
 
   /**

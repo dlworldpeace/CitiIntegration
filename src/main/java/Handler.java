@@ -110,11 +110,12 @@ import org.xml.sax.SAXException;
 
 public class Handler {
 
-  /* Class-level Constants */
+  /* Class-level Attributes */
 
   public static final Boolean isPROD = false; // is UAT otherwise
+  public enum PaymentType {DFT, FAST}
 
-  /* Instance-level Variables */
+  /* Instance-level Attributes */
 
   private String oauthToken;
   private KeyStore ks;
@@ -672,12 +673,11 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param secretKey account-specific secret key
-   * @param oauthpayload request body in xml
+   * @param paymentType either DFT or FAST, which decides the payload to be used
    * @throws HandlerException custom exception for Handler class
    */
   public void requestOAuth(String clientId, String secretKey,
-      String oauthpayload) throws HandlerException {
-
+      PaymentType paymentType) throws HandlerException {
     try {
       KeyStore clientStore = KeyStore.getInstance("PKCS12");
       FileInputStream deskeraIs = isPROD
@@ -716,8 +716,16 @@ public class Handler {
           + Base64.encodeBase64String((clientId + ":" + secretKey)
           .getBytes()).replaceAll("([\\r\\n])", ""));
 
+      String payload = paymentType == PaymentType.FAST
+          ? new String(Files.readAllBytes(Paths.get(
+            "src/test/resources/sample/Authentication/"
+                + "DirectDebitPaymentandUSFasterPayment/XML Request/"
+                + "AuthorizationRequest_V3_Plain.txt")))
+          : new String(Files.readAllBytes(Paths.get(
+          "src/test/resources/sample/Authentication/OutgoingPayment/"
+              + "XML Request/AuthorizationRequest_V2_Plain.txt")));
       String url = isPROD ? OAUTH_URL_PROD : OAUTH_URL_UAT;
-      String response = new String(handleHttp(headerList, oauthpayload, url));
+      String response = new String(handleHttp(headerList, payload, url));
       String decryptedVerifiedResponse = decryptAndVerifyXmlFromCiti(response);
       String oauthToken = parseAuthOrPayInitResponse(
           convertXmlStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);

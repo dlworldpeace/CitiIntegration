@@ -33,6 +33,7 @@ import java.util.HashMap;
 import javax.xml.xpath.XPathExpressionException;
 import main.java.BankFormatConverterException;
 import main.java.Handler;
+import main.java.Handler.PaymentType;
 import main.java.HandlerException;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.apache.xml.security.exceptions.XMLSecurityException;
@@ -325,28 +326,15 @@ public class HandlerTest {
   }
 
   @Test
-  public void authenticate_responseReceivedSuccess() throws IOException,
-      HandlerException {
-
-    final String str = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/"
-            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
-            + "AuthorizationRequest_V3_Plain.txt")));
-    handler.requestOAuth(clientId, secretKey, str);
+  public void authenticate_responseReceivedSuccess() throws HandlerException {
+    handler.requestOAuth(clientId, secretKey, PaymentType.DFT);
   }
 
   @Test
   public void authentication_validateAllApi_success() throws IOException,
       HandlerException{
 
-//    final String strAuth = new String(Files.readAllBytes(Paths.get(
-//        "src/test/resources/sample/Authentication/"
-//            + "DirectDebitPaymentandUSFasterPayment/XML Request/"
-//            + "AuthorizationRequest_V3_Plain.txt")));
-    final String strAuth = new String(Files.readAllBytes(Paths.get(
-        "src/test/resources/sample/Authentication/OutgoingPayment/"
-            + "XML Request/AuthorizationRequest_V2_Plain.txt")));
-    handler.requestOAuth(clientId, secretKey, strAuth);
+    handler.requestOAuth(clientId, secretKey, PaymentType.DFT);
 
     final String strInitPay = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"

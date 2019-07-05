@@ -325,21 +325,19 @@ public class HandlerTest {
   }
 
   @Test
-  public void authenticate_responseReceivedSuccess()
-      throws IOException, HandlerException {
+  public void authenticate_responseReceivedSuccess() throws IOException,
+      HandlerException {
 
     final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/"
             + "DirectDebitPaymentandUSFasterPayment/XML Request/"
             + "AuthorizationRequest_V3_Plain.txt")));
-
     handler.requestOAuth(clientId, secretKey, str);
   }
 
   @Test
   public void authentication_validateAllApi_success() throws IOException,
-      XMLSecurityException, HandlerException, CertificateEncodingException,
-      XPathExpressionException, BankFormatConverterException {
+      HandlerException{
 
 //    final String strAuth = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/Authentication/"

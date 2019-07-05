@@ -2,6 +2,7 @@ package test.java;
 
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
+import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.BankFormatConverter.createPayInitDocumentInstance;
 import static main.java.BankFormatConverter.convertCamt052ToJson;
 import static main.java.BankFormatConverter.convertCamt053ToJson;
@@ -111,6 +112,35 @@ public class BankFormatConverterTest extends TestCase {
   public void convertCamt052ToJson_invalidXml_throwsHandlerException()
       throws BankFormatConverterException {
     convertCamt052ToJson(SOME_XML);
+  }
+
+  @Test
+  public void convertPaIn002ToJson_samplePaIn002Sample_convertSuccess()
+      throws BankFormatConverterException, IOException {
+
+    final String pain002Sample = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/EnhancedPaymentStatusInquiry/"
+            + "XML Response/paymentInq_Response.txt")));
+    String res = convertPaIn002ToJson(pain002Sample);
+    System.out.println(res);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertPaIn002ToJson_emptyStr_throwsHandlerException()
+      throws BankFormatConverterException {
+    convertPaIn002ToJson(EMPTY_STRING);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertPaIn002ToJson_whiteSpace_throwsHandlerException()
+      throws BankFormatConverterException {
+    convertPaIn002ToJson(WHITE_SPACE);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertPaIn002ToJson_invalidXml_throwsHandlerException()
+      throws BankFormatConverterException {
+    convertPaIn002ToJson(SOME_XML);
   }
 
   @Test

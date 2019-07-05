@@ -121,8 +121,8 @@ public class Handler {
 
   /* Setters and Getters */
 
-  private void setOAuthToken(String oauthtoken) {
-    this.oauthToken = oauthtoken;
+  private void setOAuthToken(String oauthToken) {
+    this.oauthToken = oauthToken;
   }
 
   /* Keys */
@@ -130,8 +130,8 @@ public class Handler {
   /**
    * get client id to be used in request header.
    *
-   * @return client id.
-   * @throws HandlerException custom exception for Handler class.
+   * @return client id
+   * @throws HandlerException custom exception for Handler class
    */
   public static String getClientId() throws HandlerException {
     try {
@@ -148,8 +148,8 @@ public class Handler {
   /**
    * get client secret key to be used in request header.
    *
-   * @return client secret key.
-   * @throws HandlerException custom exception for Handler class.
+   * @return client secret key
+   * @throws HandlerException custom exception for Handler class
    */
   public static String getSecretKey() throws HandlerException {
     try {
@@ -168,7 +168,7 @@ public class Handler {
    *
    * @param ksPath String path to the .p12 keystore file in the file system
    * @param ksPswd String password to access this keystore
-   * @throws HandlerException custom exception for Handler class.
+   * @throws HandlerException custom exception for Handler class
    */
   public void loadKeystore(String ksPath, String ksPswd) throws HandlerException {
     try {
@@ -187,8 +187,8 @@ public class Handler {
    * Getting public client signing cert.
    *
    * @param ksAlias hash key of the set of cert and key contained in the keystore
-   * @return client signing cert.
-   * @throws HandlerException custom exception for Handler class.
+   * @return client signing cert
+   * @throws HandlerException custom exception for Handler class
    */
   public X509Certificate getClientSigningCert(String ksAlias)
       throws HandlerException {
@@ -208,8 +208,8 @@ public class Handler {
    *
    * @param ksAlias hash key of the set of cert and key contained in the keystore
    * @param ksPswd String password to access this keystore
-   * @return PrivateKey client private key.
-   * @throws HandlerException custom exception for Handler class.
+   * @return PrivateKey client private key
+   * @throws HandlerException custom exception for Handler class
    */
   public PrivateKey getClientPrivateKey(String ksAlias, String ksPswd)
       throws HandlerException {
@@ -225,8 +225,8 @@ public class Handler {
   /**
    * Getting public citi encryption public key.
    *
-   * @return citi public key.
-   * @throws HandlerException custom exception for Handler class.
+   * @return citi public key
+   * @throws HandlerException custom exception for Handler class
    */
   private static PublicKey getCitiPublicKey() throws HandlerException {
     try {
@@ -245,8 +245,8 @@ public class Handler {
   /**
    * Getting public citi verification key.
    *
-   * @return public citi verification key.
-   * @throws HandlerException custom exception for Handler class.
+   * @return public citi verification key
+   * @throws HandlerException custom exception for Handler class
    */
   public static X509Certificate getCitiSigningCert() throws HandlerException {
     try {
@@ -266,9 +266,9 @@ public class Handler {
   /**
    * Getting the XML payload as Document object.
    *
-   * @param xmlPayload original payload in xml format.
-   * @return converted document object.
-   * @throws HandlerException custom exception for Handler class.
+   * @param xmlPayload original payload in xml format
+   * @return converted document object
+   * @throws HandlerException custom exception for Handler class
    */
   public static Document convertXmlStrToDoc(String xmlPayload)
       throws HandlerException {
@@ -287,8 +287,8 @@ public class Handler {
   /**
    * Convert the Document object to String value.
    *
-   * @return xml string value of the document WITHOUT the xml header.
-   * @throws HandlerException custom exception for Handler class.
+   * @return xml string value of the document WITHOUT the xml header
+   * @throws HandlerException custom exception for Handler class
    */
   public static String convertDocToXmlStr(Document xmlDoc) throws HandlerException {
     try {
@@ -307,11 +307,11 @@ public class Handler {
   /**
    * Signing the XML payload document.
    *
-   * @param xmlDoc xml document to be signed.
-   * @param signCert certificate to be added in.
-   * @param privateSignKey private key used to sign the document.
+   * @param xmlDoc xml document to be signed
+   * @param signCert certificate to be added in
+   * @param privateSignKey private key used to sign the document
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the {@code xmlDoc}.
+   *                              the {@code xmlDoc}
    */
   public static void signXmlPayloadDoc(Document xmlDoc, X509Certificate signCert,
       PrivateKey privateSignKey) throws XMLSecurityException {
@@ -338,11 +338,11 @@ public class Handler {
   /**
    * Encrypt the signed XML payload document.
    *
-   * @param signedXmlDoc signed XML document.
-   * @param publicEncryptKey public key used to encrypt the doc.
+   * @param signedXmlDoc signed XML document
+   * @param publicEncryptKey public key used to encrypt the doc
    * @throws XMLEncryptionException if an unexpected exception occurs while
-   *                                encrypting the signed doc.
-   * @throws HandlerException custom exception for Handler class.
+   *                                encrypting the signed doc
+   * @throws HandlerException custom exception for Handler class
    */
   public static Document encryptSignedXmlPayloadDoc(Document signedXmlDoc,
       PublicKey publicEncryptKey) throws XMLEncryptionException, HandlerException {
@@ -384,11 +384,11 @@ public class Handler {
    * Sign xml payload using our private key and citi cert, followed by encrypting
    * it using citi public key.
    *
-   * @param payloadXml payload string in xml.
-   * @return encrypted signed payload string.
+   * @param payloadXml payload string in xml
+   * @return encrypted signed payload string
    * @throws XMLSecurityException if an unexpected exception occurs while signing
-   *                              the auth payload or encrypting the payload.
-   * @throws HandlerException custom exception for Handler class.
+   *                              the auth payload or encrypting the payload
+   * @throws HandlerException custom exception for Handler class
    */
   public String signAndEncryptXmlForCiti(String payloadXml)
       throws XMLSecurityException, HandlerException {
@@ -410,12 +410,12 @@ public class Handler {
   /**
    * Decrypt the encrypted & signed xml response payload document.
    *
-   * @param encryptedSignedDoc encrypted & signed XML doc from server.
-   * @param privateDecryptKey client private key.
-   * @return decrypted xml document that is yet verified.
+   * @param encryptedSignedDoc encrypted & signed XML doc from server
+   * @param privateDecryptKey client private key
+   * @return decrypted xml document that is yet verified
    * @throws XMLEncryptionException if an unexpected exception occurs while
-   *                                decrypting the encrypted & signed doc.
-   * @throws HandlerException custom exception for Handler class.
+   *                                decrypting the encrypted & signed doc
+   * @throws HandlerException custom exception for Handler class
    */
   public static Document decryptEncryptedAndSignedXml(Document encryptedSignedDoc,
       PrivateKey privateDecryptKey) throws XMLEncryptionException, HandlerException {
@@ -480,13 +480,13 @@ public class Handler {
   /**
    * Verifying the Signature of decrypted XML response Payload Document.
    *
-   * @param decryptedDoc decrypted XML doc to be verified.
-   * @param signVerifyCert certificate used to verify the signature of the doc.
+   * @param decryptedDoc decrypted XML doc to be verified
+   * @param signVerifyCert certificate used to verify the signature of the doc
    * @throws CertificateEncodingException if an unexpected exception occurs while
-   *                                      extracting cert info.
+   *                                      extracting cert info
    * @throws XMLSecurityException if an unexpected exception occurs while
-   *                              verifying the signature.
-   * @throws HandlerException custom exception for Handler class.
+   *                              verifying the signature
+   * @throws HandlerException custom exception for Handler class
    */
   public static void verifyDecryptedXml(Document decryptedDoc,
       X509Certificate signVerifyCert) throws CertificateEncodingException,
@@ -542,13 +542,13 @@ public class Handler {
    * verify its authentication using citi's public verifying certificate.
    *
    * @param encryptedSignedXmlResponse xml response to be decrypted followed by
-   *                                   verified.
-   * @return verified and decrypted xml response string.
+   *                                   verified
+   * @return verified and decrypted xml response string
    * @throws CertificateEncodingException if an unexpected exception occurs while
-   *                                      extracting cert info.
+   *                                      extracting cert info
    * @throws XMLSecurityException if an unexpected exception occurs while
-   *                              verifying the signature.
-   * @throws HandlerException custom exception for Handler class.
+   *                              verifying the signature
+   * @throws HandlerException custom exception for Handler class
    */
   public String decryptAndVerifyXmlFromCiti(String encryptedSignedXmlResponse)
       throws HandlerException, XMLSecurityException, CertificateEncodingException {
@@ -672,9 +672,8 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param secretKey account-specific secret key
-   * @param oauthpayload request body in xml.
-   * @return response received from the successful handshake with Citi API.
-   * @throws HandlerException custom exception for Handler class.
+   * @param oauthpayload request body in xml
+   * @throws HandlerException custom exception for Handler class
    */
   public void requestOAuth(String clientId, String secretKey,
       String oauthpayload) throws HandlerException {
@@ -735,13 +734,13 @@ public class Handler {
   /**
    * Parsing response to show error or valid message logic.
    *
-   * @param responseDoc document to be parsed.
-   * @param type "" for TYPE_AUTH or "BASE64" for TYPE_PAY_INIT.
+   * @param responseDoc document to be parsed
+   * @param type "" for TYPE_AUTH or "BASE64" for TYPE_PAY_INIT
    * @param tagName differentiate between response handling logic: use
    *        "//access_token/text()" for Authentication & "//Response/text()"
-   *        for Payment Initiation.
-   * @return response message.
-   * @throws HandlerException custom exception for Handler class.
+   *        for Payment Initiation
+   * @return response message
+   * @throws HandlerException custom exception for Handler class
    */
   public static String parseAuthOrPayInitResponse(Document responseDoc, String type,
       String tagName) throws HandlerException, XPathExpressionException {
@@ -815,12 +814,12 @@ public class Handler {
   /**
    * Payment Initiation API: Generate Base64 request payload from ISO XML Payload.
    *
-   * @param isoPayInXml input xml string.
+   * @param isoPayInXml input xml string
    * @return base64 string generated from {@code isoPayInXML} placed in
-   *         {@code <Request><paymentBase64>} tag.
+   *         {@code <Request><paymentBase64>} tag
    * @throws HandlerException a custom exception for Handler class is triggered
    *                          when the input is not of the correct ISO XML form
-   *                          or unexpected event occurred during XML parsing.
+   *                          or unexpected event occurred during XML parsing
    */
   public static String generateBase64PayloadFromIsoXml(String isoPayInXml)
       throws HandlerException {
@@ -912,13 +911,13 @@ public class Handler {
    * necessary data required in ISOXML V3 (pain.001.001.03).
    *
    * @param clientId account-specific identifier
-   * @param payload data in ISOXML V3 format.
+   * @param payload data in ISOXML V3 format
    * @return a json response that denotes whether the payment has passed the basic
    *         validations. The Partner has the ability to view transaction or
    *         payment status at any later point using the Payment Status Inquiry
    *         API. The response also contains an APITrackingID (Message ID) as
-   *         its URI.
-   * @throws HandlerException custom exception for Handler class.
+   *         its URI
+   * @throws HandlerException custom exception for Handler class
    */
   public String initiatePayment(String clientId, String payload) throws HandlerException {
     if (oauthToken == null) {
@@ -954,8 +953,8 @@ public class Handler {
    *
    * @param clientId account-specific identifier
    * @param endToEndId payment transaction URI
-   * @return a json response that follows the ISOXML (pain.002.001.03) standards.
-   * @throws HandlerException custom exception for Handler class.
+   * @return a json response that follows the ISOXML (pain.002.001.03) standards
+   * @throws HandlerException custom exception for Handler class
    */
   public String checkPaymentStatus(String clientId, String endToEndId)
       throws HandlerException {
@@ -1022,10 +1021,10 @@ public class Handler {
    * Statement initiation logic.
    *
    * @param clientId account-specific identifier
-   * @param payLoad data in XML format.
+   * @param payLoad data in XML format
    * @return a response that contains the statement ID which can be used to call
-   *         statement retrieval API to obtain the specific statement file.
-   * @throws HandlerException custom exception for Handler class.
+   *         statement retrieval API to obtain the specific statement file
+   * @throws HandlerException custom exception for Handler class
    */
   public String initiateStatement(String clientId, String payLoad) throws HandlerException {
     if (oauthToken == null) {
@@ -1054,10 +1053,10 @@ public class Handler {
    * parsing logic to extract only the statement id from the statement initiation
    * response after the latter is decrypted and verified by the client.
    *
-   * @param xml the decrypted and verified statement initiation response.
-   * @return the attached decryption key used to decrypt the statement file.
+   * @param xml the decrypted and verified statement initiation response
+   * @return the attached decryption key used to decrypt the statement file
    * @throws HandlerException if an unexpected event occurs when taking out the
-   *                          statement id from the {@code XML}.
+   *                          statement id from the {@code XML}
    */
   public static String extractStatementId(String xml)
       throws HandlerException {
@@ -1091,21 +1090,21 @@ public class Handler {
    *                    get a plain XML response. The plain response has an
    *                    AttachmentDecryptionKey and is used to decrypt the Binary
    *                    Statement (2nd part of MIME) which is the expected
-   *                    Statement file.
+   *                    Statement file
    *
    *                    The second part contains the Statement File attached in
    *                    MTOM format which follows SWIFT MT940, or ISO XML
    *                    camt.053.001.02 or SWIFT MT942 or ISO XML camt.052.001.02
    *                    standards. If the file size exceeds 4 MB, then there will
    *                    be an error message in response will be sent back to the
-   *                    partner.
+   *                    partner
    *
    *                    If the request is rejected due to validation errors or
-   *                    data issues, the response follows a custom XML format.
+   *                    data issues, the response follows a custom XML format
    * @return a HashMap that contains the encrypted decryption key from the xml
    *         part of {@code response}, which is used to decrypt the encrypted
-   *         statement file from the second part of {@code response}.
-   * @throws HandlerException custom exception for Handler class.
+   *         statement file from the second part of {@code response}
+   * @throws HandlerException custom exception for Handler class
    */
   public static HashMap<String, Object> parseMimeResponse(byte[] xmlResponse)
       throws HandlerException {
@@ -1158,10 +1157,10 @@ public class Handler {
    * decryption key and IvParameterSpec instance from the xml section of MIME
    * response.
    *
-   * @param decryptionKey the decryption key.
-   * @param input encrypted attachment (including first 8 bytes).
-   * @return decrypted statement file.
-   * @throws HandlerException custom exception for Handler class.
+   * @param decryptionKey the decryption key
+   * @param input encrypted attachment (including first 8 bytes)
+   * @return decrypted statement file
+   * @throws HandlerException custom exception for Handler class
    */
   public static byte[] des3DecodeCbc(String decryptionKey, byte[] input)
       throws HandlerException {
@@ -1199,11 +1198,11 @@ public class Handler {
    * first section of the statement retrieval response after the latter is
    * decrypted and verified by the client.
    *
-   * @param xml the decrypted first section of statement retrieval response.
-   * @return the attached decryption key used to decrypt the statement file.
+   * @param xml the decrypted first section of statement retrieval response
+   * @return the attached decryption key used to decrypt the statement file
    * @throws HandlerException if an unexpected event occurs when taking out the
    *                          attachmentDecryptionKey value from the {@code XML}
-   *                          string.
+   *                          string
    */
   public static String extractAttachmentDecryptionKey(String xml)
       throws HandlerException {
@@ -1235,7 +1234,7 @@ public class Handler {
    * @param clientId account-specific identifier
    * @param statementId unique statement identifier
    * @param url the address that we are sending the statement retrieval request
-   *            to.
+   *            to
    * @return the expected statement file decrypted
    * @throws HandlerException if an unexpected exception occurs while requesting
    *                          for the specific statement file from the server

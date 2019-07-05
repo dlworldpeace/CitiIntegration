@@ -67,6 +67,8 @@ public class HandlerTest {
       "400. BadRequest. ";
 
   private Handler handler;
+  private String clientId;
+  private String secretKey;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -84,6 +86,12 @@ public class HandlerTest {
       } else {
         handler.loadKeystore(KEYSTORE_FILEPATH_UAT, KEYSTORE_PASSWORD_UAT);
       }
+    }
+    if (clientId == null) {
+      clientId = getClientId();
+    }
+    if (secretKey == null) {
+      secretKey = getSecretKey();
     }
   }
 
@@ -320,8 +328,6 @@ public class HandlerTest {
   public void authenticate_responseReceivedSuccess()
       throws IOException, HandlerException {
 
-    final String clientId = getClientId();
-    final String secretKey = getSecretKey();
     final String str = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/"
             + "DirectDebitPaymentandUSFasterPayment/XML Request/"
@@ -334,9 +340,6 @@ public class HandlerTest {
   public void authentication_validateAllApi_success() throws IOException,
       XMLSecurityException, HandlerException, CertificateEncodingException,
       XPathExpressionException, BankFormatConverterException {
-
-    final String clientId = getClientId();
-    final String secretKey = getSecretKey();
 
 //    final String strAuth = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/Authentication/"

@@ -171,7 +171,7 @@ public class BankFormatConverter<T> {
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readCamt053ToJson(String camt053Str)
+  public static String convertCamt053ToJson(String camt053Str)
       throws BankFormatConverterException {
     BankFormatConverter<deskera.fintech.camt053.Document>
         converter = new BankFormatConverter<>(CAMT053_CLASS_PATH);
@@ -190,7 +190,7 @@ public class BankFormatConverter<T> {
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readCamt052ToJson(String camt052Str)
+  public static String convertCamt052ToJson(String camt052Str)
       throws BankFormatConverterException {
     BankFormatConverter<deskera.fintech.camt052.Document>
         converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
@@ -228,7 +228,7 @@ public class BankFormatConverter<T> {
    *                                      the conversion process from XML String
    *                                      to JAXBElement and then to json String.
    */
-  public static String readDeskeraPaInXmlToDeskeraPaInJson(String deskeraPaInXml)
+  public static String convertDeskeraPaInXmlToDeskeraPaInJson(String deskeraPaInXml)
       throws BankFormatConverterException {
     BankFormatConverter<main.java.payinit.InitiatePayments>
         converter = new BankFormatConverter<>(DESKERA_PAIN_CLASS_PATH);

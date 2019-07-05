@@ -3,9 +3,9 @@ package test.java;
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
 import static main.java.BankFormatConverter.createPayInitDocumentInstance;
-import static main.java.BankFormatConverter.readCamt052ToJson;
-import static main.java.BankFormatConverter.readCamt053ToJson;
-import static main.java.BankFormatConverter.readDeskeraPaInXmlToDeskeraPaInJson;
+import static main.java.BankFormatConverter.convertCamt052ToJson;
+import static main.java.BankFormatConverter.convertCamt053ToJson;
+import static main.java.BankFormatConverter.convertDeskeraPaInXmlToDeskeraPaInJson;
 import static main.java.BankFormatConverter.readJsonToDeskeraPaInElement;
 import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_STAT_CLASS_PATH;
@@ -56,65 +56,61 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test
-  public void readCamt053ToJson_sampleCamt053Sample_readSuccess()
+  public void convertCamt053ToJson_sampleCamt053Sample_convertSuccess()
       throws BankFormatConverterException, IOException {
 
     final String camt053Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementRetrieval/XML Response/"
             + "StatementRetrieval_CAMT_053_001_02_File.txt")));
-
-    String res = readCamt053ToJson(camt053Sample);
-
+    String res = convertCamt053ToJson(camt053Sample);
     System.out.println(res);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt053ToJson_emptyStr_throwsHandlerException()
+  public void convertCamt053ToJson_emptyStr_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt053ToJson(EMPTY_STRING);
+    convertCamt053ToJson(EMPTY_STRING);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt053ToJson_whiteSpace_throwsHandlerException()
+  public void convertCamt053ToJson_whiteSpace_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt053ToJson(WHITE_SPACE);
+    convertCamt053ToJson(WHITE_SPACE);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt053ToJson_invalidXml_throwsHandlerException()
+  public void convertCamt053ToJson_invalidXml_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt053ToJson(SOME_XML);
+    convertCamt053ToJson(SOME_XML);
   }
 
   @Test
-  public void readCamt052ToJson_sampleCamt052Sample_readSuccess()
+  public void convertCamt052ToJson_sampleCamt052Sample_convertSuccess()
       throws BankFormatConverterException, IOException {
 
     final String camt052Sample = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/BalanceInquiry/XML Response/"
             + "BalanceInquiryResponse_Plain.txt")));
-
-    String res = readCamt052ToJson(camt052Sample);
-
+    String res = convertCamt052ToJson(camt052Sample);
     System.out.println(res);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt052ToJson_emptyStr_throwsHandlerException()
+  public void convertCamt052ToJson_emptyStr_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt052ToJson(EMPTY_STRING);
+    convertCamt052ToJson(EMPTY_STRING);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt052ToJson_whiteSpace_throwsHandlerException()
+  public void convertCamt052ToJson_whiteSpace_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt052ToJson(WHITE_SPACE);
+    convertCamt052ToJson(WHITE_SPACE);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void readCamt052ToJson_invalidXml_throwsHandlerException()
+  public void convertCamt052ToJson_invalidXml_throwsHandlerException()
       throws BankFormatConverterException {
-    readCamt052ToJson(SOME_XML);
+    convertCamt052ToJson(SOME_XML);
   }
 
   @Test
@@ -136,13 +132,13 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test
-  public void readDeskeraPaInXmlToDeskeraPaInJson_success()
+  public void convertDeskeraPaInXmlToDeskeraPaInJson_success()
       throws IOException, BankFormatConverterException {
 
     final String deskeraPaInSampleXml = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
             + "JSON Request/DeskeraFastPayInit_XML.txt")));
-    System.out.println(readDeskeraPaInXmlToDeskeraPaInJson(deskeraPaInSampleXml));
+    System.out.println(convertDeskeraPaInXmlToDeskeraPaInJson(deskeraPaInSampleXml));
   }
 
   @Test

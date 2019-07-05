@@ -4,6 +4,7 @@ import static main.java.Constant.CAMT052_CLASS_PATH;
 import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_PAIN_CLASS_PATH;
 import static main.java.Constant.PAIN001_CLASS_PATH;
+import static main.java.Constant.PAIN002_CLASS_PATH;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -195,6 +196,25 @@ public class BankFormatConverter<T> {
         converter = new BankFormatConverter<>(CAMT052_CLASS_PATH);
     JAXBElement<deskera.fintech.camt052.Document> documentElement =
         converter.readXmlToElement(camt052Str);
+    return converter.writeElementToJson(documentElement);
+  }
+
+  /**
+   * Converter from pain.002.001.03 formatted Xml String to its corresponding json
+   * String.
+   *
+   * @param pain002Str XML string in ISO 20022 pain.002.001.03 format.
+   * @return its corresponding json format string.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from XML String
+   *                                      to JAXBElement and then to json String.
+   */
+  public static String convertPaIn002ToJson(String pain002Str)
+      throws BankFormatConverterException {
+    BankFormatConverter<deskera.fintech.pain002.Document>
+        converter = new BankFormatConverter<>(PAIN002_CLASS_PATH);
+    JAXBElement<deskera.fintech.pain002.Document> documentElement =
+        converter.readXmlToElement(pain002Str);
     return converter.writeElementToJson(documentElement);
   }
 

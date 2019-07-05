@@ -110,10 +110,13 @@ import org.xml.sax.SAXException;
 
 public class Handler {
 
+  /* Enum */
+
+  public enum PaymentType { DFT, FAST }
+  
   /* Class-level Attributes */
 
   public static final Boolean isPROD = false; // is UAT otherwise
-  public enum PaymentType {DFT, FAST}
 
   /* Instance-level Attributes */
 

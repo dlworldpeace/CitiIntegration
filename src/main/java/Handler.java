@@ -910,7 +910,7 @@ public class Handler {
    * necessary data required in ISOXML V3 (pain.001.001.03).
    *
    * @param clientId account-specific identifier
-   * @param isoXml data in ISOXML V3 format.
+   * @param payload data in ISOXML V3 format.
    * @return a response that denotes whether the payment has passed the basic
    *         validations. The Partner has the ability to view transaction or
    *         payment status at any later point using the Payment Status Inquiry
@@ -918,22 +918,31 @@ public class Handler {
    *         its URI.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String initiatePayment(String clientId, String isoXml) throws HandlerException {
+  public String initiatePayment(String clientId, String payload) throws HandlerException {
     if (oauthtoken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw e;
     }
-    Map<String, String> headerList = new HashMap<>();
-    headerList.put("Content-Type", "application/xml");
-    headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
-    headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-    String base64Payload = generateBase64PayloadFromIsoXml(isoXml);
-    String url = isPROD
-        ? PAY_INIT_URL_PROD + clientId
-        : PAY_INIT_URL_UAT + clientId;
-    return new String(handleHttp(headerList, base64Payload, url));
+    try {
+      Map<String, String> headerList = new HashMap<>();
+      headerList.put("Content-Type", "application/xml");
+      headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      String base64Payload = generateBase64PayloadFromIsoXml(payload);
+      String url = isPROD
+          ? PAY_INIT_URL_PROD + clientId
+          : PAY_INIT_URL_UAT + clientId;
+      String resEncrypted = new String(handleHttp(headerList, base64Payload, url));
+      final String resPlain = decryptAndVerifyXmlFromCiti(resEncrypted);
+      return parseAuthOrPayInitResponse(
+          convertXmlStrToDoc(resPlain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+    } catch (XMLSecurityException | CertificateEncodingException
+        | XPathExpressionException e) {
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw new HandlerException(e.getMessage());
+    }
   }
 
   /**

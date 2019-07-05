@@ -359,11 +359,7 @@ public class HandlerTest {
 //    final String strInitPay = new String(Files.readAllBytes(Paths.get(
 //        "src/test/resources/sample/PaymentInitiation/DeskeraFastPayment/"
 //            + "XML Request/DeskeraFastISOXML.txt")));
-    final String resInitPay_Encrypted = handler.initiatePayment(clientId, strInitPay);
-    final String resInitPay_Plain =
-        handler.decryptAndVerifyXmlFromCiti(resInitPay_Encrypted);
-    final String resInitPay_ISOXML = parseAuthOrPayInitResponse(
-        convertXmlStrToDoc(resInitPay_Plain), TYPE_PAY_INIT, TAG_NAME_PAY_INIT);
+    final String resInitPay_ISOXML = handler.initiatePayment(clientId, strInitPay);
     System.out.println(resInitPay_ISOXML);
 
 //    final String strCheckPay = new String(Files.readAllBytes(Paths.get(

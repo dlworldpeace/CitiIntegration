@@ -348,11 +348,7 @@ public class HandlerTest {
     final String strAuth = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/Authentication/OutgoingPayment/"
             + "XML Request/AuthorizationRequest_V2_Plain.txt")));
-    String response = handler.requestOAuth(clientId, secretKey, strAuth);
-    String decryptedVerifiedResponse = handler.decryptAndVerifyXmlFromCiti(response);
-    String oauthToken = parseAuthOrPayInitResponse(
-        convertXmlStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
-    handler.setOAuthToken(oauthToken);
+    handler.requestOAuth(clientId, secretKey, strAuth);
 
     final String strInitPay = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
@@ -402,6 +398,21 @@ public class HandlerTest {
     final String resStatRet = handler.retrieveStatement(
         clientId, strStatRet, STATEMENT_RET_URL_MOCK);
     System.out.println(resStatRet);
+  }
+
+  @Test (expected = HandlerException.class)
+  public void authenticateNotDone_callOtherApi_throwsException()
+      throws IOException, HandlerException, XMLSecurityException,
+      CertificateEncodingException, BankFormatConverterException {
+    handler = new Handler();
+    final String strCheckBalance = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/"
+            + "XML Request/BalanceInquiryRequest_Plain_Real.txt")));
+    final String resBalance_Encypted = handler.checkBalance(clientId, strCheckBalance);
+    final String resBalance =
+        handler.decryptAndVerifyXmlFromCiti(resBalance_Encypted);
+    final String json = readCamt052ToJson(resBalance);
+    System.out.println(json);
   }
 
   @Test

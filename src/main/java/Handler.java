@@ -117,9 +117,9 @@ public class Handler {
   private String oauthtoken;
   private KeyStore ks;
 
-  /* Setters */
+  /* Setters and Getters */
 
-  public void setOAuthToken(String oauthtoken) {
+  private void setOAuthToken(String oauthtoken) {
     this.oauthtoken = oauthtoken;
   }
 
@@ -674,7 +674,7 @@ public class Handler {
    * @return response received from the successful handshake with Citi API.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String requestOAuth(String clientId, String secretKey,
+  public void requestOAuth(String clientId, String secretKey,
       String oauthpayload) throws HandlerException {
 
     try {
@@ -716,10 +716,15 @@ public class Handler {
           .getBytes()).replaceAll("([\\r\\n])", ""));
 
       String url = isPROD ? OAUTH_URL_PROD : OAUTH_URL_UAT;
-      return new String(handleHttp(headerList, oauthpayload, url));
+      String response = new String(handleHttp(headerList, oauthpayload, url));
+      String decryptedVerifiedResponse = decryptAndVerifyXmlFromCiti(response);
+      String oauthToken = parseAuthOrPayInitResponse(
+          convertXmlStrToDoc(decryptedVerifiedResponse), TYPE_AUTH, TAG_NAME_AUTH);
+      this.setOAuthToken(oauthToken);
 
     } catch (IOException | CertificateException | UnrecoverableKeyException
-        | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+        | NoSuchAlgorithmException | KeyStoreException | KeyManagementException
+        | XMLSecurityException | XPathExpressionException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }
@@ -914,6 +919,12 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   public String initiatePayment(String clientId, String isoXml) throws HandlerException {
+    if (oauthtoken == null) {
+      HandlerException e =
+          new HandlerException("Other api is called before authentication");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw e;
+    }
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
@@ -936,7 +947,14 @@ public class Handler {
    * @return a response that follows the ISOXML (pain.002.001.03) standards.
    * @throws HandlerException custom exception for Handler class.
    */
-  public String checkPaymentStatus(String clientId, String payload) throws HandlerException {
+  public String checkPaymentStatus(String clientId, String payload)
+      throws HandlerException {
+    if (oauthtoken == null) {
+      HandlerException e =
+          new HandlerException("Other api is called before authentication");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw e;
+    }
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
@@ -955,6 +973,12 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class
    */
   public String checkBalance(String clientId, String payload) throws HandlerException {
+    if (oauthtoken == null) {
+      HandlerException e =
+          new HandlerException("Other api is called before authentication");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw e;
+    }
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
@@ -974,6 +998,12 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   public String initiateStatement(String clientId, String payLoad) throws HandlerException {
+    if (oauthtoken == null) {
+      HandlerException e =
+          new HandlerException("Other api is called before authentication");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw e;
+    }
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
@@ -1179,11 +1209,15 @@ public class Handler {
    */
   public String retrieveStatement(String clientId, String payload, String url) throws XMLSecurityException,
       CertificateEncodingException, HandlerException {
-
+    if (oauthtoken == null) {
+      HandlerException e =
+          new HandlerException("Other api is called before authentication");
+      Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
+      throw e;
+    }
     Map<String, String> headerList = new HashMap<>();
     headerList.put("Content-Type", "application/xml");
     headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
-
     HashMap<String, Object> body = parseMimeResponse(
         handleHttp(headerList, payload, url + clientId));
     String firstHalf =

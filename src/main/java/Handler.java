@@ -112,17 +112,17 @@ public class Handler {
 
   /* Class-level Constants */
 
-  public static final Boolean isPROD = false;
+  public static final Boolean isPROD = false; // is UAT otherwise
 
   /* Instance-level Variables */
 
-  private String oauthtoken;
+  private String oauthToken;
   private KeyStore ks;
 
   /* Setters and Getters */
 
   private void setOAuthToken(String oauthtoken) {
-    this.oauthtoken = oauthtoken;
+    this.oauthToken = oauthtoken;
   }
 
   /* Keys */
@@ -921,7 +921,7 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   public String initiatePayment(String clientId, String payload) throws HandlerException {
-    if (oauthtoken == null) {
+    if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -931,7 +931,7 @@ public class Handler {
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
       headerList.put(PAYMENT_TYPE_HEADER, OUTGOING_PAYMENT_TYPE);
-      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken);
       String base64Payload = generateBase64PayloadFromIsoXml(payload);
       String url = isPROD
           ? PAY_INIT_URL_PROD + clientId
@@ -959,7 +959,7 @@ public class Handler {
    */
   public String checkPaymentStatus(String clientId, String endToEndId)
       throws HandlerException {
-    if (oauthtoken == null) {
+    if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -972,7 +972,7 @@ public class Handler {
           .replace("placeholder", endToEndId);
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
-      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken);
       String url = isPROD
           ? PAY_ENHANCED_STATUS_URL_PROD + clientId
           : PAY_ENHANCED_STATUS_URL_UAT + clientId;
@@ -995,7 +995,7 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class
    */
   public String checkBalance(String clientId, String payload) throws HandlerException {
-    if (oauthtoken == null) {
+    if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1004,7 +1004,7 @@ public class Handler {
     try {
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
-      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken);
       String url = isPROD
           ? BALANCE_INQUIRY_URL_PROD + clientId
           : BALANCE_INQUIRY_URL_UAT + clientId;
@@ -1028,7 +1028,7 @@ public class Handler {
    * @throws HandlerException custom exception for Handler class.
    */
   public String initiateStatement(String clientId, String payLoad) throws HandlerException {
-    if (oauthtoken == null) {
+    if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
@@ -1037,7 +1037,7 @@ public class Handler {
     try {
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
-      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken);
       String url = isPROD
           ? STATEMENT_INIT_URL_PROD + clientId
           : STATEMENT_INIT_URL_UAT + clientId;
@@ -1249,7 +1249,7 @@ public class Handler {
           .replace("placeholder", statementId);
       Map<String, String> headerList = new HashMap<>();
       headerList.put("Content-Type", "application/xml");
-      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthtoken);
+      headerList.put(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken);
       HashMap<String, Object> body = parseMimeResponse(
           handleHttp(headerList, payload, url + clientId));
       String firstHalf =
@@ -1274,7 +1274,7 @@ public class Handler {
    */
   public String retrieveStatement(String clientId, String statementId)
       throws HandlerException {
-    if (oauthtoken == null) {
+    if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);

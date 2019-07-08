@@ -467,7 +467,7 @@ public class BankFormatConverter<T> {
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process.
    */
-  public static String convertJsonToStatInitXml(String jsonStr)
+  public static String convertJsonToStatInitReqXml(String jsonStr)
       throws BankFormatConverterException {
     JAXBElement<deskera.fintech.statinit.StatementInitiationRequestType>
         statInitElement = readJsonToStatInitElement(jsonStr);

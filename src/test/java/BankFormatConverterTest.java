@@ -2,7 +2,7 @@ package test.java;
 
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
-import static main.java.BankFormatConverter.convertJsonToStatInitXml;
+import static main.java.BankFormatConverter.convertJsonToStatInitReqXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.BankFormatConverter.createPayInitDocumentInstance;
 import static main.java.BankFormatConverter.convertCamt052ToJson;
@@ -207,21 +207,20 @@ public class BankFormatConverterTest extends TestCase {
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT.txt")));
 
+    System.out.println(convertJsonToPaIn001Xml(deskeraPaInSampleJson));
     assertXMLEqual(pain001Sample, convertJsonToPaIn001Xml(deskeraPaInSampleJson));
   }
 
   @Test
-  public void convertJsonToStatInitXml_success()
-      throws BankFormatConverterException, IOException {
-    final String sampleJson =
-        "{\n"
-            + "  \"statementInitiationRequest\": {\n"
-            + "    \"accountNumber\": \"865828039\",\n"
-            + "    \"formatName\": \"CAMT_053_001_02\",\n"
-            + "    \"fromDate\": \"2018-05-31\",\n"
-            + "    \"toDate\": \"2018-06-09\"\n"
-            + "  }\n"
-            + "}";
-    System.out.println(convertJsonToStatInitXml(sampleJson));
+  public void convertJsonToStatInitReqXml_success()
+      throws BankFormatConverterException, IOException, SAXException {
+    final String sampleJson = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
+            + "XML Request/DeskeraStatInitRequest_CAMT_053_JSON.txt")));
+    final String sampleXml = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/XML Request/"
+            + "StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
+
+    assertEquals(sampleXml, convertJsonToStatInitReqXml(sampleJson));
   }
 }

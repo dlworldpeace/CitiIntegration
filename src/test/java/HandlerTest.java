@@ -359,7 +359,7 @@ public class HandlerTest {
 
     final String strInitStat = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
-            + "XML Request/StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
+            + "XML Request/DeskeraStatInitRequest_CAMT_053_JSON.txt")));
     final String statementId = handler.initiateStatement(clientId, strInitStat);
     System.out.println(statementId);
 

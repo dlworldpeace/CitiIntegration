@@ -230,6 +230,7 @@ public class BankFormatConverterTest extends TestCase {
             + "StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
 
     XMLUnit.setIgnoreWhitespace(true);
+
     // compare XMLs with different xmlns (xml namespace)
     Diff xmlDiff = new Diff(sampleXml, convertJsonToStatInitReqXml(sampleJson));
     xmlDiff.overrideElementQualifier(new ElementNameQualifier() {

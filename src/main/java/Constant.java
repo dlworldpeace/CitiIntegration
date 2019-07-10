@@ -66,6 +66,7 @@ public class Constant {
   public static final String CAMT053_CLASS_PATH = "deskera.fintech.camt053";
   public static final String OAUTH_CLASS_PATH = "deskera.fintech.oauth";
   public static final String PAY_INIT_CLASS_PATH = "deskera.fintech.payinit";
+  public static final String BAL_INQ_CLASS_PATH = "deskera.fintech.balinq";
   public static final String STAT_INIT_CLASS_PATH = "deskera.fintech.statinit";
   public static final String STAT_RET_CLASS_PATH = "deskera.fintech.statret";
   public static final String DESKERA_PAIN_CLASS_PATH = "main.java.payinit";

@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.Constant.BAL_INQ_CLASS_PATH;
 import static main.java.Constant.CAMT052_CLASS_PATH;
 import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_PAIN_CLASS_PATH;
@@ -442,11 +443,12 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Converter from Json to Deskera's custom payment initiation formatted element.
+   * Converter from Json to citi statement initiation request formatted element.
    *
-   * @param jsonStr json string in Deskera's custom payment initiation format
+   * @param jsonStr json string in citi's statement initiation request format
    * @return its corresponding {@link JAXBElement} {@code <}
-   *         {@link main.java.payinit.InitiatePayments} {@code >} class instance
+   *         {@link deskera.fintech.statinit.StatementInitiationRequestType}
+   *         {@code >} class instance
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process from Json String
    *                                      to JAXBElement.
@@ -459,11 +461,29 @@ public class BankFormatConverter<T> {
   }
 
   /**
-   * Converter from Deskera's custom payment initiation formatted Json String to
-   * its corresponding Xml String in pain.001.001.03 standards.
+   * Converter from Json to citi balance inquiry request formatted element.
    *
-   * @param jsonStr Json string in Deskera's custom payment initiation format.
-   * @return its corresponding xml string in pain.001.001.03 standards.
+   * @param jsonStr json string in citi's balance inquiry request format
+   * @return its corresponding {@link JAXBElement} {@code <}
+   *         {@link deskera.fintech.balinq.BalanceInquiryRequestType}
+   *         {@code >} class instance
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process from Json String
+   *                                      to JAXBElement.
+   */
+  public static JAXBElement<deskera.fintech.balinq.BalanceInquiryRequestType>
+  readJsonToBalInqElement(String jsonStr) throws BankFormatConverterException {
+    BankFormatConverter<deskera.fintech.balinq.BalanceInquiryRequestType>
+        converter = new BankFormatConverter<>(BAL_INQ_CLASS_PATH);
+    return converter.readJsonToElement(jsonStr);
+  }
+
+  /**
+   * Converter from citi statement initiation request formatted Json String to
+   * its corresponding Xml standards.
+   *
+   * @param jsonStr Json string in citi's statement initiation request format.
+   * @return its corresponding xml.
    * @throws BankFormatConverterException if an unexpected event occurs during
    *                                      the conversion process.
    */
@@ -474,6 +494,24 @@ public class BankFormatConverter<T> {
     BankFormatConverter<deskera.fintech.statinit.StatementInitiationRequestType>
         converter = new BankFormatConverter<>(STAT_INIT_CLASS_PATH);
     return converter.writeElementToXml(statInitElement);
+  }
+
+  /**
+   * Converter from citi balance inquiry request formatted Json String to
+   * its corresponding Xml standards.
+   *
+   * @param jsonStr Json string in citi's balance inquiry request format.
+   * @return its corresponding xml.
+   * @throws BankFormatConverterException if an unexpected event occurs during
+   *                                      the conversion process.
+   */
+  public static String convertJsonToBalInqReqXml(String jsonStr)
+      throws BankFormatConverterException {
+    JAXBElement<deskera.fintech.balinq.BalanceInquiryRequestType>
+        balInqElement = readJsonToBalInqElement(jsonStr);
+    BankFormatConverter<deskera.fintech.balinq.BalanceInquiryRequestType>
+        converter = new BankFormatConverter<>(BAL_INQ_CLASS_PATH);
+    return converter.writeElementToXml(balInqElement);
   }
 
   /**

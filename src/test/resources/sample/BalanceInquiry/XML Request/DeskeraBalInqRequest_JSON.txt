@@ -1,0 +1,8 @@
+{
+  "balanceInquiryRequest": {
+    "accountNumber": "865828039",
+    "baseCurrency": "SGD",
+    "fromDate": "2019-06-01",
+    "toDate": "2019-06-05"
+  }
+}

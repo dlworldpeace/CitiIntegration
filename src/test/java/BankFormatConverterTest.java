@@ -4,6 +4,7 @@ import static main.java.BankFormatConverter.convertCamt052ToJson;
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
 import static main.java.BankFormatConverter.convertCamt053ToJson;
 import static main.java.BankFormatConverter.convertDeskeraPaInXmlToDeskeraPaInJson;
+import static main.java.BankFormatConverter.convertJsonToBalInqReqXml;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
 import static main.java.BankFormatConverter.convertJsonToStatInitReqXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
@@ -271,4 +272,40 @@ public class BankFormatConverterTest extends TestCase {
       throws BankFormatConverterException {
     convertJsonToStatInitReqXml(SOME_JSON);
   }
+
+  @Test
+  public void convertJsonToBalInqReqXml__success()
+      throws BankFormatConverterException, IOException, SAXException {
+
+    final String sampleJson = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "DeskeraBalInqRequest_JSON.txt")));
+    final String sampleXml = new String(Files.readAllBytes(Paths.get(
+        "src/test/resources/sample/BalanceInquiry/XML Request/"
+            + "BalanceInquiryRequest_Plain_Real.txt")));
+
+    // compare XMLs with different xmlns (xml namespace)
+    Diff xmlDiff = new Diff(sampleXml, convertJsonToBalInqReqXml(sampleJson));
+    xmlDiff.overrideElementQualifier(new ElementNameQualifier() {
+      @Override
+      protected boolean equalsNamespace(Node control, Node test) {
+        return true;
+      }
+    });
+    xmlDiff.overrideDifferenceListener(new DifferenceListener() {
+      @Override
+      public int differenceFound(Difference diff) {
+        if (diff.getId() == DifferenceConstants.NAMESPACE_URI_ID) {
+          return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
+        }
+        return RETURN_ACCEPT_DIFFERENCE;
+      }
+
+      @Override
+      public void skippedComparison(Node arg0, Node arg1) { }
+    });
+    assertXMLEqual(xmlDiff, true);
+
+  }
+
 }

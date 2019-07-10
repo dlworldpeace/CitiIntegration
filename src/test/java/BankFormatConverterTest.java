@@ -232,7 +232,7 @@ public class BankFormatConverterTest extends TestCase {
 
     XMLUnit.setIgnoreWhitespace(true);
 
-    // compare XMLs with different xmlns (xml namespace)
+    // compare XMLs with xmlns (xml namespace) ignored
     Diff xmlDiff = new Diff(sampleXml, convertJsonToStatInitReqXml(sampleJson));
     xmlDiff.overrideElementQualifier(new ElementNameQualifier() {
       @Override
@@ -274,7 +274,7 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test
-  public void convertJsonToBalInqReqXml__success()
+  public void convertJsonToBalInqReqXml_success()
       throws BankFormatConverterException, IOException, SAXException {
 
     final String sampleJson = new String(Files.readAllBytes(Paths.get(
@@ -284,7 +284,7 @@ public class BankFormatConverterTest extends TestCase {
         "src/test/resources/sample/BalanceInquiry/XML Request/"
             + "BalanceInquiryRequest_Plain_Real.txt")));
 
-    // compare XMLs with different xmlns (xml namespace)
+    // compare XMLs with xmlns (xml namespace) ignored
     Diff xmlDiff = new Diff(sampleXml, convertJsonToBalInqReqXml(sampleJson));
     xmlDiff.overrideElementQualifier(new ElementNameQualifier() {
       @Override

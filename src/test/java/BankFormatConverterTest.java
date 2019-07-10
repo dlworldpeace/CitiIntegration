@@ -1,13 +1,13 @@
 package test.java;
 
+import static main.java.BankFormatConverter.convertCamt052ToJson;
 import static main.java.BankFormatConverter.convertCamt053ToDeskeraStatement;
+import static main.java.BankFormatConverter.convertCamt053ToJson;
+import static main.java.BankFormatConverter.convertDeskeraPaInXmlToDeskeraPaInJson;
 import static main.java.BankFormatConverter.convertJsonToPaIn001Xml;
 import static main.java.BankFormatConverter.convertJsonToStatInitReqXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.BankFormatConverter.createPayInitDocumentInstance;
-import static main.java.BankFormatConverter.convertCamt052ToJson;
-import static main.java.BankFormatConverter.convertCamt053ToJson;
-import static main.java.BankFormatConverter.convertDeskeraPaInXmlToDeskeraPaInJson;
 import static main.java.BankFormatConverter.readJsonToDeskeraPaInElement;
 import static main.java.Constant.CAMT053_CLASS_PATH;
 import static main.java.Constant.DESKERA_STAT_CLASS_PATH;
@@ -24,9 +24,16 @@ import junit.framework.TestCase;
 import main.java.BankFormatConverter;
 import main.java.BankFormatConverterException;
 import main.java.statement.DeskeraStatement;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
+import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.ElementNameQualifier;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 @RunWith(JUnit4.class)
@@ -207,13 +214,13 @@ public class BankFormatConverterTest extends TestCase {
         "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
             + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT.txt")));
 
-    System.out.println(convertJsonToPaIn001Xml(deskeraPaInSampleJson));
     assertXMLEqual(pain001Sample, convertJsonToPaIn001Xml(deskeraPaInSampleJson));
   }
 
   @Test
   public void convertJsonToStatInitReqXml_success()
       throws BankFormatConverterException, IOException, SAXException {
+
     final String sampleJson = new String(Files.readAllBytes(Paths.get(
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/"
             + "XML Request/DeskeraStatInitRequest_CAMT_053_JSON.txt")));
@@ -221,6 +228,27 @@ public class BankFormatConverterTest extends TestCase {
         "src/test/resources/sample/StatementInitiation/CAMTorSWIFT/XML Request/"
             + "StatementInitiationRequest_CAMT_053_001_02_Plain_Real.txt")));
 
-    assertEquals(sampleXml, convertJsonToStatInitReqXml(sampleJson));
+    XMLUnit.setIgnoreWhitespace(true);
+    // compare XMLs with different xmlns (xml namespace)
+    Diff xmlDiff = new Diff(sampleXml, convertJsonToStatInitReqXml(sampleJson));
+    xmlDiff.overrideElementQualifier(new ElementNameQualifier() {
+      @Override
+      protected boolean equalsNamespace(Node control, Node test) {
+        return true;
+      }
+    });
+    xmlDiff.overrideDifferenceListener(new DifferenceListener() {
+      @Override
+      public int differenceFound(Difference diff) {
+        if (diff.getId() == DifferenceConstants.NAMESPACE_URI_ID) {
+          return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
+        }
+        return RETURN_ACCEPT_DIFFERENCE;
+      }
+
+      @Override
+      public void skippedComparison(Node arg0, Node arg1) { }
+    });
+    assertXMLEqual(xmlDiff, true);
   }
 }

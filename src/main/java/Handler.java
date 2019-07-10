@@ -653,7 +653,7 @@ public class Handler {
       ResponseEntity<?> responseEntity = restTemplate
           .exchange(url, HttpMethod.POST, entity, byte[].class);
       return (byte[]) responseEntity.getBody();
-    } catch (HttpStatusCodeException e) {
+    } catch (HttpStatusCodeException e) { // non-200 response status received
       String errorResponse = e.getResponseBodyAsString();
       String errorResponseDecrypted;
       try {

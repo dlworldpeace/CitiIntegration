@@ -308,4 +308,22 @@ public class BankFormatConverterTest extends TestCase {
 
   }
 
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToBalInqReqXml_emptyStr_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToBalInqReqXml(EMPTY_STRING);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToBalInqReqXml_whiteSpace_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToBalInqReqXml(WHITE_SPACE);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToBalInqReqXml_invalidJson_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToBalInqReqXml(SOME_JSON);
+  }
+
 }

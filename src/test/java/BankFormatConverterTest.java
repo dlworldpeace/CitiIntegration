@@ -42,6 +42,7 @@ public class BankFormatConverterTest extends TestCase {
   private static final String EMPTY_STRING = "";
   private static final String WHITE_SPACE = " ";
   private static final String SOME_XML = "<hi>123</hi>";
+  private static final String SOME_JSON = "{key: value}";
 
   @Test
   public void readXmlToElement_jaxbElementGenerateCorrectly()
@@ -76,19 +77,19 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt053ToJson_emptyStr_throwsHandlerException()
+  public void convertCamt053ToJson_emptyStr_throwsException()
       throws BankFormatConverterException {
     convertCamt053ToJson(EMPTY_STRING);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt053ToJson_whiteSpace_throwsHandlerException()
+  public void convertCamt053ToJson_whiteSpace_throwsException()
       throws BankFormatConverterException {
     convertCamt053ToJson(WHITE_SPACE);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt053ToJson_invalidXml_throwsHandlerException()
+  public void convertCamt053ToJson_invalidXml_throwsException()
       throws BankFormatConverterException {
     convertCamt053ToJson(SOME_XML);
   }
@@ -105,19 +106,19 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt052ToJson_emptyStr_throwsHandlerException()
+  public void convertCamt052ToJson_emptyStr_throwsException()
       throws BankFormatConverterException {
     convertCamt052ToJson(EMPTY_STRING);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt052ToJson_whiteSpace_throwsHandlerException()
+  public void convertCamt052ToJson_whiteSpace_throwsException()
       throws BankFormatConverterException {
     convertCamt052ToJson(WHITE_SPACE);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertCamt052ToJson_invalidXml_throwsHandlerException()
+  public void convertCamt052ToJson_invalidXml_throwsException()
       throws BankFormatConverterException {
     convertCamt052ToJson(SOME_XML);
   }
@@ -134,19 +135,19 @@ public class BankFormatConverterTest extends TestCase {
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertPaIn002ToJson_emptyStr_throwsHandlerException()
+  public void convertPaIn002ToJson_emptyStr_throwsException()
       throws BankFormatConverterException {
     convertPaIn002ToJson(EMPTY_STRING);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertPaIn002ToJson_whiteSpace_throwsHandlerException()
+  public void convertPaIn002ToJson_whiteSpace_throwsException()
       throws BankFormatConverterException {
     convertPaIn002ToJson(WHITE_SPACE);
   }
 
   @Test (expected = BankFormatConverterException.class)
-  public void convertPaIn002ToJson_invalidXml_throwsHandlerException()
+  public void convertPaIn002ToJson_invalidXml_throwsException()
       throws BankFormatConverterException {
     convertPaIn002ToJson(SOME_XML);
   }
@@ -250,5 +251,23 @@ public class BankFormatConverterTest extends TestCase {
       public void skippedComparison(Node arg0, Node arg1) { }
     });
     assertXMLEqual(xmlDiff, true);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToStatInitReqXml_emptyStr_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToStatInitReqXml(EMPTY_STRING);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToStatInitReqXml_whiteSpace_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToStatInitReqXml(WHITE_SPACE);
+  }
+
+  @Test (expected = BankFormatConverterException.class)
+  public void convertJsonToStatInitReqXml_invalidJson_throwsException()
+      throws BankFormatConverterException {
+    convertJsonToStatInitReqXml(SOME_JSON);
   }
 }

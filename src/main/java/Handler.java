@@ -1,6 +1,7 @@
 package main.java;
 
 import static main.java.BankFormatConverter.convertCamt052ToJson;
+import static main.java.BankFormatConverter.convertJsonToStatInitReqXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.Constant.*;
 import static org.apache.commons.io.IOUtils.toByteArray;
@@ -1032,12 +1033,12 @@ public class Handler {
    * Statement initiation logic.
    *
    * @param clientId account-specific identifier
-   * @param payLoad data in XML format
-   * @return a response that contains the statement ID which can be used to call
+   * @param payload data in Json format
+   * @return a Json response that contains the statement ID which can be used to call
    *         statement retrieval API to obtain the specific statement file
    * @throws HandlerException custom exception for Handler class
    */
-  public String initiateStatement(String clientId, String payLoad) throws HandlerException {
+  public String initiateStatement(String clientId, String payload) throws HandlerException {
     if (oauthToken == null) {
       HandlerException e =
           new HandlerException("Other api is called before authentication");
@@ -1051,10 +1052,12 @@ public class Handler {
       String url = isPROD
           ? STATEMENT_INIT_URL_PROD + clientId
           : STATEMENT_INIT_URL_UAT + clientId;
-      String resEncrypted = new String(handleHttp(headerList, payLoad, url));
+      String xmlPayload = convertJsonToStatInitReqXml(payload);
+      String resEncrypted = new String(handleHttp(headerList, xmlPayload, url));
       String resInitStat = decryptAndVerifyXmlFromCiti(resEncrypted);
       return extractStatementId(resInitStat);
-    } catch (XMLSecurityException | CertificateEncodingException e) {
+    } catch (XMLSecurityException | CertificateEncodingException
+        | BankFormatConverterException e) {
       Logger.getLogger(Handler.class.getName()).log(Level.SEVERE, null, e);
       throw new HandlerException(e.getMessage());
     }

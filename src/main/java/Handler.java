@@ -1,6 +1,7 @@
 package main.java;
 
 import static main.java.BankFormatConverter.convertCamt052ToJson;
+import static main.java.BankFormatConverter.convertJsonToBalInqReqXml;
 import static main.java.BankFormatConverter.convertJsonToStatInitReqXml;
 import static main.java.BankFormatConverter.convertPaIn002ToJson;
 import static main.java.Constant.*;
@@ -1001,7 +1002,8 @@ public class Handler {
    * Balance inquiry logic.
    *
    * @param clientId account-specific identifier
-   * @param payload Payload that contains account number or branch number
+   * @param payload Json Payload that contains account number or branch number
+   *                and date range
    * @return a json response in the format of camt.052.001.02
    * @throws HandlerException custom exception for Handler class
    */
@@ -1019,7 +1021,8 @@ public class Handler {
       String url = isPROD
           ? BALANCE_INQUIRY_URL_PROD + clientId
           : BALANCE_INQUIRY_URL_UAT + clientId;
-      String resEncrypted = new String(handleHttp(headerList, payload, url));
+      String xmlPayload = convertJsonToBalInqReqXml(payload);
+      String resEncrypted = new String(handleHttp(headerList, xmlPayload, url));
       final String resPlain = decryptAndVerifyXmlFromCiti(resEncrypted);
       return convertCamt052ToJson(resPlain);
     } catch (XMLSecurityException | CertificateEncodingException

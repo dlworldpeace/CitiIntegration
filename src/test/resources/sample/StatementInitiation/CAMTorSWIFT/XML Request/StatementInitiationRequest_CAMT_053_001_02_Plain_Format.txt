@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<statementInitiationRequest xmlns="http://com.citi.citiconnect/services/types/inquiries/statement/v1">
+	<accountNumber>account_number</accountNumber>
+  <formatName>CAMT_053_001_02</formatName>
+  <fromDate>from_date</fromDate>
+  <toDate>to_date</toDate>
+</statementInitiationRequest>

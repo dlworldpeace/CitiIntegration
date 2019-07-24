@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>GBP161111000001</MsgId>
+      <CreDtTm>2019-07-22T09:43:15</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <InitgPty>
+        <Nm>Deskera Singapore</Nm>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>98765432 Fund Transfer Domestic</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <PmtTpInf>
+        <SvcLvl>
+          <Cd>URGP</Cd>
+        </SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt>2019-07-22</ReqdExctnDt>
+      <Dbtr>
+        <Nm>Deskera Singapore Pte Ltd</Nm>
+        <PstlAdr>
+          <Ctry>SG</Ctry>
+          <AdrLine>One Raffles Place</AdrLine>
+          <AdrLine>Singapore</AdrLine>
+        </PstlAdr>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <Othr>
+            <Id>865828039</Id>
+          </Othr>
+        </Id>
+        <Ccy>SGD</Ccy>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BIC>CITISGSG</BIC>
+          <PstlAdr>
+            <Ctry>SG</Ctry>
+          </PstlAdr>
+        </FinInstnId>
+      </DbtrAgt>
+      <ChrgBr>DEBT</ChrgBr>
+      <CdtTrfTxInf>
+        <PmtId>
+          <EndToEndId>end_to_end_id</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="SGD">1</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>DBSSSGSG</BIC>
+            <Nm>DBS Bank Ltd</Nm>
+            <PstlAdr>
+              <Ctry>SG</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>Mahamuni Sagar Subhash</Nm>
+          <PstlAdr>
+            <Ctry>SG</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <Othr>
+              <Id>480516840</Id>
+            </Othr>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>TR002638</Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>

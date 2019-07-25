@@ -815,4 +815,8 @@ public class BankFormatConverter<T> {
     return document;
   }
 
+  public static String addDocumentLayerToJson (String jsonStr) {
+    return "{ \"Document\": " + jsonStr + "}";
+  }
+
 }

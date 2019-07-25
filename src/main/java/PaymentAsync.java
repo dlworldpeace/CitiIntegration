@@ -1,5 +1,6 @@
 package main.java;
 
+import static main.java.BankFormatConverter.addDocumentLayerToJson;
 import static main.java.Constant.KEYSTORE_FILEPATH_PROD;
 import static main.java.Constant.KEYSTORE_PASSWORD_PROD;
 import static main.java.Constant.PAIN002_CLASS_PATH;
@@ -16,8 +17,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import main.java.Handler.PaymentType;
 
@@ -68,7 +72,7 @@ public class PaymentAsync {
       Statement st = conn.createStatement();
 
       // payment initiation logic
-      String endToEndId = "ABC-0001"; // TODO: add your unique id generation logic here
+      String endToEndId = "ABC-0003"; // TODO: add your unique id generation logic here
       String strInitPay = new String(Files.readAllBytes(Paths.get(
           "src/test/resources/sample/PaymentInitiation/OutgoingPayment/"
               + "XML Request/PaymentInitRequest_ISOXMLPlain_DFT_Format.txt")))
@@ -97,11 +101,11 @@ public class PaymentAsync {
       } else if (additionalInfo.isEmpty()) {
         st.executeUpdate(String.format(
             "INSERT INTO bank_payments (id, end_to_end_id, status) VALUES ('%s', '%s', '%s');",
-            uuid, endToEndId, status));
+            uuid, endToEndId, status.value()));
       } else {
         st.executeUpdate(String.format(
             "INSERT INTO bank_payments (id, end_to_end_id, status, additional_info) VALUES ('%s', '%s', '%s', '%s');",
-            uuid, endToEndId, status, String.join("", additionalInfo)));
+            uuid, endToEndId, status.value(), String.join("", additionalInfo)));
       }
 
       // payment status inquiry logic
@@ -113,42 +117,49 @@ public class PaymentAsync {
           + " status IS NULL";
       ResultSet rs = st.executeQuery(query);
 
+      List <String> endToEndIdList = new ArrayList<>();
       while (rs.next()) {
-        String _endToEndId = rs.getString("end_to_end_id");
+        endToEndIdList.add(rs.getString("end_to_end_id"));
+      }
+
+      for (String _endToEndId: endToEndIdList) {
         String resCheckPay = handler.checkPaymentStatus(clientId, _endToEndId);
-        documentElement = converter.readXmlToElement(resCheckPay);
-        status = documentElement.getValue().getCstmrPmtStsRpt().getOrgnlPmtInfAndSts()
+        BankFormatConverter<deskera.fintech.pain002.Document>
+          _converter = new BankFormatConverter<>(PAIN002_CLASS_PATH);
+        JAXBElement<Document> _documentElement = _converter.readJsonToElement(addDocumentLayerToJson(resCheckPay));
+        TransactionIndividualStatus3Code _status = _documentElement.getValue().getCstmrPmtStsRpt().getOrgnlPmtInfAndSts()
                 .get(0).getTxInfAndSts().get(0).getTxSts();
-        additionalInfo = documentElement.getValue().getCstmrPmtStsRpt().getOrgnlPmtInfAndSts()
+        List<String>_additionalInfo = _documentElement.getValue().getCstmrPmtStsRpt().getOrgnlPmtInfAndSts()
             .get(0).getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf();
 
-        if (status == null && additionalInfo.isEmpty()) {
+        if (_status == null && _additionalInfo.isEmpty()) {
           st.executeUpdate(String.format(
               "UPDATE bank_payments SET status = NULL , additional_info = NULL WHERE end_to_end_id = '%s'",
               _endToEndId));
-        } else if (status == null) {
+        } else if (_status == null) {
           st.executeUpdate(String.format(
               "UPDATE bank_payments SET status = NULL , additional_info = '%s' WHERE end_to_end_id = '%s'",
-              String.join("", additionalInfo), _endToEndId));
-        } else if (additionalInfo.isEmpty()) {
+              String.join("", _additionalInfo), _endToEndId));
+        } else if (_additionalInfo.isEmpty()) {
           st.executeUpdate(String.format(
               "UPDATE bank_payments SET status = '%s' , additional_info = NULL WHERE end_to_end_id = '%s'",
-              status, _endToEndId));
+              _status.value(), _endToEndId));
         } else {
           st.executeUpdate(String.format(
               "UPDATE bank_payments SET status = '%s' , additional_info = '%s' WHERE end_to_end_id = '%s'",
-              status, String.join("", additionalInfo), _endToEndId));
+              _status.value(), String.join("", _additionalInfo), _endToEndId));
         }
       }
 
       st.close();
       conn.close();
-    } catch (BankFormatConverterException | HandlerException e) {
+    } catch (IOException | BankFormatConverterException | HandlerException e) {
       System.err.println("Unable to check payment status!");
       System.err.println(e.getMessage());
-    } catch (IOException | SQLException | ClassNotFoundException e) {
+    } catch (SQLException | ClassNotFoundException e) {
       System.err.println("Got an exception!");
       System.err.println(e.getMessage());
+      Logger.getLogger(PaymentAsync.class.getName()).log(Level.SEVERE, null, e);
     }
   }
 
